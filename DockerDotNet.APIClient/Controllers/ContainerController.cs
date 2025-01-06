@@ -98,6 +98,22 @@ namespace DockerDotNet.APIClient.Controllers
             return await httpResponseMessage.Content.ReadAsStringAsync();
         }
 
+        [HttpGet]
+        [Route("{id}/logs")]
+        public async Task GetContainerLogs(string id)
+        {
+            HttpClient httpClient = DockerClient.GetDockerHttpClient();
 
+            HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Get, new UriBuilder($"{httpClient.BaseAddress}containers/{id}/logs?follow=true&stdout=true&tail=50").Uri);
+            HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead);
+
+
+            Response.StatusCode = (int)httpResponseMessage.StatusCode;
+            Response.ContentType = httpResponseMessage.Content.Headers.ContentType?.ToString() ?? "application/octet-stream";
+
+            using var upstreamStream = await httpResponseMessage.Content.ReadAsStreamAsync();
+            await upstreamStream.CopyToAsync(Response.Body);
+            await Response.Body.FlushAsync();
+        }
     }
 }
