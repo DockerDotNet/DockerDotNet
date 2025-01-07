@@ -1,4 +1,5 @@
 ﻿using DockerDotNet.Core;
+
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,104 +17,150 @@ namespace DockerDotNet.APIClient.Controllers
         }
 
         [HttpGet]
-        public async Task<string> GetContainers()
+        public async Task<IActionResult> GetContainers()
         {
-            HttpClient httpClient = DockerClient.GetDockerHttpClient();
+            using HttpClient httpClient = DockerClient.GetDockerHttpClient();
+            Uri requestUri = new UriBuilder($"{httpClient.BaseAddress}containers/json").Uri;
 
-            HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Get, new UriBuilder($"{httpClient.BaseAddress}containers/json").Uri);
+            HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, requestUri);
             HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(requestMessage);
+            httpResponseMessage.EnsureSuccessStatusCode();
 
-            httpClient.Dispose();
-
-            return await httpResponseMessage.Content.ReadAsStringAsync();
+            string responseContent = await httpResponseMessage.Content.ReadAsStringAsync();
+            return Ok(responseContent);
         }
 
         [HttpGet]
         [Route("{id}")]
-        public async Task<string> GetContainer(string id)
+        public async Task<IActionResult> GetContainer(string id)
         {
-            HttpClient httpClient = DockerClient.GetDockerHttpClient();
+            using HttpClient httpClient = DockerClient.GetDockerHttpClient();
+            Uri requestUri = new UriBuilder($"{httpClient.BaseAddress}containers/{id}/json").Uri;
 
-            HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Get, new UriBuilder($"{httpClient.BaseAddress}containers/{id}/json").Uri);
+            HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, requestUri);
             HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(requestMessage);
+            httpResponseMessage.EnsureSuccessStatusCode();
 
-            httpClient.Dispose();
-
-            return await httpResponseMessage.Content.ReadAsStringAsync();
+            string responseContent = await httpResponseMessage.Content.ReadAsStringAsync();
+            return Ok(responseContent);
         }
 
         [HttpPost]
         [Route("{id}/restart")]
-        public async Task<string> RestartContainer(string id)
+        public async Task<IActionResult> RestartContainer(string id)
         {
-            HttpClient httpClient = DockerClient.GetDockerHttpClient();
+            using HttpClient httpClient = DockerClient.GetDockerHttpClient();
+            Uri requestUri = new UriBuilder($"{httpClient.BaseAddress}containers/{id}/restart").Uri;
 
-            HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, new UriBuilder($"{httpClient.BaseAddress}containers/{id}/restart").Uri);
+            HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, requestUri);
             HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(requestMessage);
+            httpResponseMessage.EnsureSuccessStatusCode();
 
-            httpClient.Dispose();
-
-            return await httpResponseMessage.Content.ReadAsStringAsync();
+            string responseContent = await httpResponseMessage.Content.ReadAsStringAsync();
+            return Ok(responseContent);
         }
 
         [HttpPost]
         [Route("{id}/start")]
-        public async Task<string> StartContainer(string id)
+        public async Task<IActionResult> StartContainer(string id)
         {
-            HttpClient httpClient = DockerClient.GetDockerHttpClient();
+            using HttpClient httpClient = DockerClient.GetDockerHttpClient();
+            Uri requestUri = new UriBuilder($"{httpClient.BaseAddress}containers/{id}/start").Uri;
 
-            HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, new UriBuilder($"{httpClient.BaseAddress}containers/{id}/start").Uri);
+            HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, requestUri);
             HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(requestMessage);
+            httpResponseMessage.EnsureSuccessStatusCode();
 
-            httpClient.Dispose();
-
-            return await httpResponseMessage.Content.ReadAsStringAsync();
+            string responseContent = await httpResponseMessage.Content.ReadAsStringAsync();
+            return Ok(responseContent);
         }
 
         [HttpPost]
         [Route("{id}/stop")]
-        public async Task<string> StopContainer(string id)
+        public async Task<IActionResult> StopContainer(string id)
         {
-            HttpClient httpClient = DockerClient.GetDockerHttpClient();
+            using HttpClient httpClient = DockerClient.GetDockerHttpClient();
+            Uri requestUri = new UriBuilder($"{httpClient.BaseAddress}containers/{id}/stop").Uri;
 
-            HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, new UriBuilder($"{httpClient.BaseAddress}containers/{id}/stop").Uri);
+            HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, requestUri);
             HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(requestMessage);
+            httpResponseMessage.EnsureSuccessStatusCode();
 
-            httpClient.Dispose();
-
-            return await httpResponseMessage.Content.ReadAsStringAsync();
+            string responseContent = await httpResponseMessage.Content.ReadAsStringAsync();
+            return Ok(responseContent);
         }
 
         [HttpPost]
         [Route("{id}/kill")]
-        public async Task<string> KillContainer(string id)
+        public async Task<IActionResult> KillContainer(string id)
         {
-            HttpClient httpClient = DockerClient.GetDockerHttpClient();
+            using HttpClient httpClient = DockerClient.GetDockerHttpClient();
+            Uri requestUri = new UriBuilder($"{httpClient.BaseAddress}containers/{id}/kill").Uri;
 
-            HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, new UriBuilder($"{httpClient.BaseAddress}containers/{id}/kill").Uri);
+            HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, requestUri);
             HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(requestMessage);
+            httpResponseMessage.EnsureSuccessStatusCode();
 
-            httpClient.Dispose();
-
-            return await httpResponseMessage.Content.ReadAsStringAsync();
+            string responseContent = await httpResponseMessage.Content.ReadAsStringAsync();
+            return Ok(responseContent);
         }
 
         [HttpGet]
         [Route("{id}/logs")]
-        public async Task GetContainerLogs(string id)
+        public async Task GetContainerLogs(string id, CancellationToken cancellationToken)
         {
-            HttpClient httpClient = DockerClient.GetDockerHttpClient();
+            try
+            {
+                HttpClient httpClient = DockerClient.GetDockerHttpClient();
 
-            HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Get, new UriBuilder($"{httpClient.BaseAddress}containers/{id}/logs?follow=true&stdout=true&tail=50").Uri);
-            HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead);
+                HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Get, new UriBuilder($"{httpClient.BaseAddress}containers/{id}/logs?follow=true&stdout=true&tail=50").Uri);
+                HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
 
 
-            Response.StatusCode = (int)httpResponseMessage.StatusCode;
-            Response.ContentType = httpResponseMessage.Content.Headers.ContentType?.ToString() ?? "application/octet-stream";
+                Response.StatusCode = (int)httpResponseMessage.StatusCode;
+                Response.ContentType = httpResponseMessage.Content.Headers.ContentType?.ToString() ?? "application/octet-stream";
 
-            using var upstreamStream = await httpResponseMessage.Content.ReadAsStreamAsync();
-            await upstreamStream.CopyToAsync(Response.Body);
-            await Response.Body.FlushAsync();
+                using var upstreamStream = await httpResponseMessage.Content.ReadAsStreamAsync(cancellationToken);
+                await upstreamStream.CopyToAsync(Response.Body, cancellationToken);
+                await Response.Body.FlushAsync(cancellationToken);
+            }
+            catch (OperationCanceledException ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+        }
+
+        [HttpGet]
+        [Route("{id}/stats")]
+        public async Task GetContainerStats(string id, CancellationToken cancellationToken)
+        {
+            try
+            {
+                HttpClient httpClient = DockerClient.GetDockerHttpClient();
+
+                HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Get, new UriBuilder($"{httpClient.BaseAddress}containers/{id}/stats?stream=true").Uri);
+                HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+
+
+                Response.StatusCode = (int)httpResponseMessage.StatusCode;
+                Response.ContentType = httpResponseMessage.Content.Headers.ContentType?.ToString() ?? "application/octet-stream";
+
+                using var upstreamStream = await httpResponseMessage.Content.ReadAsStreamAsync(cancellationToken);
+                await upstreamStream.CopyToAsync(Response.Body, cancellationToken);
+                await Response.Body.FlushAsync(cancellationToken);
+            }
+            catch (OperationCanceledException ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
         }
     }
 }
