@@ -16,6 +16,20 @@ namespace DockerDotNet.APIClient.Controllers
             DockerClient = new DockerClient();
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAllImages(CancellationToken cancellationToken)
+        {
+            using HttpClient httpClient = DockerClient.GetDockerHttpClient();
+            Uri requestUri = new UriBuilder($"{httpClient.BaseAddress}images/json").Uri;
+
+            HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Get, requestUri);
+            HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(requestMessage, cancellationToken);
+            httpResponseMessage.EnsureSuccessStatusCode();
+
+            string responseContent = await httpResponseMessage.Content.ReadAsStringAsync(cancellationToken);
+            return Ok(responseContent);
+        }
+
         [HttpPost]
         [Route("pull")]
         public async Task PullImage([FromQuery]string imageName, CancellationToken cancellationToken)
