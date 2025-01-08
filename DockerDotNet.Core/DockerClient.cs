@@ -1,4 +1,8 @@
-﻿using System.IO.Pipes;
+﻿using DockerDotNet.Core.Models;
+
+using Newtonsoft.Json;
+
+using System.IO.Pipes;
 using System.Net.Sockets;
 
 namespace DockerDotNet.Core
@@ -7,7 +11,7 @@ namespace DockerDotNet.Core
     {
         public Uri? BaseUri { get; set; }
 
-        public Version? Version { get; set; }
+        public System.Version? Version { get; set; }
 
         private readonly OSPlatform _operatingSystem;
 
@@ -17,7 +21,7 @@ namespace DockerDotNet.Core
         {
         }
 
-        public DockerClient(Uri? baseUri = null, Version? version = null)
+        public DockerClient(Uri? baseUri = null, System.Version? version = null)
         {
             BaseUri = baseUri;
             Version = version;
@@ -122,6 +126,43 @@ namespace DockerDotNet.Core
             return httpHandler;
         }
 
+        public Dictionary<string, string> GetRegistryAuthHeaders(AuthConfig authConfig)
+        {
+            return new Dictionary<string, string>
+            {
+                {
+                    "X-Registry-Auth", GetRegistryAuthCredentialsString(authConfig)
+                }
+            };
+        }
+
+        private string GetRegistryAuthCredentialsString(AuthConfig authConfig)
+        {
+            string resultString = string.Empty;
+
+            AuthConfig auth = new AuthConfig()
+            {
+                ServerAddress = "excellonb2bregsrv.azurecr.io",
+                Username = "excellonb2bregsrv",
+                Password = "bo3NnGf9UhG=iRFSSoK51Xrlemm5CNUv"
+            };
+
+            if(authConfig == null)
+            {
+                JsonSerializerSettings serializerSettings = new JsonSerializerSettings();
+                serializerSettings.NullValueHandling = NullValueHandling.Ignore;
+                 resultString = JsonConvert.SerializeObject(auth, serializerSettings);
+            }
+
+            byte[] result =  System.Text.Encoding.UTF8.GetBytes(resultString);
+
+            string finalResult = Convert.ToBase64String(result).Replace("/", "_").Replace("+", "-");
+            // This is not documented in Docker API but from source code (https://github.com/docker/docker-ce/blob/10e40bd1548f69354a803a15fde1b672cc024b91/components/cli/cli/command/registry.go#L47)
+            // and from multiple internet sources it has to be base64-url-safe. 
+            // See RFC 4648 Section 5. Padding (=) needs to be kept.
+
+            return finalResult;
+        }
     }
 
     public enum OSPlatform

@@ -26,7 +26,7 @@ namespace DockerDotNet.APIClient.Controllers
 
                 HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, new UriBuilder($"{httpClient.BaseAddress}images/create?fromImage={imageName}").Uri);
                 requestMessage.Headers.Add("Accept", "application/json");
-                var headers = GetAuthHeaders();
+                var headers = DockerClient.GetRegistryAuthHeaders(null);
                 foreach (var header in headers)
                 {
                     requestMessage.Headers.Add(header.Key, header.Value);
@@ -49,28 +49,6 @@ namespace DockerDotNet.APIClient.Controllers
             {
                 Console.WriteLine(ex.ToString());
             }
-        }
-
-
-        private Dictionary<string, string> GetAuthHeaders()
-        {
-            string authString = """{"username":"excellonb2bregsrv","password":"bo3NnGf9UhG=iRFSSoK51Xrlemm5CNUv","serveraddress":"excellonb2bregsrv.azurecr.io"}""";
-                //"username": "aniketmespl",
-                //"password": "Excellon@123",
-                //"email": "aniketm@excellonsoft.com",
-                //"serveraddress": "https://index.docker.io/v1/"
-
-            return new Dictionary<string, string>
-            {
-                {
-                    "X-Registry-Auth",
-                    Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(authString))
-                    .Replace("/", "_").Replace("+", "-") 
-                    // This is not documented in Docker API but from source code (https://github.com/docker/docker-ce/blob/10e40bd1548f69354a803a15fde1b672cc024b91/components/cli/cli/command/registry.go#L47)
-                    // and from multiple internet sources it has to be base64-url-safe. 
-                    // See RFC 4648 Section 5. Padding (=) needs to be kept.
-                }
-            };
         }
     }
 }
