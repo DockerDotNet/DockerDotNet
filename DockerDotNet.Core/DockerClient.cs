@@ -2,8 +2,11 @@
 
 using Newtonsoft.Json;
 
+using System.Collections;
 using System.IO.Pipes;
 using System.Net.Sockets;
+using System.Reflection;
+using System.Web;
 
 namespace DockerDotNet.Core
 {
@@ -163,6 +166,48 @@ namespace DockerDotNet.Core
 
             return finalResult;
         }
+
+        public string ToQueryString<T>(T dto)
+        {
+            if (dto == null)
+                throw new ArgumentNullException(nameof(dto));
+
+            var properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+            var keyValuePairs = new List<string>();
+            foreach (var property in properties)
+            {
+                var value = property.GetValue(dto);
+                if (value == null)
+                    continue;
+
+                // Check if the property has a JsonPropertyName attribute
+                var jsonPropertyNameAttribute = property
+                    .GetCustomAttribute<JsonPropertyAttribute>();
+
+                string propertyName = jsonPropertyNameAttribute?.PropertyName ?? property.Name;
+                string encodedKey = HttpUtility.UrlEncode(propertyName);
+                string encodedValue = string.Empty;
+
+                //if (property.PropertyType.GetGenericTypeDefinition() == typeof(IDictionary<,>))
+                if (value is IDictionary)
+                {
+                    encodedValue = GetMapQuery(value as IDictionary);
+                }
+                else
+                {
+                    encodedValue = HttpUtility.UrlEncode(value.ToString());
+                }
+                keyValuePairs.Add($"{Uri.EscapeUriString(encodedKey)}={Uri.EscapeDataString(encodedValue)}");
+            }
+            return string.Join("&", keyValuePairs);
+        }
+
+        public string GetMapQuery(IDictionary dictionary)
+        {
+            return JsonConvert.SerializeObject(dictionary);
+        }
+
     }
 
     public enum OSPlatform

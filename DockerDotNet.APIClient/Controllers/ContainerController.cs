@@ -1,6 +1,7 @@
-﻿using DockerDotNet.Core;
+﻿using Docker.DotNet.Models;
 
-using Microsoft.AspNetCore.Http;
+using DockerDotNet.Core;
+
 using Microsoft.AspNetCore.Mvc;
 
 namespace DockerDotNet.APIClient.Controllers
@@ -17,12 +18,13 @@ namespace DockerDotNet.APIClient.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetContainers(CancellationToken cancellationToken)
+        public async Task<IActionResult> GetContainers([FromQuery]ContainersListParameters containersListParameters, CancellationToken cancellationToken)
         {
+            string queryString = DockerClient.ToQueryString(containersListParameters);
             using HttpClient httpClient = DockerClient.GetDockerHttpClient();
-            Uri requestUri = new UriBuilder($"{httpClient.BaseAddress}containers/json").Uri;
+            Uri requestUri = new UriBuilder($"{httpClient.BaseAddress}containers/json?{queryString}").Uri;
 
-            HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, requestUri);
+            HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Get, requestUri);
             HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(requestMessage, cancellationToken);
             httpResponseMessage.EnsureSuccessStatusCode();
 
@@ -37,7 +39,7 @@ namespace DockerDotNet.APIClient.Controllers
             using HttpClient httpClient = DockerClient.GetDockerHttpClient();
             Uri requestUri = new UriBuilder($"{httpClient.BaseAddress}containers/{id}/json").Uri;
 
-            HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, requestUri);
+            HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Get, requestUri);
             HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(requestMessage, cancellationToken);
             httpResponseMessage.EnsureSuccessStatusCode();
 
