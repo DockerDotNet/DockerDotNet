@@ -6,6 +6,7 @@ using System.Collections;
 using System.IO.Pipes;
 using System.Net.Sockets;
 using System.Reflection;
+using System.Text.Json;
 using System.Web;
 
 namespace DockerDotNet.Core
@@ -167,7 +168,7 @@ namespace DockerDotNet.Core
             return finalResult;
         }
 
-        public string ToQueryString<T>(T dto)
+        public string GetQueryString<T>(T dto)
         {
             if (dto == null)
                 throw new ArgumentNullException(nameof(dto));
@@ -205,7 +206,7 @@ namespace DockerDotNet.Core
 
         public string GetMapQuery(IDictionary dictionary)
         {
-            return JsonConvert.SerializeObject(dictionary);
+            return System.Text.Json.JsonSerializer.Serialize(dictionary);
         }
 
     }
