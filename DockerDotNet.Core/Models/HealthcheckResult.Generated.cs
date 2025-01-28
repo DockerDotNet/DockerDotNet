@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace Docker.DotNet.Models
+namespace DockerDotNet.Core.Models
 {
     [DataContract]
     public class HealthcheckResult // (types.HealthcheckResult)

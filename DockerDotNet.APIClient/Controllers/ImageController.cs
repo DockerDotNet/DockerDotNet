@@ -1,11 +1,9 @@
-﻿using Docker.DotNet.Models;
-
-using DockerDotNet.Core;
-
+﻿using DockerDotNet.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using DockerDotNet.Core.Models;
 
-namespace DockerDotNet.APIClient.Controllers
+namespace Models.Core.Models.APIClient.Controllers
 {
     [Route("api/images")]
     [ApiController]

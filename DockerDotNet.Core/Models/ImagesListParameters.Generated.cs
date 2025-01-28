@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace Docker.DotNet.Models
+namespace DockerDotNet.Core.Models
 {
     [DataContract]
     public class ImagesListParameters // (main.ImagesListParameters)

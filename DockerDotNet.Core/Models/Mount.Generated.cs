@@ -1,6 +1,7 @@
 using System.Runtime.Serialization;
+using DockerDotNet.Core.Models;
 
-namespace Docker.DotNet.Models
+namespace DockerDotNet.Core.Models
 {
     [DataContract]
     public class Mount // (mount.Mount)

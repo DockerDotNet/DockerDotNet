@@ -1,6 +1,4 @@
-﻿using DockerDotNet.APIClient.Controllers;
-
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 using System;
@@ -10,10 +8,11 @@ using System.Net;
 using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
-
+using DockerDotNet.Core.Models;
+using Models.Core.Models.APIClient.Controllers;
 using Xunit.Abstractions;
 
-namespace DockerDotNet.API.Tests
+namespace Models.Core.Models.API.Tests
 {
     public class ImageControllerTests
     {
@@ -36,7 +35,7 @@ namespace DockerDotNet.API.Tests
             var responseStream = new MemoryStream();
             ImageController.Response.Body = responseStream;  
 
-            await ImageController.PullImage(new Docker.DotNet.Models.ImagesCreateParameters() { FromImage= "excellonb2bregsrv.azurecr.io/businessruleapp:latest" }, null, new CancellationToken());
+            await ImageController.PullImage(new ImagesCreateParameters() { FromImage= "excellonb2bregsrv.azurecr.io/businessruleapp:latest" }, null, new CancellationToken());
 
             Assert.Equal((int)HttpStatusCode.OK, ImageController.Response.StatusCode);
 
@@ -58,7 +57,7 @@ namespace DockerDotNet.API.Tests
         [Fact]
         public async void GetImageList()
         {
-            await ImageController.GetAllImages(new Docker.DotNet.Models.ImagesListParameters(), new CancellationToken());
+            await ImageController.GetAllImages(new ImagesListParameters(), new CancellationToken());
 
             Assert.Equal((int)HttpStatusCode.OK, ImageController.Response.StatusCode);
         }

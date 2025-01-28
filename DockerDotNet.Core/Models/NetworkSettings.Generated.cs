@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using DockerDotNet.Core.Models;
 
-namespace Docker.DotNet.Models
+namespace DockerDotNet.Core.Models
 {
     [DataContract]
     public class NetworkSettings // (types.NetworkSettings)

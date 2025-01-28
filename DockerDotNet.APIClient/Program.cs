@@ -1,5 +1,5 @@
 
-namespace DockerDotNet.APIClient
+namespace Models.Core.Models.APIClient
 {
     public class Program
     {

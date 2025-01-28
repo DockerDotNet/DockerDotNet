@@ -4,7 +4,7 @@ using System.Configuration;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
 
-namespace Docker.DotNet.Models
+namespace DockerDotNet.Core.Models
 {
     [DataContract]
     public class Config // (container.Config)

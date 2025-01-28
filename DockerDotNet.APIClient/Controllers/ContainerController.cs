@@ -1,16 +1,14 @@
-﻿using Docker.DotNet.Models;
-
-using DockerDotNet.Core;
-
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 using Newtonsoft.Json;
 
 using System.Net.Mime;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using DockerDotNet.Core;
+using DockerDotNet.Core.Models;
 
-namespace DockerDotNet.APIClient.Controllers
+namespace Models.Core.Models.APIClient.Controllers
 {
     [Route("api/containers")]
     [ApiController]

@@ -2,8 +2,9 @@ using DockerDotNet.Core.Models;
 
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
+using DockerDotNet.Core.Models;
 
-namespace Docker.DotNet.Models
+namespace DockerDotNet.Core.Models
 {
     [DataContract]
     public class RestartPolicy // (container.RestartPolicy)
