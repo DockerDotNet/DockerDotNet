@@ -7,6 +7,7 @@ using Models.Core.Models.APIClient.Controllers;
 using DockerDotNet.Core.Models;
 using Xunit.Abstractions;
 using Xunit.Sdk;
+using Docker.DotNet.Models;
 
 namespace Models.Core.Models.API.Tests
 {
@@ -47,5 +48,21 @@ namespace Models.Core.Models.API.Tests
             _output.WriteLine(JsonSerializer.Serialize(inspectResponse));
         }
 
+        [Fact]
+        public async void CreateExec()
+        {
+            ContainerExecCreateParameters containerExecCreateParameters = new ContainerExecCreateParameters();
+            containerExecCreateParameters.AttachStdout = true;
+            containerExecCreateParameters.AttachStderr = true;
+            containerExecCreateParameters.AttachStdin = false;
+            containerExecCreateParameters.DetachKeys = "ctrl-p,ctrl-q";
+            containerExecCreateParameters.Cmd = new List<string>() { "ls"};
+            ContainerExecCreateResponse containerExecCreateResponse = await Controller.CreateExec("7733bfa5017ae064b390b3e9428e8dae21c0ffeaf90820c6a9d444fbfc0b08eb", containerExecCreateParameters, new CancellationToken());
+
+            Assert.Equal((int)HttpStatusCode.OK, Controller.Response.StatusCode);
+            Assert.NotNull(containerExecCreateResponse);
+
+            _output.WriteLine(JsonSerializer.Serialize(containerExecCreateResponse));
+        }
     }
 }

@@ -1,10 +1,16 @@
 ﻿using DockerDotNet.Core;
+using DockerDotNet.Core.Models;
+
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
+using System.Text.Json.Serialization;
+
+using System.Text.Json;
+
 namespace Models.Core.Models.APIClient.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/exec")]
     [ApiController]
     public class ExecController : ControllerBase
     {
@@ -16,15 +22,21 @@ namespace Models.Core.Models.APIClient.Controllers
         }
 
         [HttpGet]
-        [Route("version")]
-        public async Task<string> GetVersion()
+        [Route("{id}")]
+        public async Task<ContainerExecInspectResponse> InspectExecInstance(string id, CancellationToken cancellationToken)
         {
-            HttpClient httpClient = DockerClient.GetDockerHttpClient();
+            using HttpClient httpClient = DockerClient.GetDockerHttpClient();
+            HttpRequestMessage requestMessage = DockerClient.PrepareHttpRequest(HttpMethod.Get, $"exec/{id}/json", string.Empty);
 
-            HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Get, new UriBuilder($"{httpClient.BaseAddress}version").Uri);
-            HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(requestMessage);
+            HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(requestMessage, cancellationToken);
+            httpResponseMessage.EnsureSuccessStatusCode();
 
-            return await httpResponseMessage.Content.ReadAsStringAsync();
+            JsonSerializerOptions jsonSerializerOptions = new JsonSerializerOptions();
+            jsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            ContainerExecInspectResponse? responseContent = await httpResponseMessage.Content.ReadFromJsonAsync<ContainerExecInspectResponse>(jsonSerializerOptions, cancellationToken);
+            
+            return responseContent;
         }
+
     }
 }

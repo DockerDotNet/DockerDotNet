@@ -7,6 +7,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using DockerDotNet.Core;
 using DockerDotNet.Core.Models;
+using Docker.DotNet.Models;
 
 namespace Models.Core.Models.APIClient.Controllers
 {
@@ -22,7 +23,7 @@ namespace Models.Core.Models.APIClient.Controllers
         }
 
         [HttpGet]
-        public async Task<IList<ContainerListResponse>> GetContainers([FromQuery]ContainersListParameters containersListParameters, CancellationToken cancellationToken)
+        public async Task<IList<ContainerListResponse>> GetContainers([FromQuery] ContainersListParameters containersListParameters, CancellationToken cancellationToken)
         {
             string queryString = DockerClient.GetQueryString(containersListParameters);
 
@@ -31,7 +32,7 @@ namespace Models.Core.Models.APIClient.Controllers
             //httpClient.DefaultRequestHeaders.Add("ContentType", "application/json");
             HttpRequestMessage requestMessage = DockerClient.PrepareHttpRequest(HttpMethod.Get, "containers/json", queryString);
             HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(requestMessage, cancellationToken);
-            
+
             httpResponseMessage.EnsureSuccessStatusCode();
 
             IList<ContainerListResponse>? responseContent = await httpResponseMessage.Content.ReadFromJsonAsync<IList<ContainerListResponse>>(cancellationToken);
@@ -40,7 +41,7 @@ namespace Models.Core.Models.APIClient.Controllers
 
         [HttpPost]
         [Route("{create}")]
-        public async Task<CreateContainerResponse> CreateContainer([FromQuery]CreateContainerQueryParameters createContainerQueryParameters, [FromBody]CreateContainerParameters createContainer, CancellationToken cancellationToken)
+        public async Task<CreateContainerResponse> CreateContainer([FromQuery] CreateContainerQueryParameters createContainerQueryParameters, [FromBody] CreateContainerParameters createContainer, CancellationToken cancellationToken)
         {
             string queryString = DockerClient.GetQueryString(createContainerQueryParameters);
 
@@ -61,7 +62,7 @@ namespace Models.Core.Models.APIClient.Controllers
 
         [HttpGet]
         [Route("{id}")]
-        public async Task<ContainerInspectResponse> GetContainer(string id, [FromQuery]ContainerInspectParameters containerInspectParameters, CancellationToken cancellationToken)
+        public async Task<ContainerInspectResponse> GetContainer(string id, [FromQuery] ContainerInspectParameters containerInspectParameters, CancellationToken cancellationToken)
         {
             using HttpClient httpClient = DockerClient.GetDockerHttpClient();
             string parameters = DockerClient.GetQueryString(containerInspectParameters);
@@ -216,6 +217,18 @@ namespace Models.Core.Models.APIClient.Controllers
             {
             }
             return Stream.Null;
+        }
+
+        [HttpPost]
+        [Route("{id}/exec")]
+        public async Task<ContainerExecCreateResponse> CreateExec(string id, [FromBody] ContainerExecCreateParameters createParameters, CancellationToken cancellationToken)
+        {
+            HttpClient httpClient = DockerClient.GetDockerHttpClient();
+
+            HttpRequestMessage requestMessage = DockerClient.PrepareHttpRequest(HttpMethod.Post, $"containers/{id}/exec", string.Empty, JsonContent.Create(createParameters));
+            HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(requestMessage, cancellationToken);
+            ContainerExecCreateResponse? response = await httpResponseMessage.Content.ReadFromJsonAsync<ContainerExecCreateResponse>(cancellationToken);
+            return response;
         }
     }
 }
