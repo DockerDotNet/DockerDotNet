@@ -34,9 +34,15 @@ namespace Models.Core.Models.APIClient.Controllers
             JsonSerializerOptions jsonSerializerOptions = new JsonSerializerOptions();
             jsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             ContainerExecInspectResponse? responseContent = await httpResponseMessage.Content.ReadFromJsonAsync<ContainerExecInspectResponse>(jsonSerializerOptions, cancellationToken);
-            
+
             return responseContent;
         }
 
+        [HttpPost]
+        [Route("{id}/start")]
+        public async Task StartExecInstance(string id, CancellationToken cancellationToken)
+        {
+
+        }
     }
 }
