@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DockerDotNet.API.Tests", "D
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DockerDotNet.WebServer", "DockerDotNet.WebServer\DockerDotNet.WebServer.csproj", "{06E01F20-D117-4F57-A790-75042EA57AA1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DockerDotNet.API.Tests.Cli", "DockerDotNet.API.Tests.Cli\DockerDotNet.API.Tests.Cli.csproj", "{FE36AB61-12B7-4B07-A1D2-EE1D1294F44E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{06E01F20-D117-4F57-A790-75042EA57AA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{06E01F20-D117-4F57-A790-75042EA57AA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{06E01F20-D117-4F57-A790-75042EA57AA1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE36AB61-12B7-4B07-A1D2-EE1D1294F44E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE36AB61-12B7-4B07-A1D2-EE1D1294F44E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE36AB61-12B7-4B07-A1D2-EE1D1294F44E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE36AB61-12B7-4B07-A1D2-EE1D1294F44E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

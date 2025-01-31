@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "DockerDotNet.API.Tests.Cli": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}

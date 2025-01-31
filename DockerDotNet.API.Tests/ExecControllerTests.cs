@@ -36,11 +36,21 @@ namespace DockerDotNet.API.Tests
         [Fact]
         public async void InspectExecInstance()
         {
-            ContainerExecInspectResponse inspectResponse = await Controller.InspectExecInstance("940a8e3780e5dd53e2e086a9889b50b6c3a4622677a47fe7d19767bf344cc1cd", new CancellationToken());
+            ContainerExecInspectResponse inspectResponse = await Controller.InspectExecInstance("eb06d25b2240313da2420624af6f13d6cfe662a57048ef79634fb6d8755c8888", new CancellationToken());
             Assert.Equal((int)HttpStatusCode.OK, Controller.Response.StatusCode);
             Assert.NotNull(inspectResponse);
 
             _output.WriteLine(JsonSerializer.Serialize(inspectResponse));
+        }
+
+        [Fact]
+        public async void StartExecInstance()
+        {
+            await Controller.StartExecInstance("eb06d25b2240313da2420624af6f13d6cfe662a57048ef79634fb6d8755c8888", new CancellationToken());
+            Assert.Equal((int)HttpStatusCode.OK, Controller.Response.StatusCode);
+            //Assert.NotNull(inspectResponse);
+
+            //_output.WriteLine(JsonSerializer.Serialize(inspectResponse));
         }
 
 
