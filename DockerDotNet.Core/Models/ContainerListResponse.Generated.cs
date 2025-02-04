@@ -1,4 +1,4 @@
-using Docker.DotNet.Models;
+using DockerDotNet.Core.Models;
 
 using System;
 using System.Collections.Generic;

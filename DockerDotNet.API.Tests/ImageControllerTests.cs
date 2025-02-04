@@ -12,7 +12,7 @@ using DockerDotNet.Core.Models;
 using Models.Core.Models.APIClient.Controllers;
 using Xunit.Abstractions;
 
-namespace Models.Core.Models.API.Tests
+namespace DockerDotNet.API.Tests
 {
     public class ImageControllerTests
     {
@@ -33,9 +33,9 @@ namespace Models.Core.Models.API.Tests
         public async void PullImage_StreamedContent()
         {
             var responseStream = new MemoryStream();
-            ImageController.Response.Body = responseStream;  
+            ImageController.Response.Body = responseStream;
 
-            await ImageController.PullImage(new ImagesCreateParameters() { FromImage= "excellonb2bregsrv.azurecr.io/businessruleapp:latest" }, null, new CancellationToken());
+            await ImageController.PullImage(new ImagesCreateParameters() { FromImage = "excellonb2bregsrv.azurecr.io/businessruleapp:latest" }, null, new CancellationToken());
 
             Assert.Equal((int)HttpStatusCode.OK, ImageController.Response.StatusCode);
 
@@ -62,6 +62,6 @@ namespace Models.Core.Models.API.Tests
             Assert.Equal((int)HttpStatusCode.OK, ImageController.Response.StatusCode);
         }
 
-        
+
     }
 }

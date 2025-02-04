@@ -7,7 +7,6 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using DockerDotNet.Core;
 using DockerDotNet.Core.Models;
-using Docker.DotNet.Models;
 
 namespace Models.Core.Models.APIClient.Controllers
 {

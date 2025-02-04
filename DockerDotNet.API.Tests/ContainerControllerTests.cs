@@ -7,9 +7,8 @@ using Models.Core.Models.APIClient.Controllers;
 using DockerDotNet.Core.Models;
 using Xunit.Abstractions;
 using Xunit.Sdk;
-using Docker.DotNet.Models;
 
-namespace Models.Core.Models.API.Tests
+namespace DockerDotNet.API.Tests
 {
     public class ContainerControllerTests
     {
@@ -54,10 +53,11 @@ namespace Models.Core.Models.API.Tests
             ContainerExecCreateParameters containerExecCreateParameters = new ContainerExecCreateParameters();
             containerExecCreateParameters.AttachStdout = true;
             containerExecCreateParameters.AttachStderr = true;
-            containerExecCreateParameters.AttachStdin = false;
+            containerExecCreateParameters.AttachStdin = true;
             containerExecCreateParameters.DetachKeys = "ctrl-p,ctrl-q";
-            containerExecCreateParameters.Cmd = new List<string>() { "ls"};
-            ContainerExecCreateResponse containerExecCreateResponse = await Controller.CreateExec("7733bfa5017ae064b390b3e9428e8dae21c0ffeaf90820c6a9d444fbfc0b08eb", containerExecCreateParameters, new CancellationToken());
+            containerExecCreateParameters.Cmd = new List<string>() { "bin/sh"};
+            containerExecCreateParameters.Tty = true;
+            ContainerExecCreateResponse containerExecCreateResponse = await Controller.CreateExec("ce483daa476ed2850c727dbefc32a739af17cac0fba3993d7a322c6c04c5390a", containerExecCreateParameters, new CancellationToken());
 
             Assert.Equal((int)HttpStatusCode.OK, Controller.Response.StatusCode);
             Assert.NotNull(containerExecCreateResponse);
