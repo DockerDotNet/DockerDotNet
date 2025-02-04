@@ -8,7 +8,7 @@ using System.Text.Json.Serialization;
 using DockerDotNet.Core;
 using DockerDotNet.Core.Models;
 
-namespace Models.Core.Models.APIClient.Controllers
+namespace DockerDotNet.APIClient.Controllers
 {
     [Route("api/containers")]
     [ApiController]

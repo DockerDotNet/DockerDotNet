@@ -3,10 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 
 using System.Net;
 using System.Text.Json;
-using Models.Core.Models.APIClient.Controllers;
 using DockerDotNet.Core.Models;
 using Xunit.Abstractions;
 using Xunit.Sdk;
+using DockerDotNet.APIClient.Controllers;
 
 namespace DockerDotNet.API.Tests
 {

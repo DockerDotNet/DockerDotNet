@@ -8,7 +8,7 @@ using System.Text.Json.Serialization;
 
 using System.Text.Json;
 
-namespace Models.Core.Models.APIClient.Controllers
+namespace DockerDotNet.APIClient.Controllers
 {
     [Route("api/exec")]
     [ApiController]

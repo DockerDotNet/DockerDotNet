@@ -9,8 +9,8 @@ using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
 using DockerDotNet.Core.Models;
-using Models.Core.Models.APIClient.Controllers;
 using Xunit.Abstractions;
+using DockerDotNet.APIClient.Controllers;
 
 namespace DockerDotNet.API.Tests
 {

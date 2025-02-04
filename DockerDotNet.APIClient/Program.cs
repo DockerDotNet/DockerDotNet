@@ -1,5 +1,4 @@
-
-namespace Models.Core.Models.APIClient
+namespace DockerDotNet.APIClient
 {
     public class Program
     {
@@ -31,9 +30,9 @@ namespace Models.Core.Models.APIClient
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-            
+
             app.UseCors("AllowAll");
-            
+
             app.MapControllers();
 
             app.Run();

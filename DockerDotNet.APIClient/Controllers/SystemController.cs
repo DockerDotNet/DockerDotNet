@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Models.Core.Models.APIClient.Controllers
+namespace DockerDotNet.APIClient.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

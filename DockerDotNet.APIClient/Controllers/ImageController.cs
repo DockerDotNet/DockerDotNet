@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using DockerDotNet.Core.Models;
 
-namespace Models.Core.Models.APIClient.Controllers
+namespace DockerDotNet.APIClient.Controllers
 {
     [Route("api/images")]
     [ApiController]
@@ -17,7 +17,7 @@ namespace Models.Core.Models.APIClient.Controllers
         }
 
         [HttpGet]
-        public async Task<IList<ImagesListResponse>> GetAllImages([FromQuery]ImagesListParameters imagesListParameters, CancellationToken cancellationToken)
+        public async Task<IList<ImagesListResponse>> GetAllImages([FromQuery] ImagesListParameters imagesListParameters, CancellationToken cancellationToken)
         {
             using HttpClient httpClient = DockerClient.GetDockerHttpClient();
             string parameters = DockerClient.GetQueryString(imagesListParameters);
@@ -34,7 +34,7 @@ namespace Models.Core.Models.APIClient.Controllers
 
         [HttpPost]
         [Route("pull")]
-        public async Task PullImage([FromQuery]ImagesCreateParameters imagesCreateParameters,[FromBody]Stream image, CancellationToken cancellationToken)
+        public async Task PullImage([FromQuery] ImagesCreateParameters imagesCreateParameters, [FromBody] Stream image, CancellationToken cancellationToken)
         {
             try
             {

@@ -1,9 +1,8 @@
-﻿using DockerDotNet.Core.Models;
+﻿using DockerDotNet.APIClient.Controllers;
+using DockerDotNet.Core.Models;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-
-using Models.Core.Models.APIClient.Controllers;
 
 using System;
 using System.Collections.Generic;
