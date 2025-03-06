@@ -59,7 +59,7 @@ namespace DockerDotNet.API.Tests
         [Fact]
         public async Task StopContainer()
         {
-            string id = "800d3c9395b24e3d98c75655d9720d9997dee27f7ebf1f3aa2ae68caed0e31c4";
+            string id = "7733bfa5017ae064b390b3e9428e8dae21c0ffeaf90820c6a9d444fbfc0b08eb";
             var response = await Controller.StopContainer(id, CancellationToken.None);
             Controller.Response.StatusCode.ShouldBe((int)HttpStatusCode.OK);
         }
@@ -79,6 +79,23 @@ namespace DockerDotNet.API.Tests
             var response = await Controller.KillContainer(id, CancellationToken.None);
             Controller.Response.StatusCode.ShouldBe((int)HttpStatusCode.OK);
         }
+
+        [Fact]
+        public async Task PauseContainer()
+        {
+            string id = "7733bfa5017ae064b390b3e9428e8dae21c0ffeaf90820c6a9d444fbfc0b08eb";
+            var response = await Controller.PauseContainer(id, CancellationToken.None);
+            Controller.Response.StatusCode.ShouldBe((int)HttpStatusCode.OK);
+        }
+
+        [Fact]
+        public async Task UnpauseContainer()
+        {
+            string id = "7733bfa5017ae064b390b3e9428e8dae21c0ffeaf90820c6a9d444fbfc0b08eb";
+            var response = await Controller.UnpauseContainer(id, CancellationToken.None);
+            Controller.Response.StatusCode.ShouldBe((int)HttpStatusCode.OK);
+        }
+
 
         [Fact]
         public async Task GetContainerList()

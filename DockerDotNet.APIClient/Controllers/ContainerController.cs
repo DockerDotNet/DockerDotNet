@@ -132,6 +132,37 @@ namespace DockerDotNet.APIClient.Controllers
             return Ok(responseContent);
         }
 
+        [HttpPost]
+        [Route("{id}/pause")]
+        public async Task<IActionResult> PauseContainer(string id, CancellationToken cancellationToken)
+        {
+            using HttpClient httpClient = DockerClient.GetDockerHttpClient();
+
+            HttpRequestMessage requestMessage = DockerClient.PrepareHttpRequest(HttpMethod.Post, $"containers/{id}/pause", string.Empty);
+
+            HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(requestMessage, cancellationToken);
+            httpResponseMessage.EnsureSuccessStatusCode();
+
+            string responseContent = await httpResponseMessage.Content.ReadAsStringAsync(cancellationToken);
+            return Ok(responseContent);
+        }
+
+        [HttpPost]
+        [Route("{id}/unpause")]
+        public async Task<IActionResult> UnpauseContainer(string id, CancellationToken cancellationToken)
+        {
+            using HttpClient httpClient = DockerClient.GetDockerHttpClient();
+
+            HttpRequestMessage requestMessage = DockerClient.PrepareHttpRequest(HttpMethod.Post, $"containers/{id}/unpause", string.Empty);
+
+            HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(requestMessage, cancellationToken);
+            httpResponseMessage.EnsureSuccessStatusCode();
+
+            string responseContent = await httpResponseMessage.Content.ReadAsStringAsync(cancellationToken);
+            return Ok(responseContent);
+        }
+
+
         [HttpGet]
         [Route("{id}/logs")]
         public async Task GetContainerLogs(string id, CancellationToken cancellationToken)
