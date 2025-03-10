@@ -1,7 +1,12 @@
 ﻿using System.Collections;
 using System.IO.Pipes;
+using System.Net;
+using System.Net.Http.Json;
 using System.Net.Sockets;
 using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Web;
 using DockerDotNet.Core.Models;
 using Newtonsoft.Json;
@@ -10,6 +15,12 @@ namespace DockerDotNet.Core
 {
     public class DockerClient
     {
+
+        private readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = null,
+        };
+
         public Uri? BaseUri { get; set; }
 
         public System.Version? Version { get; set; }
@@ -229,6 +240,46 @@ namespace DockerDotNet.Core
             return System.Text.Json.JsonSerializer.Serialize(dictionary);
         }
 
+        public async Task<(bool, T?, DockerError?)> GetRequestAsync<T>(string endpoint, string queryParameters, CancellationToken cancellationToken, object? requestBody = null)
+        {
+            HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Get, endpoint);
+            var client = GetDockerHttpClient();
+            var response = await client.SendAsync(requestMessage, cancellationToken);
+            return await ProcessResponse<T>(response, cancellationToken);// Task.CompletedTask;
+        }
+
+        private async Task<(bool, T?, DockerError?)> ProcessResponse<T>(HttpResponseMessage response, CancellationToken cancellationToken)
+        {
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorContent = await response.Content.ReadFromJsonAsync<DockerErrorResponse>();
+                return (false, default, new DockerError(response.StatusCode, errorContent.Message));
+            }
+
+            _jsonOptions.Converters.Add(new JsonStringEnumConverter());
+            var content = await response.Content.ReadFromJsonAsync<T>(_jsonOptions, cancellationToken);
+            return (true, content, null);
+        }
+
+    }
+
+    public record DockerErrorResponse
+    {
+        public string Message { get; set; } = string.Empty;
+    }
+
+    public class DockerError
+    {
+        public HttpStatusCode StatusCode { get; set; }
+        public string Message { get; set; }
+        public string? Details { get; set; }
+
+        public DockerError(HttpStatusCode statusCode, string message, string? details = null)
+        {
+            StatusCode = statusCode;
+            Message = message;
+            Details = details;
+        }
     }
 
     public enum OSPlatform

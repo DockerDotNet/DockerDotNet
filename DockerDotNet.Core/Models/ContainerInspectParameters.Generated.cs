@@ -1,14 +1,14 @@
-using Newtonsoft.Json;
+
 
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace DockerDotNet.Core.Models
 {
-    [DataContract]
     public class ContainerInspectParameters // (main.ContainerInspectParameters)
     {
         //[QueryStringParameter("size", false, typeof(BoolQueryStringConverter))]
-        [JsonProperty("size")]
+        [JsonPropertyName("size")]
         public bool? IncludeSize { get; set; }
     }
 }

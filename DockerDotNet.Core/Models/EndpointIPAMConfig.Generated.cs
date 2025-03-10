@@ -1,18 +1,16 @@
-using System.Collections.Generic;
-using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace DockerDotNet.Core.Models
 {
-    [DataContract]
     public class EndpointIPAMConfig // (network.EndpointIPAMConfig)
     {
-        [DataMember(Name = "IPv4Address", EmitDefaultValue = false)]
+        [JsonPropertyName("IPv4Address")]
         public string IPv4Address { get; set; }
 
-        [DataMember(Name = "IPv6Address", EmitDefaultValue = false)]
+        [JsonPropertyName("IPv6Address")]
         public string IPv6Address { get; set; }
 
-        [DataMember(Name = "LinkLocalIPs", EmitDefaultValue = false)]
+        [JsonPropertyName("LinkLocalIPs")]
         public IList<string> LinkLocalIPs { get; set; }
     }
 }
