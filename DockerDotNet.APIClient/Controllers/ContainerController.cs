@@ -15,110 +15,96 @@ namespace DockerDotNet.APIClient.Controllers
     [ApiController]
     public class ContainerController : ControllerBase
     {
-        DockerClient DockerClient { get; set; }
+        private readonly DockerClient _dockerClient;
 
-        ContainerService ContainerService { get; set; }
+        private readonly ContainerService _containerService;
 
         public ContainerController(ContainerService containerService)
         {
-            DockerClient = new DockerClient();
-            ContainerService = containerService;
+            _dockerClient = new DockerClient();
+            _containerService = containerService;
         }
 
-        public ContainerController()
-        {
-            DockerClient = new DockerClient();
-        }
+        //public ContainerController()
+        //{
+        //    _dockerClient = new DockerClient();
+        //}
 
         [HttpGet]
         public async Task<IList<ContainerListResponse>> GetContainers([FromQuery] ContainersListParameters containersListParameters, CancellationToken cancellationToken)
         {
-            return await ContainerService.GetContainers(containersListParameters, cancellationToken);
+            return await _containerService.GetContainers(containersListParameters, cancellationToken);
         }
 
         [HttpPost]
         [Route("create")]
         public async Task<CreateContainerResponse> CreateContainer([FromQuery] CreateContainerQueryParameters createContainerQueryParameters, [FromBody] CreateContainerParameters createContainer, CancellationToken cancellationToken)
         {
-            return await ContainerService.CreateContainer(createContainerQueryParameters, createContainer, cancellationToken);
+            return await _containerService.CreateContainer(createContainerQueryParameters, createContainer, cancellationToken);
         }
 
         [HttpGet]
         [Route("{id}")]
         public async Task<ContainerInspectResponse> GetContainer(string id, [FromQuery] ContainerInspectParameters containerInspectParameters, CancellationToken cancellationToken)
         {
-            return await ContainerService.GetContainer(id, containerInspectParameters, cancellationToken);
+            return await _containerService.GetContainer(id, containerInspectParameters, cancellationToken);
         }
 
         [HttpPost]
         [Route("{id}/restart")]
         public async Task<IActionResult> RestartContainer(string id, CancellationToken cancellationToken)
         {
-            return Ok(await ContainerService.RestartContainer(id, cancellationToken));
+            return Ok(await _containerService.RestartContainer(id, cancellationToken));
         }
 
         [HttpPost]
         [Route("{id}/start")]
         public async Task<IActionResult> StartContainer(string id, CancellationToken cancellationToken)
         {
-            return Ok(await ContainerService.StartContainer(id, cancellationToken));
+            return Ok(await _containerService.StartContainer(id, cancellationToken));
         }
 
         [HttpPost]
         [Route("{id}/stop")]
         public async Task<IActionResult> StopContainer(string id, CancellationToken cancellationToken)
         {
-            return Ok(await ContainerService.StopContainer(id, cancellationToken));
+            return Ok(await _containerService.StopContainer(id, cancellationToken));
         }
 
         [HttpPost]
         [Route("{id}/kill")]
         public async Task<IActionResult> KillContainer(string id, CancellationToken cancellationToken)
         {
-            return Ok(await ContainerService.KillContainer(id, cancellationToken));
+            return Ok(await _containerService.KillContainer(id, cancellationToken));
         }
 
         [HttpPost]
         [Route("{id}/pause")]
         public async Task<IActionResult> PauseContainer(string id, CancellationToken cancellationToken)
         {
-            return Ok(await ContainerService.PauseContainer(id, cancellationToken));
+            return Ok(await _containerService.PauseContainer(id, cancellationToken));
         }
 
         [HttpPost]
         [Route("{id}/unpause")]
         public async Task<IActionResult> UnpauseContainer(string id, CancellationToken cancellationToken)
         {
-            return Ok(await ContainerService.UnpauseContainer(id, cancellationToken));
+            return Ok(await _containerService.UnpauseContainer(id, cancellationToken));
         }
-
 
         [HttpGet]
         [Route("{id}/logs")]
         public async Task GetContainerLogs(string id, CancellationToken cancellationToken)
         {
-            try
+            var (logStream, statusCode, contentType) = await _containerService.GetContainerLogs(id, cancellationToken);
+
+            Response.StatusCode = (int)statusCode;
+            Response.ContentType = contentType;
+
+            if (logStream != null)
             {
-                HttpClient httpClient = DockerClient.GetDockerHttpClient();
-
-                HttpRequestMessage requestMessage = DockerClient.PrepareHttpRequest(HttpMethod.Get, $"containers/{id}/logs?follow=true&stdout=true&tail=50", string.Empty);
-
-                HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
-
-                Response.StatusCode = (int)httpResponseMessage.StatusCode;
-                Response.ContentType = httpResponseMessage.Content.Headers.ContentType?.ToString() ?? "application/octet-stream";
-
-                using var upstreamStream = await httpResponseMessage.Content.ReadAsStreamAsync(cancellationToken);
-                await upstreamStream.CopyToAsync(Response.Body, cancellationToken);
+                await logStream.CopyToAsync(Response.Body, cancellationToken);
                 await Response.Body.FlushAsync(cancellationToken);
-            }
-            catch (OperationCanceledException ex)
-            {
-                Console.WriteLine(ex.ToString());
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
             }
         }
 
@@ -126,28 +112,15 @@ namespace DockerDotNet.APIClient.Controllers
         [Route("{id}/stats")]
         public async Task GetContainerStats(string id, CancellationToken cancellationToken)
         {
-            try
+            var (logStream, statusCode, contentType) = await _containerService.GetContainerStats(id, cancellationToken);
+
+            Response.StatusCode = (int)statusCode;
+            Response.ContentType = contentType;
+
+            if (logStream != null)
             {
-                HttpClient httpClient = DockerClient.GetDockerHttpClient();
-
-                HttpRequestMessage requestMessage = DockerClient.PrepareHttpRequest(HttpMethod.Get, $"containers/{id}/stats?stream=true", string.Empty);
-
-                HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
-
-                Response.StatusCode = (int)httpResponseMessage.StatusCode;
-                Response.ContentType = httpResponseMessage.Content.Headers.ContentType?.ToString() ?? "application/octet-stream";
-
-                using var upstreamStream = await httpResponseMessage.Content.ReadAsStreamAsync(cancellationToken);
-                await upstreamStream.CopyToAsync(Response.Body, cancellationToken);
+                await logStream.CopyToAsync(Response.Body, cancellationToken);
                 await Response.Body.FlushAsync(cancellationToken);
-            }
-            catch (OperationCanceledException ex)
-            {
-                Console.WriteLine(ex.ToString());
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
             }
         }
 
@@ -158,9 +131,9 @@ namespace DockerDotNet.APIClient.Controllers
             // TODO: Finish this properly and test it.
             try
             {
-                HttpClient httpClient = DockerClient.GetDockerHttpClient();
-                string parameters = DockerClient.GetQueryString(containerAttachParameters);
-                HttpRequestMessage requestMessage = DockerClient.PrepareHttpRequest(HttpMethod.Post, "", parameters);
+                HttpClient httpClient = _dockerClient.GetDockerHttpClient();
+                string parameters = _dockerClient.GetQueryString(containerAttachParameters);
+                HttpRequestMessage requestMessage = _dockerClient.PrepareHttpRequest(HttpMethod.Post, "", parameters);
                 HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
                 var stream = await httpResponseMessage.Content.ReadAsStreamAsync();
                 return stream;
@@ -175,7 +148,7 @@ namespace DockerDotNet.APIClient.Controllers
         [Route("{id}/exec")]
         public async Task<ContainerExecCreateResponse> CreateExec(string id, [FromBody] ContainerExecCreateParameters createParameters, CancellationToken cancellationToken)
         {
-            return await ContainerService.CreateExec(id, createParameters, cancellationToken);
+            return await _containerService.CreateExec(id, createParameters, cancellationToken);
         }
     }
 }
