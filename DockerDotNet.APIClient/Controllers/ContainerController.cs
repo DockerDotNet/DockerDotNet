@@ -7,6 +7,8 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using DockerDotNet.Core;
 using DockerDotNet.Core.Models;
+using DockerDotNet.Core.Services;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace DockerDotNet.APIClient.Controllers
 {
@@ -14,184 +16,98 @@ namespace DockerDotNet.APIClient.Controllers
     [ApiController]
     public class ContainerController : ControllerBase
     {
-        DockerClient DockerClient { get; set; }
+        private readonly DockerClient _dockerClient;
 
-        public ContainerController()
+        private readonly ContainerService _containerService;
+
+        public ContainerController(ContainerService containerService)
         {
-            DockerClient = new DockerClient();
+            _dockerClient = new DockerClient();
+            _containerService = containerService;
         }
+
+        //public ContainerController()
+        //{
+        //    _dockerClient = new DockerClient();
+        //}
 
         [HttpGet]
         public async Task<IList<ContainerListResponse>> GetContainers([FromQuery] ContainersListParameters containersListParameters, CancellationToken cancellationToken)
         {
-            string queryString = DockerClient.GetQueryString(containersListParameters);
-
-            using HttpClient httpClient = DockerClient.GetDockerHttpClient();
-            HttpRequestMessage requestMessage = DockerClient.PrepareHttpRequest(HttpMethod.Get, "containers/json", queryString);
-            HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(requestMessage, cancellationToken);
-
-            httpResponseMessage.EnsureSuccessStatusCode();
-
-            IList<ContainerListResponse>? responseContent = await httpResponseMessage.Content.ReadFromJsonAsync<IList<ContainerListResponse>>(cancellationToken);
-            return responseContent;
+            return await _containerService.GetContainers(containersListParameters, cancellationToken);
         }
 
         [HttpPost]
         [Route("create")]
         public async Task<IActionResult> CreateContainer([FromQuery] CreateContainerQueryParameters createContainerQueryParameters, [FromBody] CreateContainerParameters createContainer, CancellationToken cancellationToken)
         {
-            string queryString = DockerClient.GetQueryString(createContainerQueryParameters);
-
-            using HttpClient httpClient = DockerClient.GetDockerHttpClient();
-            HttpRequestMessage requestMessage = DockerClient.PrepareHttpRequest(HttpMethod.Post, "containers/create", queryString, JsonContent.Create(createContainer));
-
-            httpClient.DefaultRequestHeaders.Add("ContentType", "application/json");
-            HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(requestMessage, cancellationToken);
-
-            //httpResponseMessage.EnsureSuccessStatusCode();
-
-            CreateContainerResponse? responseContent = await httpResponseMessage.Content.ReadFromJsonAsync<CreateContainerResponse>(cancellationToken);
-            return Ok(responseContent);
+            return Ok(await _containerService.CreateContainer(createContainerQueryParameters, createContainer, cancellationToken));
         }
 
         [HttpGet]
         [Route("{id}")]
         public async Task<IActionResult> GetContainer(string id, [FromQuery] ContainerInspectParameters containerInspectParameters, CancellationToken cancellationToken)
         {
-            string parameters = DockerClient.GetQueryString(containerInspectParameters);
-            var (success, response, error) = await DockerClient.GetRequestAsync<ContainerInspectResponse>($"containers/{id}/json", parameters, cancellationToken);
-            return success ? Ok(response) : StatusCode((int)error!.StatusCode, error.Message);
-
-            //using HttpClient httpClient = DockerClient.GetDockerHttpClient();
-            //string parameters = DockerClient.GetQueryString(containerInspectParameters);
-
-            //HttpRequestMessage requestMessage = DockerClient.PrepareHttpRequest(HttpMethod.Get, $"containers/{id}/json", parameters);
-            //HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(requestMessage, cancellationToken);
-            //httpResponseMessage.EnsureSuccessStatusCode();
-
-            //JsonSerializerOptions jsonSerializerOptions = new JsonSerializerOptions();
-            //jsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-            //ContainerInspectResponse? responseContent = await httpResponseMessage.Content.ReadFromJsonAsync<ContainerInspectResponse>(jsonSerializerOptions, cancellationToken);
-            //string responseContent = await httpResponseMessage.Content.ReadAsStringAsync(cancellationToken);
+            var(success, response, error) = await _containerService.GetContainer(id, containerInspectParameters, cancellationToken);
+            return success? Ok(response) : StatusCode((int)error!.StatusCode, error.Message);
+            //return await _containerService.GetContainer(id, containerInspectParameters, cancellationToken);
         }
 
         [HttpPost]
         [Route("{id}/restart")]
         public async Task<IActionResult> RestartContainer(string id, CancellationToken cancellationToken)
         {
-            using HttpClient httpClient = DockerClient.GetDockerHttpClient();
-
-            HttpRequestMessage requestMessage = DockerClient.PrepareHttpRequest(HttpMethod.Post, $"containers/{id}/restart", string.Empty);
-
-            HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(requestMessage, cancellationToken);
-            httpResponseMessage.EnsureSuccessStatusCode();
-
-            string responseContent = await httpResponseMessage.Content.ReadAsStringAsync(cancellationToken);
-            return Ok(responseContent);
+            return Ok(await _containerService.RestartContainer(id, cancellationToken));
         }
 
         [HttpPost]
         [Route("{id}/start")]
         public async Task<IActionResult> StartContainer(string id, CancellationToken cancellationToken)
         {
-            using HttpClient httpClient = DockerClient.GetDockerHttpClient();
-
-            HttpRequestMessage requestMessage = DockerClient.PrepareHttpRequest(HttpMethod.Post, $"containers/{id}/start", string.Empty);
-
-            HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(requestMessage, cancellationToken);
-            httpResponseMessage.EnsureSuccessStatusCode();
-
-            string responseContent = await httpResponseMessage.Content.ReadAsStringAsync(cancellationToken);
-            return Ok(responseContent);
+            return Ok(await _containerService.StartContainer(id, cancellationToken));
         }
 
         [HttpPost]
         [Route("{id}/stop")]
         public async Task<IActionResult> StopContainer(string id, CancellationToken cancellationToken)
         {
-            using HttpClient httpClient = DockerClient.GetDockerHttpClient();
-
-            HttpRequestMessage requestMessage = DockerClient.PrepareHttpRequest(HttpMethod.Post, $"containers/{id}/stop", string.Empty);
-
-            HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(requestMessage, cancellationToken);
-            httpResponseMessage.EnsureSuccessStatusCode();
-
-            string responseContent = await httpResponseMessage.Content.ReadAsStringAsync(cancellationToken);
-            return Ok(responseContent);
+            return Ok(await _containerService.StopContainer(id, cancellationToken));
         }
 
         [HttpPost]
         [Route("{id}/kill")]
         public async Task<IActionResult> KillContainer(string id, CancellationToken cancellationToken)
         {
-            using HttpClient httpClient = DockerClient.GetDockerHttpClient();
-
-            HttpRequestMessage requestMessage = DockerClient.PrepareHttpRequest(HttpMethod.Post, $"containers/{id}/kill", string.Empty);
-            
-            HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(requestMessage, cancellationToken);
-            httpResponseMessage.EnsureSuccessStatusCode();
-
-            string responseContent = await httpResponseMessage.Content.ReadAsStringAsync(cancellationToken);
-            return Ok(responseContent);
+            return Ok(await _containerService.KillContainer(id, cancellationToken));
         }
 
         [HttpPost]
         [Route("{id}/pause")]
         public async Task<IActionResult> PauseContainer(string id, CancellationToken cancellationToken)
         {
-            using HttpClient httpClient = DockerClient.GetDockerHttpClient();
-
-            HttpRequestMessage requestMessage = DockerClient.PrepareHttpRequest(HttpMethod.Post, $"containers/{id}/pause", string.Empty);
-
-            HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(requestMessage, cancellationToken);
-            httpResponseMessage.EnsureSuccessStatusCode();
-
-            string responseContent = await httpResponseMessage.Content.ReadAsStringAsync(cancellationToken);
-            return Ok(responseContent);
+            return Ok(await _containerService.PauseContainer(id, cancellationToken));
         }
 
         [HttpPost]
         [Route("{id}/unpause")]
         public async Task<IActionResult> UnpauseContainer(string id, CancellationToken cancellationToken)
         {
-            using HttpClient httpClient = DockerClient.GetDockerHttpClient();
-
-            HttpRequestMessage requestMessage = DockerClient.PrepareHttpRequest(HttpMethod.Post, $"containers/{id}/unpause", string.Empty);
-
-            HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(requestMessage, cancellationToken);
-            httpResponseMessage.EnsureSuccessStatusCode();
-
-            string responseContent = await httpResponseMessage.Content.ReadAsStringAsync(cancellationToken);
-            return Ok(responseContent);
+            return Ok(await _containerService.UnpauseContainer(id, cancellationToken));
         }
-
 
         [HttpGet]
         [Route("{id}/logs")]
         public async Task GetContainerLogs(string id, CancellationToken cancellationToken)
         {
-            try
+            var (logStream, statusCode, contentType) = await _containerService.GetContainerLogs(id, cancellationToken);
+
+            Response.StatusCode = (int)statusCode;
+            Response.ContentType = contentType;
+
+            if (logStream != null)
             {
-                HttpClient httpClient = DockerClient.GetDockerHttpClient();
-
-                HttpRequestMessage requestMessage = DockerClient.PrepareHttpRequest(HttpMethod.Get, $"containers/{id}/logs?follow=true&stdout=true&tail=50", string.Empty);
-
-                HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
-
-                Response.StatusCode = (int)httpResponseMessage.StatusCode;
-                Response.ContentType = httpResponseMessage.Content.Headers.ContentType?.ToString() ?? "application/octet-stream";
-
-                using var upstreamStream = await httpResponseMessage.Content.ReadAsStreamAsync(cancellationToken);
-                await upstreamStream.CopyToAsync(Response.Body, cancellationToken);
+                await logStream.CopyToAsync(Response.Body, cancellationToken);
                 await Response.Body.FlushAsync(cancellationToken);
-            }
-            catch (OperationCanceledException ex)
-            {
-                Console.WriteLine(ex.ToString());
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
             }
         }
 
@@ -199,28 +115,15 @@ namespace DockerDotNet.APIClient.Controllers
         [Route("{id}/stats")]
         public async Task GetContainerStats(string id, CancellationToken cancellationToken)
         {
-            try
+            var (logStream, statusCode, contentType) = await _containerService.GetContainerStats(id, cancellationToken);
+
+            Response.StatusCode = (int)statusCode;
+            Response.ContentType = contentType;
+
+            if (logStream != null)
             {
-                HttpClient httpClient = DockerClient.GetDockerHttpClient();
-
-                HttpRequestMessage requestMessage = DockerClient.PrepareHttpRequest(HttpMethod.Get, $"containers/{id}/stats?stream=true", string.Empty);
-
-                HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
-
-                Response.StatusCode = (int)httpResponseMessage.StatusCode;
-                Response.ContentType = httpResponseMessage.Content.Headers.ContentType?.ToString() ?? "application/octet-stream";
-
-                using var upstreamStream = await httpResponseMessage.Content.ReadAsStreamAsync(cancellationToken);
-                await upstreamStream.CopyToAsync(Response.Body, cancellationToken);
+                await logStream.CopyToAsync(Response.Body, cancellationToken);
                 await Response.Body.FlushAsync(cancellationToken);
-            }
-            catch (OperationCanceledException ex)
-            {
-                Console.WriteLine(ex.ToString());
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
             }
         }
 
@@ -231,9 +134,9 @@ namespace DockerDotNet.APIClient.Controllers
             // TODO: Finish this properly and test it.
             try
             {
-                HttpClient httpClient = DockerClient.GetDockerHttpClient();
-                string parameters = DockerClient.GetQueryString(containerAttachParameters);
-                HttpRequestMessage requestMessage = DockerClient.PrepareHttpRequest(HttpMethod.Post, "", parameters);
+                HttpClient httpClient = _dockerClient.GetDockerHttpClient();
+                string parameters = _dockerClient.GetQueryString(containerAttachParameters);
+                HttpRequestMessage requestMessage = _dockerClient.PrepareHttpRequest(HttpMethod.Post, "", parameters);
                 HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
                 var stream = await httpResponseMessage.Content.ReadAsStreamAsync();
                 return stream;
@@ -248,12 +151,7 @@ namespace DockerDotNet.APIClient.Controllers
         [Route("{id}/exec")]
         public async Task<ContainerExecCreateResponse> CreateExec(string id, [FromBody] ContainerExecCreateParameters createParameters, CancellationToken cancellationToken)
         {
-            HttpClient httpClient = DockerClient.GetDockerHttpClient();
-
-            HttpRequestMessage requestMessage = DockerClient.PrepareHttpRequest(HttpMethod.Post, $"containers/{id}/exec", string.Empty, JsonContent.Create(createParameters));
-            HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(requestMessage, cancellationToken);
-            ContainerExecCreateResponse? response = await httpResponseMessage.Content.ReadFromJsonAsync<ContainerExecCreateResponse>(cancellationToken);
-            return response;
+            return await _containerService.CreateExec(id, createParameters, cancellationToken);
         }
     }
 }

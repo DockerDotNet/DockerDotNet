@@ -1,3 +1,6 @@
+using DockerDotNet.Core;
+using DockerDotNet.Core.Services;
+
 namespace DockerDotNet.APIClient
 {
     public class Program
@@ -17,6 +20,9 @@ namespace DockerDotNet.APIClient
                 options.AddPolicy("AllowAll",
                     corsPolicyBuilder => corsPolicyBuilder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
             });
+
+            builder.Services.AddScoped<DockerClient>();
+            builder.Services.AddScoped<ContainerService>();
 
             var app = builder.Build();
 
