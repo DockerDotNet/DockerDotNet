@@ -23,6 +23,9 @@ namespace DockerDotNet.APIClient
 
             builder.Services.AddScoped<DockerClient>();
             builder.Services.AddScoped<ContainerService>();
+            builder.Services.AddScoped<ImageService>();
+            builder.Services.AddScoped<ExecService>();
+            builder.Services.AddScoped<SystemService>();
 
             var app = builder.Build();
 
