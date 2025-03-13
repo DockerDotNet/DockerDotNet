@@ -11,27 +11,30 @@ using System.Threading.Tasks;
 using DockerDotNet.Core.Models;
 using Xunit.Abstractions;
 using DockerDotNet.APIClient.Controllers;
+using DockerDotNet.Core.Services;
+using Microsoft.Extensions.DependencyInjection;
+using Shouldly;
+using System.Text.Json;
 
 namespace DockerDotNet.API.Tests
 {
-    public class ImageControllerTests
+    public class ImageControllerTests : DockerTestBase
     {
         ImageController ImageController { get; set; }
 
+        private readonly ImageService _imageService;
+
         private readonly ITestOutputHelper _output;
-        public ImageControllerTests(ITestOutputHelper testOutputHelper)
+        public ImageControllerTests(ITestOutputHelper testOutputHelper) : base(Array.Empty<string>())
         {
+            _imageService = _host.Services.GetRequiredService<ImageService>(); 
             _output = testOutputHelper;
-            ImageController = new ImageController();
-            ImageController.ControllerContext = new ControllerContext
-            {
-                HttpContext = new DefaultHttpContext()
-            };
         }
 
         [Fact]
         public async void PullImage_StreamedContent()
         {
+            // TODO: Write this test properly after implementing streaming abstraction
             var responseStream = new MemoryStream();
             ImageController.Response.Body = responseStream;
 
@@ -55,11 +58,11 @@ namespace DockerDotNet.API.Tests
         }
 
         [Fact]
-        public async void GetImageList()
+        public async System.Threading.Tasks.Task GetImageList()
         {
-            await ImageController.GetAllImages(new ImagesListParameters(), new CancellationToken());
-
-            Assert.Equal((int)HttpStatusCode.OK, ImageController.Response.StatusCode);
+            var images = await _imageService.GetImages(new ImagesListParameters(), new CancellationToken());
+            images.ShouldNotBeNull();
+            _output.WriteLine(JsonSerializer.Serialize(images));
         }
 
 
