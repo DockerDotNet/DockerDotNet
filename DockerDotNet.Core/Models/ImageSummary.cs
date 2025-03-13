@@ -336,8 +336,8 @@ namespace DockerDotNet.Core.Models
             if (!sharedSize.IsSet)
                 throw new ArgumentException("Property is required for class ImageSummary.", nameof(sharedSize));
 
-            if (!labels.IsSet)
-                throw new ArgumentException("Property is required for class ImageSummary.", nameof(labels));
+            //if (!labels.IsSet)
+            //    throw new ArgumentException("Property is required for class ImageSummary.", nameof(labels));
 
             if (!containers.IsSet)
                 throw new ArgumentException("Property is required for class ImageSummary.", nameof(containers));

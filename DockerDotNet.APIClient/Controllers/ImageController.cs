@@ -21,7 +21,7 @@ namespace DockerDotNet.APIClient.Controllers
         }
 
         [HttpGet]
-        public async Task<IList<ImagesListResponse>> GetAllImages([FromQuery] ImagesListParameters imagesListParameters, CancellationToken cancellationToken)
+        public async Task<IList<ImageSummary>> GetAllImages([FromQuery] ImagesListParameters imagesListParameters, CancellationToken cancellationToken)
         {
             return await _imageService.GetImages(imagesListParameters, cancellationToken).ConfigureAwait(false);
         }
