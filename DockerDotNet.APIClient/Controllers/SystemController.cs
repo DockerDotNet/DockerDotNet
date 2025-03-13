@@ -1,6 +1,11 @@
 ﻿using DockerDotNet.Core;
+using DockerDotNet.Core.Models;
+using DockerDotNet.Core.Services;
+
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+
+using System.Text.Json;
 
 namespace DockerDotNet.APIClient.Controllers
 {
@@ -10,21 +15,19 @@ namespace DockerDotNet.APIClient.Controllers
     {
         DockerClient DockerClient { get; set; }
 
-        public SystemController()
+        private readonly SystemService _systemService;
+
+        public SystemController(SystemService systemService)
         {
             DockerClient = new DockerClient();
+            _systemService = systemService;
         }
 
         [HttpGet]
         [Route("version")]
-        public async Task<string> GetVersion()
+        public async Task<Core.Models.Version> GetVersion()
         {
-            HttpClient httpClient = DockerClient.GetDockerHttpClient();
-
-            HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Get, new UriBuilder($"{httpClient.BaseAddress}version").Uri);
-            HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(requestMessage);
-
-            return await httpResponseMessage.Content.ReadAsStringAsync();
+            return await _systemService.GetVersionAsync();
         }
     }
 }

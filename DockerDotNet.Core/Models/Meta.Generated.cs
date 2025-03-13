@@ -6,7 +6,7 @@ namespace DockerDotNet.Core.Models
     public class Meta // (swarm.Meta)
     {
         [JsonPropertyName("Version")]
-        public Version Version { get; set; }
+        public System.Version Version { get; set; }
 
         [JsonPropertyName("CreatedAt")]
         public DateTime CreatedAt { get; set; }
