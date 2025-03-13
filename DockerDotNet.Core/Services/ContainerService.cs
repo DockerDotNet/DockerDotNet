@@ -15,13 +15,15 @@ namespace DockerDotNet.Core.Services
     public class ContainerService
     {
         private readonly DockerClient _dockerClient;
+        private readonly JsonSerializerOptions _serializerOptions;
 
-        public ContainerService(DockerClient dockerClient)
+        public ContainerService(DockerClient dockerClient, JsonSerializerOptions jsonSerializerOptions)
         {
             _dockerClient = dockerClient;
+            _serializerOptions = jsonSerializerOptions;
         }
 
-        public async Task<IList<ContainerListResponse>> GetContainers(ContainersListParameters parameters, CancellationToken cancellationToken)
+        public async Task<IList<ContainerSummary>> GetContainers(ContainersListParameters parameters, CancellationToken cancellationToken)
         {
             string queryString = _dockerClient.GetQueryString(parameters);
 
@@ -31,14 +33,14 @@ namespace DockerDotNet.Core.Services
 
             httpResponseMessage.EnsureSuccessStatusCode();
 
-            IList<ContainerListResponse>? responseContent = await httpResponseMessage.Content.ReadFromJsonAsync<IList<ContainerListResponse>>(cancellationToken);
+            IList<ContainerSummary>? responseContent = await httpResponseMessage.Content.ReadFromJsonAsync<IList<ContainerSummary>>(_serializerOptions, cancellationToken);
             return responseContent;
         }
 
         public async Task<(bool, ContainerInspectResponse?, DockerError?)> GetContainer(string id, ContainerInspectParameters queryParameters, CancellationToken cancellationToken)
         {
             string parameters = _dockerClient.GetQueryString(queryParameters);
-            return await _dockerClient.GetRequestAsync<ContainerInspectResponse>($"containers/{id}/json", parameters, cancellationToken);
+            return await _dockerClient.GetRequestAsync<ContainerInspectResponse>($"containers/{id}/json", parameters, _serializerOptions, cancellationToken);
         }
 
         public async Task<CreateContainerResponse> CreateContainer(CreateContainerQueryParameters createContainerQueryParameters, ContainerCreateRequest createContainer, CancellationToken cancellationToken)

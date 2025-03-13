@@ -240,15 +240,15 @@ namespace DockerDotNet.Core
             return System.Text.Json.JsonSerializer.Serialize(dictionary);
         }
 
-        public async Task<(bool, T?, DockerError?)> GetRequestAsync<T>(string endpoint, string queryParameters, CancellationToken cancellationToken, object? requestBody = null)
+        public async Task<(bool, T?, DockerError?)> GetRequestAsync<T>(string endpoint, string queryParameters, JsonSerializerOptions serializerOptions, CancellationToken cancellationToken, object? requestBody = null)
         {
             HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Get, endpoint);
             var client = GetDockerHttpClient();
             var response = await client.SendAsync(requestMessage, cancellationToken);
-            return await ProcessResponse<T>(response, cancellationToken);// Task.CompletedTask;
+            return await ProcessResponse<T>(response, serializerOptions, cancellationToken);// Task.CompletedTask;
         }
 
-        private async Task<(bool, T?, DockerError?)> ProcessResponse<T>(HttpResponseMessage response, CancellationToken cancellationToken)
+        private async Task<(bool, T?, DockerError?)> ProcessResponse<T>(HttpResponseMessage response, JsonSerializerOptions options, CancellationToken cancellationToken)
         {
             if (!response.IsSuccessStatusCode)
             {
@@ -257,7 +257,7 @@ namespace DockerDotNet.Core
             }
 
             _jsonOptions.Converters.Add(new JsonStringEnumConverter());
-            var content = await response.Content.ReadFromJsonAsync<T>(_jsonOptions, cancellationToken);
+            var content = await response.Content.ReadFromJsonAsync<T>(options, cancellationToken);
             return (true, content, null);
         }
 

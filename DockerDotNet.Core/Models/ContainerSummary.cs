@@ -50,7 +50,7 @@ namespace DockerDotNet.Core.Models
         /// <param name="networkSettings">networkSettings</param>
         /// <param name="mounts">List of mounts used by the container.</param>
         [JsonConstructor]
-        public ContainerSummary(Option<string?> id = default, Option<List<string>?> names = default, Option<string?> image = default, Option<string?> imageID = default, Option<OCIDescriptor?> imageManifestDescriptor = default, Option<string?> command = default, Option<long?> created = default, Option<List<Port>?> ports = default, Option<long?> sizeRw = default, Option<long?> sizeRootFs = default, Option<Dictionary<string, string>?> labels = default, Option<StateEnum?> state = default, Option<string?> status = default, Option<ContainerSummaryHostConfig?> hostConfig = default, Option<ContainerSummaryNetworkSettings?> networkSettings = default, Option<List<MountPoint>?> mounts = default)
+        public ContainerSummary(Option<string?> id = default, Option<List<string>?> names = default, Option<string?> image = default, Option<string?> imageID = default, Option<OCIDescriptor?> imageManifestDescriptor = default, Option<string?> command = default, Option<long?> created = default, Option<List<Port>?> ports = default, Option<long?> sizeRw = default, Option<long?> sizeRootFs = default, Option<Dictionary<string, string>?> labels = default, Option<ContainerStateEnum?> state = default, Option<string?> status = default, Option<ContainerSummaryHostConfig?> hostConfig = default, Option<ContainerSummaryNetworkSettings?> networkSettings = default, Option<List<MountPoint>?> mounts = default)
         {
             IdOption = id;
             NamesOption = names;
@@ -77,7 +77,7 @@ namespace DockerDotNet.Core.Models
         /// The state of this container. 
         /// </summary>
         /// <value>The state of this container. </value>
-        public enum StateEnum
+        public enum ContainerStateEnum
         {
             /// <summary>
             /// Enum Created for value: created
@@ -116,95 +116,95 @@ namespace DockerDotNet.Core.Models
         }
 
         /// <summary>
-        /// Returns a <see cref="StateEnum"/>
+        /// Returns a <see cref="ContainerStateEnum"/>
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public static StateEnum StateEnumFromString(string value)
+        public static ContainerStateEnum StateEnumFromString(string value)
         {
             if (value.Equals("created"))
-                return StateEnum.Created;
+                return ContainerStateEnum.Created;
 
             if (value.Equals("running"))
-                return StateEnum.Running;
+                return ContainerStateEnum.Running;
 
             if (value.Equals("paused"))
-                return StateEnum.Paused;
+                return ContainerStateEnum.Paused;
 
             if (value.Equals("restarting"))
-                return StateEnum.Restarting;
+                return ContainerStateEnum.Restarting;
 
             if (value.Equals("exited"))
-                return StateEnum.Exited;
+                return ContainerStateEnum.Exited;
 
             if (value.Equals("removing"))
-                return StateEnum.Removing;
+                return ContainerStateEnum.Removing;
 
             if (value.Equals("dead"))
-                return StateEnum.Dead;
+                return ContainerStateEnum.Dead;
 
             throw new NotImplementedException($"Could not convert value to type StateEnum: '{value}'");
         }
 
         /// <summary>
-        /// Returns a <see cref="StateEnum"/>
+        /// Returns a <see cref="ContainerStateEnum"/>
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static StateEnum? StateEnumFromStringOrDefault(string value)
+        public static ContainerStateEnum? StateEnumFromStringOrDefault(string value)
         {
             if (value.Equals("created"))
-                return StateEnum.Created;
+                return ContainerStateEnum.Created;
 
             if (value.Equals("running"))
-                return StateEnum.Running;
+                return ContainerStateEnum.Running;
 
             if (value.Equals("paused"))
-                return StateEnum.Paused;
+                return ContainerStateEnum.Paused;
 
             if (value.Equals("restarting"))
-                return StateEnum.Restarting;
+                return ContainerStateEnum.Restarting;
 
             if (value.Equals("exited"))
-                return StateEnum.Exited;
+                return ContainerStateEnum.Exited;
 
             if (value.Equals("removing"))
-                return StateEnum.Removing;
+                return ContainerStateEnum.Removing;
 
             if (value.Equals("dead"))
-                return StateEnum.Dead;
+                return ContainerStateEnum.Dead;
 
             return null;
         }
 
         /// <summary>
-        /// Converts the <see cref="StateEnum"/> to the json value
+        /// Converts the <see cref="ContainerStateEnum"/> to the json value
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public static string StateEnumToJsonValue(StateEnum? value)
+        public static string StateEnumToJsonValue(ContainerStateEnum? value)
         {
-            if (value == StateEnum.Created)
+            if (value == ContainerStateEnum.Created)
                 return "created";
 
-            if (value == StateEnum.Running)
+            if (value == ContainerStateEnum.Running)
                 return "running";
 
-            if (value == StateEnum.Paused)
+            if (value == ContainerStateEnum.Paused)
                 return "paused";
 
-            if (value == StateEnum.Restarting)
+            if (value == ContainerStateEnum.Restarting)
                 return "restarting";
 
-            if (value == StateEnum.Exited)
+            if (value == ContainerStateEnum.Exited)
                 return "exited";
 
-            if (value == StateEnum.Removing)
+            if (value == ContainerStateEnum.Removing)
                 return "removing";
 
-            if (value == StateEnum.Dead)
+            if (value == ContainerStateEnum.Dead)
                 return "dead";
 
             throw new NotImplementedException($"Value could not be handled: '{value}'");
@@ -215,7 +215,7 @@ namespace DockerDotNet.Core.Models
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<StateEnum?> StateOption { get; private set; }
+        public Option<ContainerStateEnum?> StateOption { get; private set; }
 
         /// <summary>
         /// The state of this container. 
@@ -223,7 +223,7 @@ namespace DockerDotNet.Core.Models
         /// <value>The state of this container. </value>
         /* <example>running</example> */
         [JsonPropertyName("State")]
-        public StateEnum? State { get { return this.StateOption; } set { this.StateOption = new(value); } }
+        public ContainerStateEnum? State { get { return this.StateOption; } set { this.StateOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of Id
@@ -536,7 +536,7 @@ namespace DockerDotNet.Core.Models
             Option<long?> sizeRw = default;
             Option<long?> sizeRootFs = default;
             Option<Dictionary<string, string>?> labels = default;
-            Option<ContainerSummary.StateEnum?> state = default;
+            Option<ContainerSummary.ContainerStateEnum?> state = default;
             Option<string?> status = default;
             Option<ContainerSummaryHostConfig?> hostConfig = default;
             Option<ContainerSummaryNetworkSettings?> networkSettings = default;
@@ -600,7 +600,7 @@ namespace DockerDotNet.Core.Models
                         case "State":
                             string? stateRawValue = utf8JsonReader.GetString();
                             if (stateRawValue != null)
-                                state = new Option<ContainerSummary.StateEnum?>(ContainerSummary.StateEnumFromStringOrDefault(stateRawValue));
+                                state = new Option<ContainerSummary.ContainerStateEnum?>(ContainerSummary.StateEnumFromStringOrDefault(stateRawValue));
                             break;
                         case "Status":
                             status = new Option<string?>(utf8JsonReader.GetString()!);

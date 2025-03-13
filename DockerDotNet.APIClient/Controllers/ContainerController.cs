@@ -32,7 +32,7 @@ namespace DockerDotNet.APIClient.Controllers
         //}
 
         [HttpGet]
-        public async Task<IList<ContainerListResponse>> GetContainers([FromQuery] ContainersListParameters containersListParameters, CancellationToken cancellationToken)
+        public async Task<IList<ContainerSummary>> GetContainers([FromQuery] ContainersListParameters containersListParameters, CancellationToken cancellationToken)
         {
             return await _containerService.GetContainers(containersListParameters, cancellationToken);
         }
