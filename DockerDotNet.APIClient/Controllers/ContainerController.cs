@@ -32,9 +32,11 @@ namespace DockerDotNet.APIClient.Controllers
         //}
 
         [HttpGet]
-        public async Task<IList<ContainerSummary>> GetContainers([FromQuery] ContainersListParameters containersListParameters, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetContainers([FromQuery] ContainersListParameters containersListParameters, CancellationToken cancellationToken)
         {
-            return await _containerService.GetContainers(containersListParameters, cancellationToken);
+            var(success, response, error) = await _containerService.GetContainers(containersListParameters, cancellationToken);
+            return success ? Ok(response) : StatusCode((int)error.StatusCode, error.Message);
+            //return await _containerService.GetContainers(containersListParameters, cancellationToken);
         }
 
         [HttpPost]
