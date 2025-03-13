@@ -39,7 +39,7 @@ namespace DockerDotNet.APIClient.Controllers
 
         [HttpPost]
         [Route("create")]
-        public async Task<IActionResult> CreateContainer([FromQuery] CreateContainerQueryParameters createContainerQueryParameters, [FromBody] CreateContainerParameters createContainer, CancellationToken cancellationToken)
+        public async Task<IActionResult> CreateContainer([FromQuery] CreateContainerQueryParameters createContainerQueryParameters, [FromBody] ContainerCreateRequest createContainer, CancellationToken cancellationToken)
         {
             return Ok(await _containerService.CreateContainer(createContainerQueryParameters, createContainer, cancellationToken));
         }
@@ -97,7 +97,7 @@ namespace DockerDotNet.APIClient.Controllers
 
         [HttpGet]
         [Route("{id}/logs")]
-        public async Task GetContainerLogs(string id, CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task GetContainerLogs(string id, CancellationToken cancellationToken)
         {
             var (logStream, statusCode, contentType) = await _containerService.GetContainerLogs(id, cancellationToken);
 
@@ -113,7 +113,7 @@ namespace DockerDotNet.APIClient.Controllers
 
         [HttpGet]
         [Route("{id}/stats")]
-        public async Task GetContainerStats(string id, CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task GetContainerStats(string id, CancellationToken cancellationToken)
         {
             var (logStream, statusCode, contentType) = await _containerService.GetContainerStats(id, cancellationToken);
 

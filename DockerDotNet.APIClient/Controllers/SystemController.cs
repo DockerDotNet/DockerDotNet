@@ -24,8 +24,15 @@ namespace DockerDotNet.APIClient.Controllers
         }
 
         [HttpGet]
+        [Route("info")]
+        public async Task<Core.Models.SystemInfo> GetInfo()
+        {
+            return await _systemService.GetInfoAsync();
+        }
+
+        [HttpGet]
         [Route("version")]
-        public async Task<Core.Models.Version> GetVersion()
+        public async Task<Core.Models.SystemVersion> GetVersion()
         {
             return await _systemService.GetVersionAsync();
         }

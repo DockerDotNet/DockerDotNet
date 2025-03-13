@@ -152,7 +152,7 @@ namespace DockerDotNet.Core
 
             authConfig = new AuthConfig()
             {
-                ServerAddress = "",
+                Serveraddress = "",
                 Username = "",
                 Password = ""
             };

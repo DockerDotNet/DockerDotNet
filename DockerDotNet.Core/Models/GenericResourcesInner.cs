@@ -22,6 +22,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.ComponentModel.DataAnnotations;
 
+
 namespace DockerDotNet.Core.Models
 {
     /// <summary>
@@ -35,7 +36,7 @@ namespace DockerDotNet.Core.Models
         /// <param name="namedResourceSpec">namedResourceSpec</param>
         /// <param name="discreteResourceSpec">discreteResourceSpec</param>
         [JsonConstructor]
-        public GenericResourcesInner(Option<NamedResourceSpec?> namedResourceSpec = default, Option<DiscreteResourceSpec?> discreteResourceSpec = default)
+        public GenericResourcesInner(Option<GenericResourcesInnerNamedResourceSpec?> namedResourceSpec = default, Option<GenericResourcesInnerDiscreteResourceSpec?> discreteResourceSpec = default)
         {
             NamedResourceSpecOption = namedResourceSpec;
             DiscreteResourceSpecOption = discreteResourceSpec;
@@ -49,26 +50,26 @@ namespace DockerDotNet.Core.Models
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<NamedResourceSpec?> NamedResourceSpecOption { get; private set; }
+        public Option<GenericResourcesInnerNamedResourceSpec?> NamedResourceSpecOption { get; private set; }
 
         /// <summary>
         /// Gets or Sets NamedResourceSpec
         /// </summary>
         [JsonPropertyName("NamedResourceSpec")]
-        public NamedResourceSpec? NamedResourceSpec { get { return this.NamedResourceSpecOption; } set { this.NamedResourceSpecOption = new(value); } }
+        public GenericResourcesInnerNamedResourceSpec? NamedResourceSpec { get { return this.NamedResourceSpecOption; } set { this.NamedResourceSpecOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of DiscreteResourceSpec
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<DiscreteResourceSpec?> DiscreteResourceSpecOption { get; private set; }
+        public Option<GenericResourcesInnerDiscreteResourceSpec?> DiscreteResourceSpecOption { get; private set; }
 
         /// <summary>
         /// Gets or Sets DiscreteResourceSpec
         /// </summary>
         [JsonPropertyName("DiscreteResourceSpec")]
-        public DiscreteResourceSpec? DiscreteResourceSpec { get { return this.DiscreteResourceSpecOption; } set { this.DiscreteResourceSpecOption = new(value); } }
+        public GenericResourcesInnerDiscreteResourceSpec? DiscreteResourceSpec { get { return this.DiscreteResourceSpecOption; } set { this.DiscreteResourceSpecOption = new(value); } }
 
         /// <summary>
         /// Returns the string presentation of the object
@@ -117,8 +118,8 @@ namespace DockerDotNet.Core.Models
 
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
-            Option<NamedResourceSpec?> namedResourceSpec = default;
-            Option<DiscreteResourceSpec?> discreteResourceSpec = default;
+            Option<GenericResourcesInnerNamedResourceSpec?> namedResourceSpec = default;
+            Option<GenericResourcesInnerDiscreteResourceSpec?> discreteResourceSpec = default;
 
             while (utf8JsonReader.Read())
             {
@@ -137,11 +138,11 @@ namespace DockerDotNet.Core.Models
                     {
                         case "NamedResourceSpec":
                             if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                namedResourceSpec = new Option<NamedResourceSpec?>(JsonSerializer.Deserialize<NamedResourceSpec>(ref utf8JsonReader, jsonSerializerOptions)!);
+                                namedResourceSpec = new Option<GenericResourcesInnerNamedResourceSpec?>(JsonSerializer.Deserialize<GenericResourcesInnerNamedResourceSpec>(ref utf8JsonReader, jsonSerializerOptions)!);
                             break;
                         case "DiscreteResourceSpec":
                             if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                discreteResourceSpec = new Option<DiscreteResourceSpec?>(JsonSerializer.Deserialize<DiscreteResourceSpec>(ref utf8JsonReader, jsonSerializerOptions)!);
+                                discreteResourceSpec = new Option<GenericResourcesInnerDiscreteResourceSpec?>(JsonSerializer.Deserialize<GenericResourcesInnerDiscreteResourceSpec>(ref utf8JsonReader, jsonSerializerOptions)!);
                             break;
                         default:
                             break;

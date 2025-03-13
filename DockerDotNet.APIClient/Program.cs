@@ -1,5 +1,6 @@
 using DockerDotNet.Core;
 using DockerDotNet.Core.Services;
+using DockerDotNet.Core.Extensions;
 
 namespace DockerDotNet.APIClient
 {
@@ -26,6 +27,7 @@ namespace DockerDotNet.APIClient
             builder.Services.AddScoped<ImageService>();
             builder.Services.AddScoped<ExecService>();
             builder.Services.AddScoped<SystemService>();
+            builder.Services.AddJsonSerializerOptions();
 
             var app = builder.Build();
 

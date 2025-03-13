@@ -28,7 +28,7 @@ namespace DockerDotNet.APIClient.Controllers
 
         [HttpPost]
         [Route("pull")]
-        public async Task PullImage([FromQuery] ImagesCreateParameters imagesCreateParameters, [FromBody] Stream image, CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task PullImage([FromQuery] ImagesCreateParameters imagesCreateParameters, [FromBody] Stream image, CancellationToken cancellationToken)
         {
             try
             {

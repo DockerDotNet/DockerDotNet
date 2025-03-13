@@ -13,13 +13,15 @@ namespace DockerDotNet.Core.Services
     public class SystemService
     {
         private readonly DockerClient _dockerClient;
+        private readonly JsonSerializerOptions _serializerOptions;
 
-        public SystemService(DockerClient dockerClient)
+        public SystemService(DockerClient dockerClient, JsonSerializerOptions serializerOptions)
         {
             _dockerClient = dockerClient;
+            _serializerOptions = serializerOptions;
         }
 
-        public async Task<Core.Models.Version> GetVersionAsync()
+        public async Task<Core.Models.SystemVersion> GetVersionAsync()
         {
             HttpClient httpClient = _dockerClient.GetDockerHttpClient();
 
@@ -27,23 +29,18 @@ namespace DockerDotNet.Core.Services
 
             HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(requestMessage);
 
-            JsonSerializerOptions jsonSerializerOptions = new JsonSerializerOptions();
-            jsonSerializerOptions.Converters.Add(new PlatformJsonConverter());
-            jsonSerializerOptions.Converters.Add(new ComponentJsonConverter());
-            jsonSerializerOptions.Converters.Add(new VersionJsonConverter());
-
-            return await httpResponseMessage.Content.ReadFromJsonAsync<Core.Models.Version>(jsonSerializerOptions);
+            return await httpResponseMessage.Content.ReadFromJsonAsync<Core.Models.SystemVersion>(_serializerOptions);
         }
 
-        public async Task<Core.Models.Info> GetInfoAsync()
+        public async Task<Core.Models.SystemInfo> GetInfoAsync()
         {
             HttpClient httpClient = _dockerClient.GetDockerHttpClient();
 
-            HttpRequestMessage requestMessage = _dockerClient.PrepareHttpRequest(HttpMethod.Get, "", string.Empty);
+            HttpRequestMessage requestMessage = _dockerClient.PrepareHttpRequest(HttpMethod.Get, "info", string.Empty);
 
             HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(requestMessage);
 
-            return await httpResponseMessage.Content.ReadFromJsonAsync<Core.Models.Info>();
+            return await httpResponseMessage.Content.ReadFromJsonAsync<Core.Models.SystemInfo>(_serializerOptions);
         }
     }
 }

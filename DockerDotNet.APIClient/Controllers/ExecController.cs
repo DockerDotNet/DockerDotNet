@@ -23,7 +23,7 @@ namespace DockerDotNet.APIClient.Controllers
 
         [HttpGet]
         [Route("{id}")]
-        public async Task<ContainerExecInspectResponse> InspectExecInstance(string id, CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<ContainerExecInspectResponse> InspectExecInstance(string id, CancellationToken cancellationToken)
         {
             using HttpClient httpClient = DockerClient.GetDockerHttpClient();
             HttpRequestMessage requestMessage = DockerClient.PrepareHttpRequest(HttpMethod.Get, $"exec/{id}/json", string.Empty);
@@ -40,7 +40,7 @@ namespace DockerDotNet.APIClient.Controllers
 
         [HttpPost]
         [Route("{id}/start")]
-        public async Task StartExecInstance(string id, CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task StartExecInstance(string id, CancellationToken cancellationToken)
         {
             // TODO: Merge the changes from Attach branch
         }

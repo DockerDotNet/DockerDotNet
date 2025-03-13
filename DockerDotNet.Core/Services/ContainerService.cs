@@ -41,7 +41,7 @@ namespace DockerDotNet.Core.Services
             return await _dockerClient.GetRequestAsync<ContainerInspectResponse>($"containers/{id}/json", parameters, cancellationToken);
         }
 
-        public async Task<CreateContainerResponse> CreateContainer(CreateContainerQueryParameters createContainerQueryParameters, CreateContainerParameters createContainer, CancellationToken cancellationToken)
+        public async Task<CreateContainerResponse> CreateContainer(CreateContainerQueryParameters createContainerQueryParameters, ContainerCreateRequest createContainer, CancellationToken cancellationToken)
         {
             string queryString = _dockerClient.GetQueryString(createContainerQueryParameters);
 

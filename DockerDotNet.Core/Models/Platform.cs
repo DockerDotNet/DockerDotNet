@@ -10,36 +10,70 @@
 
 #nullable enable
 
-using System.ComponentModel.DataAnnotations;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.ComponentModel.DataAnnotations;
+
 
 namespace DockerDotNet.Core.Models
 {
     /// <summary>
-    /// SystemVersionPlatform
+    /// Platform represents the platform (Arch/OS). 
     /// </summary>
     public partial class Platform : IValidatableObject
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Platform" /> class.
         /// </summary>
-        /// <param name="name">name</param>
+        /// <param name="architecture">Architecture represents the hardware architecture (for example, &#x60;x86_64&#x60;). </param>
+        /// <param name="oS">OS represents the Operating System (for example, &#x60;linux&#x60; or &#x60;windows&#x60;). </param>
         [JsonConstructor]
-        public Platform(string name)
+        public Platform(Option<string?> architecture = default, Option<string?> oS = default)
         {
-            Name = name;
+            ArchitectureOption = architecture;
+            OSOption = oS;
             OnCreated();
         }
 
         partial void OnCreated();
 
         /// <summary>
-        /// Gets or Sets Name
+        /// Used to track the state of Architecture
         /// </summary>
-        [JsonPropertyName("Name")]
-        public string Name { get; set; }
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<string?> ArchitectureOption { get; private set; }
+
+        /// <summary>
+        /// Architecture represents the hardware architecture (for example, &#x60;x86_64&#x60;). 
+        /// </summary>
+        /// <value>Architecture represents the hardware architecture (for example, &#x60;x86_64&#x60;). </value>
+        /* <example>x86_64</example> */
+        [JsonPropertyName("Architecture")]
+        public string? Architecture { get { return this.ArchitectureOption; } set { this.ArchitectureOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of OS
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<string?> OSOption { get; private set; }
+
+        /// <summary>
+        /// OS represents the Operating System (for example, &#x60;linux&#x60; or &#x60;windows&#x60;). 
+        /// </summary>
+        /// <value>OS represents the Operating System (for example, &#x60;linux&#x60; or &#x60;windows&#x60;). </value>
+        /* <example>linux</example> */
+        [JsonPropertyName("OS")]
+        public string? OS { get { return this.OSOption; } set { this.OSOption = new(value); } }
 
         /// <summary>
         /// Returns the string presentation of the object
@@ -48,8 +82,9 @@ namespace DockerDotNet.Core.Models
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append("class SystemVersionPlatform {\n");
-            sb.Append("  Name: ").Append(Name).Append("\n");
+            sb.Append("class Platform {\n");
+            sb.Append("  Architecture: ").Append(Architecture).Append("\n");
+            sb.Append("  OS: ").Append(OS).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -64,7 +99,7 @@ namespace DockerDotNet.Core.Models
             yield break;
         }
     }
-    
+
     /// <summary>
     /// A Json converter for type <see cref="Platform" />
     /// </summary>
@@ -87,7 +122,8 @@ namespace DockerDotNet.Core.Models
 
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
-            Option<string?> name = default;
+            Option<string?> architecture = default;
+            Option<string?> oS = default;
 
             while (utf8JsonReader.Read())
             {
@@ -104,8 +140,11 @@ namespace DockerDotNet.Core.Models
 
                     switch (localVarJsonPropertyName)
                     {
-                        case "Name":
-                            name = new Option<string?>(utf8JsonReader.GetString()!);
+                        case "Architecture":
+                            architecture = new Option<string?>(utf8JsonReader.GetString()!);
+                            break;
+                        case "OS":
+                            oS = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
                         default:
                             break;
@@ -113,27 +152,27 @@ namespace DockerDotNet.Core.Models
                 }
             }
 
-            if (!name.IsSet)
-                throw new ArgumentException("Property is required for class SystemVersionPlatform.", nameof(name));
+            if (architecture.IsSet && architecture.Value == null)
+                throw new ArgumentNullException(nameof(architecture), "Property is not nullable for class Platform.");
 
-            if (name.IsSet && name.Value == null)
-                throw new ArgumentNullException(nameof(name), "Property is not nullable for class SystemVersionPlatform.");
+            if (oS.IsSet && oS.Value == null)
+                throw new ArgumentNullException(nameof(oS), "Property is not nullable for class Platform.");
 
-            return new Platform(name.Value!);
+            return new Platform(architecture, oS);
         }
 
         /// <summary>
         /// Serializes a <see cref="Platform" />
         /// </summary>
         /// <param name="writer"></param>
-        /// <param name="systemVersionPlatform"></param>
+        /// <param name="platform"></param>
         /// <param name="jsonSerializerOptions"></param>
         /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, Platform systemVersionPlatform, JsonSerializerOptions jsonSerializerOptions)
+        public override void Write(Utf8JsonWriter writer, Platform platform, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
 
-            WriteProperties(writer, systemVersionPlatform, jsonSerializerOptions);
+            WriteProperties(writer, platform, jsonSerializerOptions);
             writer.WriteEndObject();
         }
 
@@ -141,15 +180,22 @@ namespace DockerDotNet.Core.Models
         /// Serializes the properties of <see cref="Platform" />
         /// </summary>
         /// <param name="writer"></param>
-        /// <param name="systemVersionPlatform"></param>
+        /// <param name="platform"></param>
         /// <param name="jsonSerializerOptions"></param>
         /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, Platform systemVersionPlatform, JsonSerializerOptions jsonSerializerOptions)
+        public void WriteProperties(Utf8JsonWriter writer, Platform platform, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (systemVersionPlatform.Name == null)
-                throw new ArgumentNullException(nameof(systemVersionPlatform.Name), "Property is required for class SystemVersionPlatform.");
+            if (platform.ArchitectureOption.IsSet && platform.Architecture == null)
+                throw new ArgumentNullException(nameof(platform.Architecture), "Property is required for class Platform.");
 
-            writer.WriteString("Name", systemVersionPlatform.Name);
+            if (platform.OSOption.IsSet && platform.OS == null)
+                throw new ArgumentNullException(nameof(platform.OS), "Property is required for class Platform.");
+
+            if (platform.ArchitectureOption.IsSet)
+                writer.WriteString("Architecture", platform.Architecture);
+
+            if (platform.OSOption.IsSet)
+                writer.WriteString("OS", platform.OS);
         }
     }
 }
