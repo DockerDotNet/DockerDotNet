@@ -26,13 +26,13 @@ namespace DockerDotNet.Core.Services
         public async Task<(bool, IList<ContainerSummary>?, DockerError?)> GetContainers(ContainersListParameters parameters, CancellationToken cancellationToken)
         {
             string queryString = _dockerClient.GetQueryString(parameters);
-            return await _dockerClient.GetRequestAsync<IList<ContainerSummary>>("containers/json", queryString, _serializerOptions, cancellationToken);
+            return await _dockerClient.GetAsync<IList<ContainerSummary>>("containers/json", queryString, _serializerOptions, cancellationToken);
         }
 
         public async Task<(bool, ContainerInspectResponse?, DockerError?)> GetContainer(string id, ContainerInspectParameters queryParameters, CancellationToken cancellationToken)
         {
             string parameters = _dockerClient.GetQueryString(queryParameters);
-            return await _dockerClient.GetRequestAsync<ContainerInspectResponse>($"containers/{id}/json", parameters, _serializerOptions, cancellationToken);
+            return await _dockerClient.GetAsync<ContainerInspectResponse>($"containers/{id}/json", parameters, _serializerOptions, cancellationToken);
         }
 
         public async Task<(bool, ContainerCreateResponse?, DockerError?)> CreateContainer(CreateContainerQueryParameters createContainerQueryParameters, ContainerCreateRequest createContainer, CancellationToken cancellationToken)

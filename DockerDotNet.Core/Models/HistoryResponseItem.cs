@@ -198,8 +198,8 @@ namespace DockerDotNet.Core.Models
             if (!createdBy.IsSet)
                 throw new ArgumentException("Property is required for class HistoryResponseItem.", nameof(createdBy));
 
-            if (!tags.IsSet)
-                throw new ArgumentException("Property is required for class HistoryResponseItem.", nameof(tags));
+            //if (!tags.IsSet)
+            //    throw new ArgumentException("Property is required for class HistoryResponseItem.", nameof(tags));
 
             if (!size.IsSet)
                 throw new ArgumentException("Property is required for class HistoryResponseItem.", nameof(size));
@@ -216,8 +216,8 @@ namespace DockerDotNet.Core.Models
             if (createdBy.IsSet && createdBy.Value == null)
                 throw new ArgumentNullException(nameof(createdBy), "Property is not nullable for class HistoryResponseItem.");
 
-            if (tags.IsSet && tags.Value == null)
-                throw new ArgumentNullException(nameof(tags), "Property is not nullable for class HistoryResponseItem.");
+            //if (tags.IsSet && tags.Value == null)
+            //    throw new ArgumentNullException(nameof(tags), "Property is not nullable for class HistoryResponseItem.");
 
             if (size.IsSet && size.Value == null)
                 throw new ArgumentNullException(nameof(size), "Property is not nullable for class HistoryResponseItem.");
@@ -258,8 +258,8 @@ namespace DockerDotNet.Core.Models
             if (historyResponseItem.CreatedBy == null)
                 throw new ArgumentNullException(nameof(historyResponseItem.CreatedBy), "Property is required for class HistoryResponseItem.");
 
-            if (historyResponseItem.Tags == null)
-                throw new ArgumentNullException(nameof(historyResponseItem.Tags), "Property is required for class HistoryResponseItem.");
+            //if (historyResponseItem.Tags == null)
+            //    throw new ArgumentNullException(nameof(historyResponseItem.Tags), "Property is required for class HistoryResponseItem.");
 
             if (historyResponseItem.Comment == null)
                 throw new ArgumentNullException(nameof(historyResponseItem.Comment), "Property is required for class HistoryResponseItem.");

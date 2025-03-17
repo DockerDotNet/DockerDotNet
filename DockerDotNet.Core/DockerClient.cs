@@ -241,7 +241,7 @@ namespace DockerDotNet.Core
             return System.Text.Json.JsonSerializer.Serialize(dictionary);
         }
 
-        public async Task<(bool, T?, DockerError?)> GetRequestAsync<T>(string endpoint, string queryParameters, JsonSerializerOptions serializerOptions, CancellationToken cancellationToken, HttpContent? requestBody = null)
+        public async Task<(bool, T?, DockerError?)> GetAsync<T>(string endpoint, string queryParameters, JsonSerializerOptions serializerOptions, CancellationToken cancellationToken, HttpContent? requestBody = null)
         {
             var client = GetDockerHttpClient();
 

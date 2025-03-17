@@ -21,16 +21,26 @@ namespace DockerDotNet.Core.Services
             _serializerOptions = serializerOptions;
         }
 
-        public async Task<IList<ImageSummary>> GetImages(ImagesListParameters imagesListParameters, CancellationToken cancellationToken)
+        public async Task<(bool, IList<ImageSummary>?, DockerError?)> GetImages(ImagesListParameters imagesListParameters, CancellationToken cancellationToken)
         {
-            using HttpClient httpClient = _dockerClient.GetDockerHttpClient();
-            string parameters = _dockerClient.GetQueryString(imagesListParameters);
-            HttpRequestMessage requestMessage = _dockerClient.PrepareHttpRequest(HttpMethod.Get, "images/json", parameters, null);
-            HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(requestMessage, cancellationToken);
-            httpResponseMessage.EnsureSuccessStatusCode();
-
-            return await httpResponseMessage.Content.ReadFromJsonAsync<IList<ImageSummary>>(_serializerOptions ,cancellationToken);
+            string query = _dockerClient.GetQueryString(imagesListParameters);
+            return await _dockerClient.GetAsync<List<ImageSummary>>("images/json", query, _serializerOptions, cancellationToken);
         }
 
+        public async Task<(bool, ImageInspect?, DockerError?)> GetImage(string name, CancellationToken cancellationToken)
+        {
+            return await _dockerClient.GetAsync<ImageInspect>($"images/{name}/json", string.Empty, _serializerOptions, cancellationToken);
+        }
+
+        public async Task<(bool, List<HistoryResponseItem>?, DockerError?)> GetImageHistory(string name, CancellationToken cancellationToken)
+        {
+            return await _dockerClient.GetAsync<List<HistoryResponseItem>>($"images/{name}/history", string.Empty, _serializerOptions, cancellationToken);
+        }
+
+        public async Task<(bool, string?, DockerError?)> TagImage(string name, ImageTagParameters parameters, CancellationToken cancellationToken)
+        {
+            string query = _dockerClient.GetQueryString(parameters);
+            return await _dockerClient.PostAsync<string>($"images/{name}/tag", query, _serializerOptions, cancellationToken);
+        }
     }
 }

@@ -60,11 +60,47 @@ namespace DockerDotNet.API.Tests
         [Fact]
         public async System.Threading.Tasks.Task GetImageList()
         {
-            var images = await _imageService.GetImages(new ImagesListParameters(), new CancellationToken());
-            images.ShouldNotBeNull();
-            _output.WriteLine(JsonSerializer.Serialize(images));
+            var (success, response, _) = await _imageService.GetImages(new ImagesListParameters(), new CancellationToken());
+            success.ShouldBeTrue();
+            response.ShouldNotBeNull();
+            _output.WriteLine(JsonSerializer.Serialize(response));
         }
 
+        [Fact]
+        public async System.Threading.Tasks.Task GetImage()
+        {
+            string imageName = "04bf2359fb0d7f18a2c98856d506051ab600624d686ba2114352fd85c28004cc";
+            var (success, response, _) = await _imageService.GetImage(imageName, new CancellationToken());
+            success.ShouldBeTrue();
+            response.ShouldNotBeNull();
+            _output.WriteLine(JsonSerializer.Serialize(response));
+        }
 
+        [Fact]
+        public async System.Threading.Tasks.Task GetImageHistory()
+        {
+            string imageName = "04bf2359fb0d7f18a2c98856d506051ab600624d686ba2114352fd85c28004cc";
+            var (success, response, _) = await _imageService.GetImageHistory(imageName, new CancellationToken());
+            success.ShouldBeTrue();
+            response.ShouldNotBeNull();
+            _output.WriteLine(JsonSerializer.Serialize(response));
+        }
+
+        [Fact]
+        public async System.Threading.Tasks.Task TagImage()
+        {
+            string imageName = "04bf2359fb0d7f18a2c98856d506051ab600624d686ba2114352fd85c28004cc";
+            
+            ImageTagParameters parameters = new ImageTagParameters();
+            parameters.Repository = "";
+            parameters.Tag = "";
+
+            var (success, response, _) = await _imageService.TagImage(imageName, parameters, new CancellationToken());
+            
+            success.ShouldBeTrue();
+            response.ShouldNotBeNull();
+            
+            _output.WriteLine(JsonSerializer.Serialize(response));
+        }
     }
 }

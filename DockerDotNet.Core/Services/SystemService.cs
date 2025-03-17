@@ -23,12 +23,12 @@ namespace DockerDotNet.Core.Services
 
         public async Task<(bool, Core.Models.SystemVersion?, DockerError?)> GetVersionAsync(CancellationToken cancellationToken)
         {
-            return await _dockerClient.GetRequestAsync<Core.Models.SystemVersion>("version", string.Empty, _serializerOptions, cancellationToken);
+            return await _dockerClient.GetAsync<Core.Models.SystemVersion>("version", string.Empty, _serializerOptions, cancellationToken);
         }
 
         public async Task<(bool, Core.Models.SystemInfo?, DockerError?)> GetInfoAsync(CancellationToken cancellationToken)
         {
-            return await _dockerClient.GetRequestAsync<Core.Models.SystemInfo>("info", string.Empty, _serializerOptions, cancellationToken);
+            return await _dockerClient.GetAsync<Core.Models.SystemInfo>("info", string.Empty, _serializerOptions, cancellationToken);
         }
     }
 }
