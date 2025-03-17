@@ -39,5 +39,14 @@ namespace DockerDotNet.APIClient.Controllers
             var(status, response, error) = await _systemService.GetVersionAsync(cancellationToken);
             return status ? Ok(response) : StatusCode((int)error.StatusCode, error.Message);
         }
+
+        [HttpPost]
+        [Route("auth")]
+        public async Task<IActionResult> AuthenticateRegistry([FromBody]AuthConfig authConfig, CancellationToken cancellationToken)
+        {
+            var (status, response, error) = await _systemService.AuthenticateRegistry(authConfig, cancellationToken);
+            return status ? Ok(response) : StatusCode((int)error.StatusCode, error.Message);
+        }
+
     }
 }

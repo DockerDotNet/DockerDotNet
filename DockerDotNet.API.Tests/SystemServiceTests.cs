@@ -1,4 +1,5 @@
-﻿using DockerDotNet.Core.Services;
+﻿using DockerDotNet.Core.Models;
+using DockerDotNet.Core.Services;
 
 using Microsoft.Extensions.DependencyInjection;
 
@@ -28,7 +29,7 @@ namespace DockerDotNet.API.Tests
         }
 
         [Fact]
-        public async Task GetVersion()
+        public async System.Threading.Tasks.Task GetVersion()
         {
             var(status, response, error) = await _systemService.GetVersionAsync(CancellationToken.None);
             status.ShouldBeTrue();
@@ -38,9 +39,20 @@ namespace DockerDotNet.API.Tests
         }
 
         [Fact]
-        public async Task GetInfo()
+        public async System.Threading.Tasks.Task GetInfo()
         {
             var (status, response, error) = await _systemService.GetInfoAsync(CancellationToken.None);
+            status.ShouldBeTrue();
+            response.ShouldNotBeNull();
+
+            _output.WriteLine(JsonSerializer.Serialize(response));
+        }
+
+        [Fact]
+        public async System.Threading.Tasks.Task AuthenticateRegistry()
+        {
+            AuthConfig authConfig = new AuthConfig();
+            var (status, response, error) = await _systemService.AuthenticateRegistry(authConfig, CancellationToken.None);
             status.ShouldBeTrue();
             response.ShouldNotBeNull();
 

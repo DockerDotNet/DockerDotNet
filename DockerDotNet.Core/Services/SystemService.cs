@@ -30,5 +30,11 @@ namespace DockerDotNet.Core.Services
         {
             return await _dockerClient.GetAsync<Core.Models.SystemInfo>("info", string.Empty, _serializerOptions, cancellationToken);
         }
+
+        public async Task<(bool, SystemAuthResponse?, DockerError?)> AuthenticateRegistry(AuthConfig authConfig, CancellationToken cancellationToken)
+        {
+            string query = _dockerClient.GetQueryString(authConfig);
+            return await _dockerClient.PostAsync<SystemAuthResponse>("auth", query, _serializerOptions, cancellationToken);
+        }
     }
 }
