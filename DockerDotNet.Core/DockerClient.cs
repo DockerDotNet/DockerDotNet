@@ -9,7 +9,6 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Web;
 using DockerDotNet.Core.Models;
-using Newtonsoft.Json;
 
 namespace DockerDotNet.Core
 {
@@ -161,9 +160,9 @@ namespace DockerDotNet.Core
 
             if (authConfig == null)
             {
-                JsonSerializerSettings serializerSettings = new JsonSerializerSettings();
-                serializerSettings.NullValueHandling = NullValueHandling.Ignore;
-                 resultString = JsonConvert.SerializeObject(authConfig, serializerSettings);
+                JsonSerializerOptions serializerSettings = new JsonSerializerOptions();
+                serializerSettings.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+                 resultString = JsonSerializer.Serialize(authConfig, serializerSettings);
             }
 
             byte[] result =  System.Text.Encoding.UTF8.GetBytes(resultString);
@@ -279,7 +278,8 @@ namespace DockerDotNet.Core
             }
             else
             {
-                content = await response.Content.ReadFromJsonAsync<T>(options, cancellationToken);
+                JsonSerializerOptions options1 = new JsonSerializerOptions(options);
+                content = await response.Content.ReadFromJsonAsync<T>(options1, cancellationToken);
             }
             return (true, (T)content, null);
         }

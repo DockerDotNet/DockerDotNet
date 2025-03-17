@@ -16,8 +16,6 @@ namespace DockerDotNet.API.Tests
 {
     public class ContainerControllerTests : DockerTestBase
     {
-        ContainerController Controller { get; set; }
-
         private readonly ITestOutputHelper _output;
         private readonly ContainerService _containerService;
 

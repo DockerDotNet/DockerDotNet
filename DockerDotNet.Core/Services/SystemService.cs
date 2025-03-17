@@ -21,26 +21,14 @@ namespace DockerDotNet.Core.Services
             _serializerOptions = serializerOptions;
         }
 
-        public async Task<Core.Models.SystemVersion> GetVersionAsync()
+        public async Task<(bool, Core.Models.SystemVersion?, DockerError?)> GetVersionAsync(CancellationToken cancellationToken)
         {
-            HttpClient httpClient = _dockerClient.GetDockerHttpClient();
-
-            HttpRequestMessage requestMessage = _dockerClient.PrepareHttpRequest(HttpMethod.Get, "version", string.Empty);
-
-            HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(requestMessage);
-
-            return await httpResponseMessage.Content.ReadFromJsonAsync<Core.Models.SystemVersion>(_serializerOptions);
+            return await _dockerClient.GetRequestAsync<Core.Models.SystemVersion>("version", string.Empty, _serializerOptions, cancellationToken);
         }
 
-        public async Task<Core.Models.SystemInfo> GetInfoAsync()
+        public async Task<(bool, Core.Models.SystemInfo?, DockerError?)> GetInfoAsync(CancellationToken cancellationToken)
         {
-            HttpClient httpClient = _dockerClient.GetDockerHttpClient();
-
-            HttpRequestMessage requestMessage = _dockerClient.PrepareHttpRequest(HttpMethod.Get, "info", string.Empty);
-
-            HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(requestMessage);
-
-            return await httpResponseMessage.Content.ReadFromJsonAsync<Core.Models.SystemInfo>(_serializerOptions);
+            return await _dockerClient.GetRequestAsync<Core.Models.SystemInfo>("info", string.Empty, _serializerOptions, cancellationToken);
         }
     }
 }

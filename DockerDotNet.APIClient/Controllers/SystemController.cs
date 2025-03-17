@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 using System.Text.Json;
+using System.Threading;
 
 namespace DockerDotNet.APIClient.Controllers
 {
@@ -25,16 +26,18 @@ namespace DockerDotNet.APIClient.Controllers
 
         [HttpGet]
         [Route("info")]
-        public async Task<Core.Models.SystemInfo> GetInfo()
+        public async Task<IActionResult> GetInfo(CancellationToken cancellationToken)
         {
-            return await _systemService.GetInfoAsync();
+            var (status, response, error) = await _systemService.GetInfoAsync(cancellationToken);
+            return status ? Ok(response) : StatusCode((int)error.StatusCode, error.Message);
         }
 
         [HttpGet]
         [Route("version")]
-        public async Task<Core.Models.SystemVersion> GetVersion()
+        public async Task<IActionResult> GetVersion(CancellationToken cancellationToken)
         {
-            return await _systemService.GetVersionAsync();
+            var(status, response, error) = await _systemService.GetVersionAsync(cancellationToken);
+            return status ? Ok(response) : StatusCode((int)error.StatusCode, error.Message);
         }
     }
 }
