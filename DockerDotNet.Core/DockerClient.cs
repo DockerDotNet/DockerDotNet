@@ -272,8 +272,16 @@ namespace DockerDotNet.Core
                 return (false, default, new DockerError(response.StatusCode, errorContent.Message));
             }
 
-            var content = await response.Content.ReadFromJsonAsync<T>(options, cancellationToken);
-            return (true, content, null);
+            object content;
+            if(typeof(T) == typeof(string))
+            {
+                content = await response.Content.ReadAsStringAsync(cancellationToken);
+            }
+            else
+            {
+                content = await response.Content.ReadFromJsonAsync<T>(options, cancellationToken);
+            }
+            return (true, (T)content, null);
         }
 
     }

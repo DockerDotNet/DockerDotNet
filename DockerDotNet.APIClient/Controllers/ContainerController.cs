@@ -60,42 +60,48 @@ namespace DockerDotNet.APIClient.Controllers
         [Route("{id}/restart")]
         public async Task<IActionResult> RestartContainer(string id, CancellationToken cancellationToken)
         {
-            return Ok(await _containerService.RestartContainer(id, cancellationToken));
+            var (success, _, error) = await _containerService.RestartContainer(id, cancellationToken);
+            return success ? Ok() : StatusCode((int)error!.StatusCode, error.Message);
         }
 
         [HttpPost]
         [Route("{id}/start")]
         public async Task<IActionResult> StartContainer(string id, CancellationToken cancellationToken)
         {
-            return Ok(await _containerService.StartContainer(id, cancellationToken));
+            var (success, _, error) = await _containerService.StartContainer(id, cancellationToken);
+            return success ? Ok() : StatusCode((int)error!.StatusCode, error.Message);
         }
 
         [HttpPost]
         [Route("{id}/stop")]
         public async Task<IActionResult> StopContainer(string id, CancellationToken cancellationToken)
         {
-            return Ok(await _containerService.StopContainer(id, cancellationToken));
+            var (success, _, error) = await _containerService.StopContainer(id, cancellationToken);
+            return success ? Ok() : StatusCode((int)error!.StatusCode, error.Message);
         }
 
         [HttpPost]
         [Route("{id}/kill")]
         public async Task<IActionResult> KillContainer(string id, CancellationToken cancellationToken)
         {
-            return Ok(await _containerService.KillContainer(id, cancellationToken));
+            var (success, _, error) = await _containerService.KillContainer(id, cancellationToken);
+            return success ? Ok() : StatusCode((int)error!.StatusCode, error.Message);
         }
 
         [HttpPost]
         [Route("{id}/pause")]
         public async Task<IActionResult> PauseContainer(string id, CancellationToken cancellationToken)
         {
-            return Ok(await _containerService.PauseContainer(id, cancellationToken));
+            var (success, _, error) = await _containerService.PauseContainer(id, cancellationToken);
+            return success ? Ok() : StatusCode((int)error!.StatusCode, error.Message);
         }
 
         [HttpPost]
         [Route("{id}/unpause")]
         public async Task<IActionResult> UnpauseContainer(string id, CancellationToken cancellationToken)
         {
-            return Ok(await _containerService.UnpauseContainer(id, cancellationToken));
+            var (success, _, error) = await _containerService.UnpauseContainer(id, cancellationToken);
+            return success ? Ok() : StatusCode((int)error!.StatusCode, error.Message);
         }
 
         [HttpGet]
@@ -152,9 +158,10 @@ namespace DockerDotNet.APIClient.Controllers
 
         [HttpPost]
         [Route("{id}/exec")]
-        public async Task<ContainerExecCreateResponse> CreateExec(string id, [FromBody] ContainerExecCreateParameters createParameters, CancellationToken cancellationToken)
+        public async Task<IActionResult> CreateExec(string id, [FromBody] ContainerExecCreateParameters createParameters, CancellationToken cancellationToken)
         {
-            return await _containerService.CreateExec(id, createParameters, cancellationToken);
+            var (success, response, error) = await _containerService.CreateExec(id, createParameters, cancellationToken);
+            return success ? Ok(response) : StatusCode((int)error.StatusCode, error.Message);
         }
     }
 }

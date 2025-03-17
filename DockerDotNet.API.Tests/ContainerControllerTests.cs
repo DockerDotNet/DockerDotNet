@@ -56,44 +56,44 @@ namespace DockerDotNet.API.Tests
         [Fact]
         public async System.Threading.Tasks.Task StartContainer()
         {
-            var response = await _containerService.StartContainer(_containerID, CancellationToken.None);
-            //Controller.Response.StatusCode.ShouldBe((int)HttpStatusCode.OK);
+            var (success, _, _) = await _containerService.StartContainer(_containerID, CancellationToken.None);
+            success.ShouldBeTrue();
 
         }
 
         [Fact]
         public async System.Threading.Tasks.Task StopContainer()
         {
-            var response = await _containerService.StopContainer(_containerID, CancellationToken.None);
-            //Controller.Response.StatusCode.ShouldBe((int)HttpStatusCode.OK);
+            var (success, _, _) = await _containerService.StopContainer(_containerID, CancellationToken.None);
+            success.ShouldBeTrue();
         }
 
         [Fact]
         public async System.Threading.Tasks.Task RestartContainer()
         {
-            var response = await _containerService.RestartContainer(_containerID, CancellationToken.None);
-            //Controller.Response.StatusCode.ShouldBe((int)HttpStatusCode.OK);
+            var (success, _, _) = await _containerService.RestartContainer(_containerID, CancellationToken.None);
+            success.ShouldBeTrue();
         }
 
         [Fact]
         public async System.Threading.Tasks.Task KillContainer()
         {
-            var response = await _containerService.KillContainer(_containerID, CancellationToken.None);
-            //Controller.Response.StatusCode.ShouldBe((int)HttpStatusCode.OK);
+            var (success, _, _) = await _containerService.KillContainer(_containerID, CancellationToken.None);
+            success.ShouldBeTrue();
         }
 
         [Fact]
         public async System.Threading.Tasks.Task PauseContainer()
         {
-            var response = await _containerService.PauseContainer(_containerID, CancellationToken.None);
-            //Controller.Response.StatusCode.ShouldBe((int)HttpStatusCode.OK);
+            var (success, _, _) = await _containerService.PauseContainer(_containerID, CancellationToken.None);
+            success.ShouldBeTrue();
         }
 
         [Fact]
         public async System.Threading.Tasks.Task UnpauseContainer()
         {
-            var response = await _containerService.UnpauseContainer(_containerID, CancellationToken.None);
-            //Controller.Response.StatusCode.ShouldBe((int)HttpStatusCode.OK);
+            var (success, _, _) = await _containerService.UnpauseContainer(_containerID, CancellationToken.None);
+            success.ShouldBeTrue();
         }
 
         [Fact]
@@ -130,12 +130,12 @@ namespace DockerDotNet.API.Tests
             containerExecCreateParameters.DetachKeys = "ctrl-p,ctrl-q";
             containerExecCreateParameters.Cmd = new List<string>() { "bin/sh" };
             containerExecCreateParameters.Tty = true;
-            ContainerExecCreateResponse containerExecCreateResponse = await _containerService.CreateExec(_containerID, containerExecCreateParameters, new CancellationToken());
+            var(success, response, error) = await _containerService.CreateExec(_containerID, containerExecCreateParameters, new CancellationToken());
 
-            //Controller.Response.StatusCode.ShouldBe((int)HttpStatusCode.OK);
-            containerExecCreateResponse.ShouldNotBeNull();
+            success.ShouldBeTrue();
+            response.ShouldNotBeNull();
 
-            _output.WriteLine(JsonSerializer.Serialize(containerExecCreateResponse));
+            _output.WriteLine(JsonSerializer.Serialize(response));
         }
     }
 }
