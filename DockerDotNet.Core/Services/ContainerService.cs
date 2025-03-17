@@ -41,6 +41,12 @@ namespace DockerDotNet.Core.Services
             return await _dockerClient.PostAsync<ContainerCreateResponse>("containers/create", queryString, _serializerOptions, cancellationToken, JsonContent.Create(createContainer));
         }
 
+        public async Task<(bool ,string?, DockerError?)> DeleteContainer(string id, ContainerDeleteParameters containerDeleteParameters, CancellationToken cancellationToken)
+        {
+            string queryString = _dockerClient.GetQueryString(containerDeleteParameters);
+            return await _dockerClient.DeleteAsync<string>($"containers/{id}", queryString, _serializerOptions, cancellationToken);
+        }
+
         public async Task<(bool, string?, DockerError?)> RestartContainer(string id, CancellationToken cancellationToken)
         {
             return await _dockerClient.PostAsync<string>($"containers/{id}/restart", string.Empty, _serializerOptions, cancellationToken);

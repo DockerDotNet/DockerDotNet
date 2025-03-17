@@ -21,7 +21,6 @@ namespace DockerDotNet.API.Tests
 
         string _containerID = "7733bfa5017ae064b390b3e9428e8dae21c0ffeaf90820c6a9d444fbfc0b08eb";
 
-
         public ContainerControllerTests(ITestOutputHelper testOutputHelper) : base(Array.Empty<string>())
         {
             DockerClient client = new DockerClient();
@@ -49,6 +48,15 @@ namespace DockerDotNet.API.Tests
             response.ShouldNotBeNull();
 
             return response;
+        }
+
+        [Fact]
+        public async System.Threading.Tasks.Task DeleteContainerAsync()
+        {
+            ContainerDeleteParameters parameters = new ContainerDeleteParameters();
+
+            var (success, _, _) = await _containerService.DeleteContainer(_containerID, parameters, CancellationToken.None);
+            success.ShouldBeTrue();
         }
 
         [Fact]

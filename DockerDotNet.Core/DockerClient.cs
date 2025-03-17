@@ -263,6 +263,17 @@ namespace DockerDotNet.Core
             return await ProcessResponse<T>(response, serializerOptions, cancellationToken);
         }
 
+        public async Task<(bool, T?, DockerError?)> DeleteAsync<T>(string endpoint, string queryParameters, JsonSerializerOptions serializerOptions, CancellationToken cancellationToken, HttpContent? body = null)
+        {
+            var client = GetDockerHttpClient();
+
+            HttpRequestMessage requestMessage = PrepareHttpRequest(HttpMethod.Delete, endpoint, queryParameters, body);
+
+            HttpResponseMessage responseMessage = await client.SendAsync(requestMessage, cancellationToken);
+
+            return await ProcessResponse<T>(responseMessage, serializerOptions, cancellationToken);
+        }
+
         private async Task<(bool, T?, DockerError?)> ProcessResponse<T>(HttpResponseMessage response, JsonSerializerOptions options, CancellationToken cancellationToken)
         {
             if (!response.IsSuccessStatusCode)

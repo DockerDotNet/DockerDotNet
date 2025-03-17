@@ -104,6 +104,14 @@ namespace DockerDotNet.APIClient.Controllers
             return success ? Ok() : StatusCode((int)error!.StatusCode, error.Message);
         }
 
+        [HttpDelete]
+        [Route("{id}")]
+        public async Task<IActionResult> DeleteContainer(string id, [FromQuery]ContainerDeleteParameters parameters, CancellationToken cancellationToken)
+        {
+            var (success, _, error) = await _containerService.DeleteContainer(id, parameters, cancellationToken);
+            return success ? Ok() : StatusCode((int)error!.StatusCode, error.Message);
+        }
+
         [HttpGet]
         [Route("{id}/logs")]
         public async System.Threading.Tasks.Task GetContainerLogs(string id, CancellationToken cancellationToken)
