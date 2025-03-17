@@ -45,11 +45,12 @@ namespace DockerDotNet.API.Tests
             queryParameters.Name = "TestContainers";
             ContainerCreateRequest containerParameters = new ContainerCreateRequest();
             containerParameters.Image = "nginx:latest";
-            ContainerCreateResponse containerResponse = await _containerService.CreateContainer(queryParameters, containerParameters, CancellationToken.None);
-            //Controller.Response.StatusCode.ShouldBe((int)HttpStatusCode.OK);
-            containerResponse.ShouldNotBeNull();
+            var (success, response, error) = await _containerService.CreateContainer(queryParameters, containerParameters, CancellationToken.None);
+            
+            success.ShouldBeTrue();
+            response.ShouldNotBeNull();
 
-            return containerResponse;
+            return response;
         }
 
         [Fact]

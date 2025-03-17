@@ -35,20 +35,21 @@ namespace DockerDotNet.Core.Services
             return await _dockerClient.GetRequestAsync<ContainerInspectResponse>($"containers/{id}/json", parameters, _serializerOptions, cancellationToken);
         }
 
-        public async Task<ContainerCreateResponse> CreateContainer(CreateContainerQueryParameters createContainerQueryParameters, ContainerCreateRequest createContainer, CancellationToken cancellationToken)
+        public async Task<(bool, ContainerCreateResponse?, DockerError?)> CreateContainer(CreateContainerQueryParameters createContainerQueryParameters, ContainerCreateRequest createContainer, CancellationToken cancellationToken)
         {
             string queryString = _dockerClient.GetQueryString(createContainerQueryParameters);
 
-            using HttpClient httpClient = _dockerClient.GetDockerHttpClient();
-            HttpRequestMessage requestMessage = _dockerClient.PrepareHttpRequest(HttpMethod.Post, "containers/create", queryString, JsonContent.Create(createContainer));
+            return await _dockerClient.PostAsync<ContainerCreateResponse>("containers/create", queryString, _serializerOptions, cancellationToken, JsonContent.Create(createContainer));
 
-            httpClient.DefaultRequestHeaders.Add("ContentType", "application/json");
-            HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(requestMessage, cancellationToken);
+            //using HttpClient httpClient = _dockerClient.GetDockerHttpClient();
+            //HttpRequestMessage requestMessage = _dockerClient.PrepareHttpRequest(HttpMethod.Post, "containers/create", queryString, JsonContent.Create(createContainer));
 
-            //httpResponseMessage.EnsureSuccessStatusCode();
+            //httpClient.DefaultRequestHeaders.Add("ContentType", "application/json");
+            //HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(requestMessage, cancellationToken);
 
-            ContainerCreateResponse? responseContent = await httpResponseMessage.Content.ReadFromJsonAsync<ContainerCreateResponse>(cancellationToken);
-            return responseContent;
+            ////httpResponseMessage.EnsureSuccessStatusCode();
+
+            //ContainerCreateResponse? responseContent = await httpResponseMessage.Content.ReadFromJsonAsync<ContainerCreateResponse>(cancellationToken);
         }
 
         public async Task<string> RestartContainer(string id, CancellationToken cancellationToken)

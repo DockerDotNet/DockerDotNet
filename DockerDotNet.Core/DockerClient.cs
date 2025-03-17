@@ -215,9 +215,9 @@ namespace DockerDotNet.Core
 
                 // Check if the property has a JsonPropertyName attribute
                 var jsonPropertyNameAttribute = property
-                    .GetCustomAttribute<JsonPropertyAttribute>();
+                    .GetCustomAttribute<JsonPropertyNameAttribute>();
 
-                string propertyName = jsonPropertyNameAttribute?.PropertyName ?? property.Name;
+                string propertyName = jsonPropertyNameAttribute?.Name ?? property.Name;
                 string encodedKey = HttpUtility.UrlEncode(propertyName);
                 string encodedValue = string.Empty;
 

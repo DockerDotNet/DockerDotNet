@@ -43,7 +43,8 @@ namespace DockerDotNet.APIClient.Controllers
         [Route("create")]
         public async Task<IActionResult> CreateContainer([FromQuery] CreateContainerQueryParameters createContainerQueryParameters, [FromBody] ContainerCreateRequest createContainer, CancellationToken cancellationToken)
         {
-            return Ok(await _containerService.CreateContainer(createContainerQueryParameters, createContainer, cancellationToken));
+            var(success, response, error) = await _containerService.CreateContainer(createContainerQueryParameters, createContainer, cancellationToken);    
+            return success ? Ok(response) : StatusCode((int)error.StatusCode, error.Message);
         }
 
         [HttpGet]
