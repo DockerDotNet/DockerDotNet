@@ -36,5 +36,10 @@ namespace DockerDotNet.Core.Services
             string query = _dockerClient.GetQueryString(authConfig);
             return await _dockerClient.PostAsync<SystemAuthResponse>("auth", query, _serializerOptions, cancellationToken);
         }
+
+        public async Task<(bool, string?, DockerError?)> Ping_Get(CancellationToken cancellationToken)
+        {
+            return await _dockerClient.GetAsync<string>("_ping", string.Empty, _serializerOptions, cancellationToken);
+        }
     }
 }

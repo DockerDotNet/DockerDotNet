@@ -58,5 +58,14 @@ namespace DockerDotNet.API.Tests
 
             _output.WriteLine(JsonSerializer.Serialize(response));
         }
+
+        [Fact]
+        public async System.Threading.Tasks.Task Ping_Get()
+        {
+            var (status, response, error) = await _systemService.Ping_Get(CancellationToken.None);
+            status.ShouldBeTrue();
+
+            _output.WriteLine(JsonSerializer.Serialize(response));
+        }
     }
 }

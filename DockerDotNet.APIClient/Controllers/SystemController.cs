@@ -36,17 +36,24 @@ namespace DockerDotNet.APIClient.Controllers
         [Route("version")]
         public async Task<IActionResult> GetVersion(CancellationToken cancellationToken)
         {
-            var(status, response, error) = await _systemService.GetVersionAsync(cancellationToken);
+            var (status, response, error) = await _systemService.GetVersionAsync(cancellationToken);
             return status ? Ok(response) : StatusCode((int)error.StatusCode, error.Message);
         }
 
         [HttpPost]
         [Route("auth")]
-        public async Task<IActionResult> AuthenticateRegistry([FromBody]AuthConfig authConfig, CancellationToken cancellationToken)
+        public async Task<IActionResult> AuthenticateRegistry([FromBody] AuthConfig authConfig, CancellationToken cancellationToken)
         {
             var (status, response, error) = await _systemService.AuthenticateRegistry(authConfig, cancellationToken);
             return status ? Ok(response) : StatusCode((int)error.StatusCode, error.Message);
         }
 
+        [HttpGet]
+        [Route("ping")]
+        public async Task<IActionResult> Ping_Get(CancellationToken cancellationToken)
+        {
+            var (status, response, error) = await _systemService.Ping_Get(cancellationToken);
+            return status ? Ok(response) : StatusCode((int)error.StatusCode, error.Message);
+        }
     }
 }
