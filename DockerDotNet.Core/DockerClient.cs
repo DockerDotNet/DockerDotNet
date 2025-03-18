@@ -178,7 +178,7 @@ namespace DockerDotNet.Core
             return finalResult;
         }
 
-        public HttpRequestMessage PrepareHttpRequest(HttpMethod httpMethod, string endpoint, string queryParameters, HttpContent? requestBody = null)
+        public HttpRequestMessage PrepareHttpRequest(HttpMethod httpMethod, string endpoint, string queryParameters, Dictionary<string, string>? headers = null, HttpContent? requestBody = null)
         {
             string uriFormat = $"{BaseUri}{endpoint}";
 
@@ -189,9 +189,9 @@ namespace DockerDotNet.Core
 
             Uri requestUri = new UriBuilder(uriFormat).Uri;
             
-            // need to implement request headers here.
-
             HttpRequestMessage httpRequestMessage = new HttpRequestMessage(httpMethod, requestUri);
+
+            AddHeadersToRequest(httpRequestMessage, headers);
 
             if (requestBody != null)
             {
@@ -253,10 +253,8 @@ namespace DockerDotNet.Core
         {
             var client = GetDockerHttpClient();
 
-            HttpRequestMessage requestMessage = PrepareHttpRequest(HttpMethod.Get, endpoint, queryParameters, requestBody);
-            
-            AddHeadersToRequest(requestMessage, headers);
-            
+            HttpRequestMessage requestMessage = PrepareHttpRequest(HttpMethod.Get, endpoint, queryParameters, headers, requestBody);
+                        
             HttpResponseMessage response = await client.SendAsync(requestMessage, cancellationToken);
 
             return await ProcessResponse<T>(response, cancellationToken);
@@ -271,9 +269,7 @@ namespace DockerDotNet.Core
         {
             var client = GetDockerHttpClient();
 
-            HttpRequestMessage requestMessage = PrepareHttpRequest(HttpMethod.Post, endpoint, queryParameters, body);
-
-            AddHeadersToRequest(requestMessage, headers);
+            HttpRequestMessage requestMessage = PrepareHttpRequest(HttpMethod.Post, endpoint, queryParameters, headers, body);
 
             HttpResponseMessage response = await client.SendAsync(requestMessage, cancellationToken);
 
@@ -289,9 +285,7 @@ namespace DockerDotNet.Core
         {
             var client = GetDockerHttpClient();
 
-            HttpRequestMessage requestMessage = PrepareHttpRequest(HttpMethod.Delete, endpoint, queryParameters, body);
-
-            AddHeadersToRequest(requestMessage, headers);
+            HttpRequestMessage requestMessage = PrepareHttpRequest(HttpMethod.Delete, endpoint, queryParameters, headers, body);
 
             HttpResponseMessage responseMessage = await client.SendAsync(requestMessage, cancellationToken);
 
