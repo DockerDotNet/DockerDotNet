@@ -324,8 +324,8 @@ namespace DockerDotNet.Core.Models
             if (!repoTags.IsSet)
                 throw new ArgumentException("Property is required for class ImageSummary.", nameof(repoTags));
 
-            if (!repoDigests.IsSet)
-                throw new ArgumentException("Property is required for class ImageSummary.", nameof(repoDigests));
+            //if (!repoDigests.IsSet)
+            //    throw new ArgumentException("Property is required for class ImageSummary.", nameof(repoDigests));
 
             if (!created.IsSet)
                 throw new ArgumentException("Property is required for class ImageSummary.", nameof(created));
@@ -414,8 +414,8 @@ namespace DockerDotNet.Core.Models
             if (imageSummary.RepoTags == null)
                 throw new ArgumentNullException(nameof(imageSummary.RepoTags), "Property is required for class ImageSummary.");
 
-            if (imageSummary.RepoDigests == null)
-                throw new ArgumentNullException(nameof(imageSummary.RepoDigests), "Property is required for class ImageSummary.");
+            //if (imageSummary.RepoDigests == null)
+            //    throw new ArgumentNullException(nameof(imageSummary.RepoDigests), "Property is required for class ImageSummary.");
 
             if (imageSummary.Labels == null)
                 throw new ArgumentNullException(nameof(imageSummary.Labels), "Property is required for class ImageSummary.");

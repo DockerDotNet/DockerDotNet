@@ -67,5 +67,15 @@ namespace DockerDotNet.API.Tests
 
             _output.WriteLine(JsonSerializer.Serialize(response));
         }
+
+        [Fact]
+        public async System.Threading.Tasks.Task GetDataUsageInformation()
+        {
+            var (status, response, error) = await _systemService.GetDataUsageInformation(CancellationToken.None);
+            status.ShouldBeTrue();
+            response.ShouldNotBeNull();
+
+            _output.WriteLine(JsonSerializer.Serialize(response));
+        }
     }
 }

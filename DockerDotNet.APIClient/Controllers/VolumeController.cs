@@ -14,9 +14,9 @@ namespace DockerDotNet.APIClient.Controllers
     {
         DockerClient DockerClient { get; set; }
 
-        public VolumeController()
+        public VolumeController(DockerClient dockerClient)
         {
-            DockerClient = new DockerClient();
+            DockerClient = dockerClient;
         }
 
         [HttpGet]

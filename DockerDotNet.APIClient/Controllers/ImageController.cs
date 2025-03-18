@@ -14,9 +14,9 @@ namespace DockerDotNet.APIClient.Controllers
 
         private readonly ImageService _imageService;
 
-        public ImageController(ImageService imageService)
+        public ImageController(DockerClient dockerClient, ImageService imageService)
         {
-            _dockerClient = new DockerClient();
+            _dockerClient = dockerClient;
             _imageService = imageService;
         }
 

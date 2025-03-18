@@ -25,6 +25,7 @@ namespace DockerDotNet.API.Tests
         private readonly ImageService _imageService;
 
         private readonly ITestOutputHelper _output;
+
         public ImageControllerTests(ITestOutputHelper testOutputHelper) : base(Array.Empty<string>())
         {
             _imageService = _host.Services.GetRequiredService<ImageService>(); 

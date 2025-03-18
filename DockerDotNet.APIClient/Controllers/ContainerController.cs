@@ -20,9 +20,9 @@ namespace DockerDotNet.APIClient.Controllers
 
         private readonly ContainerService _containerService;
 
-        public ContainerController(ContainerService containerService)
+        public ContainerController(DockerClient dockerClient, ContainerService containerService)
         {
-            _dockerClient = new DockerClient();
+            _dockerClient = dockerClient;
             _containerService = containerService;
         }
 

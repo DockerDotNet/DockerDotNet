@@ -18,9 +18,9 @@ namespace DockerDotNet.APIClient.Controllers
 
         private readonly SystemService _systemService;
 
-        public SystemController(SystemService systemService)
+        public SystemController(DockerClient dockerClient, SystemService systemService)
         {
-            DockerClient = new DockerClient();
+            DockerClient = dockerClient;
             _systemService = systemService;
         }
 
@@ -53,6 +53,14 @@ namespace DockerDotNet.APIClient.Controllers
         public async Task<IActionResult> Ping_Get(CancellationToken cancellationToken)
         {
             var (status, response, error) = await _systemService.Ping_Get(cancellationToken);
+            return status ? Ok(response) : StatusCode((int)error.StatusCode, error.Message);
+        }
+
+        [HttpGet]
+        [Route("")]
+        public async Task<IActionResult> GetSystemDataUsage(CancellationToken cancellationToken)
+        {
+            var(status, response, error) = await _systemService.GetDataUsageInformation(cancellationToken);
             return status ? Ok(response) : StatusCode((int)error.StatusCode, error.Message);
         }
     }

@@ -24,19 +24,22 @@ namespace DockerDotNet.Core
 
         private string _versionString = string.Empty;
 
+        private JsonSerializerOptions _jsonSerializerOptions;
+
         #endregion
 
         #region Constructor
 
-        public DockerClient() : this(null, null)
-        {
-        }
+        //public DockerClient(JsonSerializerOptions jsonSerializerOptions)
+        //{
+        //}
 
-        public DockerClient(Uri? baseUri = null, System.Version? version = null)
+        public DockerClient(JsonSerializerOptions serializerOptions, Uri? baseUri = null, System.Version? version = null)
         {
             BaseUri = baseUri;
             Version = version;
             _operatingSystem = GetOperatingSystem();
+            _jsonSerializerOptions = serializerOptions;
         }
 
         #endregion
@@ -236,45 +239,66 @@ namespace DockerDotNet.Core
             return string.Join("&", keyValuePairs);
         }
 
-        public string GetMapQuery(IDictionary dictionary)
+        private string GetMapQuery(IDictionary dictionary)
         {
             return System.Text.Json.JsonSerializer.Serialize(dictionary);
         }
 
-        public async Task<(bool, T?, DockerError?)> GetAsync<T>(string endpoint, string queryParameters, JsonSerializerOptions serializerOptions, CancellationToken cancellationToken, HttpContent? requestBody = null)
+        public async Task<(bool, T?, DockerError?)> GetAsync<T>(
+            string endpoint,
+            string queryParameters,
+            CancellationToken cancellationToken,
+            Dictionary<string, string>? headers = null,
+            HttpContent? requestBody = null)
         {
             var client = GetDockerHttpClient();
 
             HttpRequestMessage requestMessage = PrepareHttpRequest(HttpMethod.Get, endpoint, queryParameters, requestBody);
             
-            HttpResponseMessage response = await client.SendAsync(requestMessage, cancellationToken);
+            AddHeadersToRequest(requestMessage, headers);
             
-            return await ProcessResponse<T>(response, serializerOptions, cancellationToken);
+            HttpResponseMessage response = await client.SendAsync(requestMessage, cancellationToken);
+
+            return await ProcessResponse<T>(response, cancellationToken);
         }
 
-        public async Task<(bool, T?, DockerError?)> PostAsync<T>(string endpoint, string queryParameters, JsonSerializerOptions serializerOptions, CancellationToken cancellationToken, HttpContent? body = null)
+        public async Task<(bool, T?, DockerError?)> PostAsync<T>(
+            string endpoint,
+            string queryParameters,
+            CancellationToken cancellationToken,
+            Dictionary<string, string>? headers = null,
+            HttpContent? body = null)
         {
             var client = GetDockerHttpClient();
 
             HttpRequestMessage requestMessage = PrepareHttpRequest(HttpMethod.Post, endpoint, queryParameters, body);
 
+            AddHeadersToRequest(requestMessage, headers);
+
             HttpResponseMessage response = await client.SendAsync(requestMessage, cancellationToken);
 
-            return await ProcessResponse<T>(response, serializerOptions, cancellationToken);
+            return await ProcessResponse<T>(response, cancellationToken);
         }
 
-        public async Task<(bool, T?, DockerError?)> DeleteAsync<T>(string endpoint, string queryParameters, JsonSerializerOptions serializerOptions, CancellationToken cancellationToken, HttpContent? body = null)
+        public async Task<(bool, T?, DockerError?)> DeleteAsync<T>(
+            string endpoint,
+            string queryParameters,
+            CancellationToken cancellationToken,
+            Dictionary<string, string>? headers = null,
+            HttpContent? body = null)
         {
             var client = GetDockerHttpClient();
 
             HttpRequestMessage requestMessage = PrepareHttpRequest(HttpMethod.Delete, endpoint, queryParameters, body);
 
+            AddHeadersToRequest(requestMessage, headers);
+
             HttpResponseMessage responseMessage = await client.SendAsync(requestMessage, cancellationToken);
 
-            return await ProcessResponse<T>(responseMessage, serializerOptions, cancellationToken);
+            return await ProcessResponse<T>(responseMessage, cancellationToken);
         }
 
-        private async Task<(bool, T?, DockerError?)> ProcessResponse<T>(HttpResponseMessage response, JsonSerializerOptions options, CancellationToken cancellationToken)
+        private async Task<(bool, T?, DockerError?)> ProcessResponse<T>(HttpResponseMessage response, CancellationToken cancellationToken)
         {
             if (!response.IsSuccessStatusCode)
             {
@@ -289,12 +313,21 @@ namespace DockerDotNet.Core
             }
             else
             {
-                JsonSerializerOptions options1 = new JsonSerializerOptions(options);
-                content = await response.Content.ReadFromJsonAsync<T>(options1, cancellationToken);
+                JsonSerializerOptions options = new JsonSerializerOptions(_jsonSerializerOptions);
+                content = await response.Content.ReadFromJsonAsync<T>(options, cancellationToken);
             }
             return (true, (T)content, null);
         }
 
+        private void AddHeadersToRequest(HttpRequestMessage requestMessage, Dictionary<string, string>? headers)
+        {
+            if (headers == null) return;
+
+            foreach (var header in headers)
+            {
+                requestMessage.Headers.TryAddWithoutValidation(header.Key, header.Value);
+            }
+        }
     }
 
     public record DockerErrorResponse
@@ -324,3 +357,4 @@ namespace DockerDotNet.Core
         MacOS = 3,
     }
 }
+

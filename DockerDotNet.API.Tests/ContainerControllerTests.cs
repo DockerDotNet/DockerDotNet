@@ -23,7 +23,6 @@ namespace DockerDotNet.API.Tests
 
         public ContainerControllerTests(ITestOutputHelper testOutputHelper) : base(Array.Empty<string>())
         {
-            DockerClient client = new DockerClient();
             _containerService = _host.Services.GetRequiredService<ContainerService>();
             _output = testOutputHelper;
         }
