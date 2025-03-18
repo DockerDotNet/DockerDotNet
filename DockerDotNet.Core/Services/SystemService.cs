@@ -1,0 +1,49 @@
+﻿using DockerDotNet.Core.Models;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http.Json;
+using System.Text;
+using System.Text.Json;
+using System.Threading.Tasks;
+
+namespace DockerDotNet.Core.Services
+{
+    public class SystemService
+    {
+        private readonly DockerClient _dockerClient;
+
+        public SystemService(DockerClient dockerClient)
+        {
+            _dockerClient = dockerClient;
+        }
+
+        public async Task<(bool, Core.Models.SystemVersion?, DockerError?)> GetVersionAsync(CancellationToken cancellationToken)
+        {
+            return await _dockerClient.GetAsync<Core.Models.SystemVersion>("version", string.Empty, cancellationToken);
+        }
+
+        public async Task<(bool, Core.Models.SystemInfo?, DockerError?)> GetInfoAsync(CancellationToken cancellationToken)
+        {
+            return await _dockerClient.GetAsync<Core.Models.SystemInfo>("info", string.Empty, cancellationToken);
+        }
+
+        public async Task<(bool, SystemAuthResponse?, DockerError?)> AuthenticateRegistry(AuthConfig authConfig, CancellationToken cancellationToken)
+        {
+            string query = _dockerClient.GetQueryString(authConfig);
+            return await _dockerClient.PostAsync<SystemAuthResponse>("auth", query, cancellationToken);
+        }
+
+        public async Task<(bool, string?, DockerError?)> Ping_Get(CancellationToken cancellationToken)
+        {
+            return await _dockerClient.GetAsync<string>("_ping", string.Empty, cancellationToken);
+        }
+
+        public async Task<(bool, SystemDataUsageResponse?, DockerError?)> GetDataUsageInformation(CancellationToken cancellationToken)
+        {
+            // TODO: Need to handle the enum configuration
+            return await _dockerClient.GetAsync<SystemDataUsageResponse>("system/df", string.Empty, cancellationToken);
+        }
+    }
+}

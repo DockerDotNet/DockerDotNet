@@ -1,6 +1,12 @@
 ﻿using DockerDotNet.Core;
+using DockerDotNet.Core.Models;
+using DockerDotNet.Core.Services;
+
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+
+using System.Text.Json;
+using System.Threading;
 
 namespace DockerDotNet.APIClient.Controllers
 {
@@ -10,21 +16,52 @@ namespace DockerDotNet.APIClient.Controllers
     {
         DockerClient DockerClient { get; set; }
 
-        public SystemController()
+        private readonly SystemService _systemService;
+
+        public SystemController(DockerClient dockerClient, SystemService systemService)
         {
-            DockerClient = new DockerClient();
+            DockerClient = dockerClient;
+            _systemService = systemService;
+        }
+
+        [HttpGet]
+        [Route("info")]
+        public async Task<IActionResult> GetInfo(CancellationToken cancellationToken)
+        {
+            var (status, response, error) = await _systemService.GetInfoAsync(cancellationToken);
+            return status ? Ok(response) : StatusCode((int)error.StatusCode, error.Message);
         }
 
         [HttpGet]
         [Route("version")]
-        public async Task<string> GetVersion()
+        public async Task<IActionResult> GetVersion(CancellationToken cancellationToken)
         {
-            HttpClient httpClient = DockerClient.GetDockerHttpClient();
+            var (status, response, error) = await _systemService.GetVersionAsync(cancellationToken);
+            return status ? Ok(response) : StatusCode((int)error.StatusCode, error.Message);
+        }
 
-            HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Get, new UriBuilder($"{httpClient.BaseAddress}version").Uri);
-            HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(requestMessage);
+        [HttpPost]
+        [Route("auth")]
+        public async Task<IActionResult> AuthenticateRegistry([FromBody] AuthConfig authConfig, CancellationToken cancellationToken)
+        {
+            var (status, response, error) = await _systemService.AuthenticateRegistry(authConfig, cancellationToken);
+            return status ? Ok(response) : StatusCode((int)error.StatusCode, error.Message);
+        }
 
-            return await httpResponseMessage.Content.ReadAsStringAsync();
+        [HttpGet]
+        [Route("ping")]
+        public async Task<IActionResult> Ping_Get(CancellationToken cancellationToken)
+        {
+            var (status, response, error) = await _systemService.Ping_Get(cancellationToken);
+            return status ? Ok(response) : StatusCode((int)error.StatusCode, error.Message);
+        }
+
+        [HttpGet]
+        [Route("")]
+        public async Task<IActionResult> GetSystemDataUsage(CancellationToken cancellationToken)
+        {
+            var(status, response, error) = await _systemService.GetDataUsageInformation(cancellationToken);
+            return status ? Ok(response) : StatusCode((int)error.StatusCode, error.Message);
         }
     }
 }

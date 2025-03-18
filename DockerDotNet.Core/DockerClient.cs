@@ -1,15 +1,21 @@
 ﻿using System.Collections;
 using System.IO.Pipes;
+using System.Net;
+using System.Net.Http.Json;
 using System.Net.Sockets;
 using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Web;
 using DockerDotNet.Core.Models;
-using Newtonsoft.Json;
 
 namespace DockerDotNet.Core
 {
     public class DockerClient
     {
+        #region Properties
+
         public Uri? BaseUri { get; set; }
 
         public System.Version? Version { get; set; }
@@ -18,16 +24,25 @@ namespace DockerDotNet.Core
 
         private string _versionString = string.Empty;
 
-        public DockerClient() : this(null, null)
-        {
-        }
+        private JsonSerializerOptions _jsonSerializerOptions;
 
-        public DockerClient(Uri? baseUri = null, System.Version? version = null)
+        #endregion
+
+        #region Constructor
+
+        //public DockerClient(JsonSerializerOptions jsonSerializerOptions)
+        //{
+        //}
+
+        public DockerClient(JsonSerializerOptions serializerOptions, Uri? baseUri = null, System.Version? version = null)
         {
             BaseUri = baseUri;
             Version = version;
             _operatingSystem = GetOperatingSystem();
+            _jsonSerializerOptions = serializerOptions;
         }
+
+        #endregion
 
         public HttpClient GetDockerHttpClient()
         {
@@ -141,16 +156,16 @@ namespace DockerDotNet.Core
 
             authConfig = new AuthConfig()
             {
-                ServerAddress = "",
+                Serveraddress = "",
                 Username = "",
                 Password = ""
             };
 
             if (authConfig == null)
             {
-                JsonSerializerSettings serializerSettings = new JsonSerializerSettings();
-                serializerSettings.NullValueHandling = NullValueHandling.Ignore;
-                 resultString = JsonConvert.SerializeObject(authConfig, serializerSettings);
+                JsonSerializerOptions serializerSettings = new JsonSerializerOptions();
+                serializerSettings.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+                 resultString = JsonSerializer.Serialize(authConfig, serializerSettings);
             }
 
             byte[] result =  System.Text.Encoding.UTF8.GetBytes(resultString);
@@ -163,7 +178,7 @@ namespace DockerDotNet.Core
             return finalResult;
         }
 
-        public HttpRequestMessage PrepareHttpRequest(HttpMethod httpMethod, string endpoint, string queryParameters, HttpContent? requestBody = null)
+        public HttpRequestMessage PrepareHttpRequest(HttpMethod httpMethod, string endpoint, string queryParameters, Dictionary<string, string>? headers = null, HttpContent? requestBody = null)
         {
             string uriFormat = $"{BaseUri}{endpoint}";
 
@@ -174,9 +189,9 @@ namespace DockerDotNet.Core
 
             Uri requestUri = new UriBuilder(uriFormat).Uri;
             
-            // need to implement request headers here.
-
             HttpRequestMessage httpRequestMessage = new HttpRequestMessage(httpMethod, requestUri);
+
+            AddHeadersToRequest(httpRequestMessage, headers);
 
             if (requestBody != null)
             {
@@ -202,9 +217,9 @@ namespace DockerDotNet.Core
 
                 // Check if the property has a JsonPropertyName attribute
                 var jsonPropertyNameAttribute = property
-                    .GetCustomAttribute<JsonPropertyAttribute>();
+                    .GetCustomAttribute<JsonPropertyNameAttribute>();
 
-                string propertyName = jsonPropertyNameAttribute?.PropertyName ?? property.Name;
+                string propertyName = jsonPropertyNameAttribute?.Name ?? property.Name;
                 string encodedKey = HttpUtility.UrlEncode(propertyName);
                 string encodedValue = string.Empty;
 
@@ -224,11 +239,108 @@ namespace DockerDotNet.Core
             return string.Join("&", keyValuePairs);
         }
 
-        public string GetMapQuery(IDictionary dictionary)
+        private string GetMapQuery(IDictionary dictionary)
         {
             return System.Text.Json.JsonSerializer.Serialize(dictionary);
         }
 
+        public async Task<(bool, T?, DockerError?)> GetAsync<T>(
+            string endpoint,
+            string queryParameters,
+            CancellationToken cancellationToken,
+            Dictionary<string, string>? headers = null,
+            HttpContent? requestBody = null)
+        {
+            var client = GetDockerHttpClient();
+
+            HttpRequestMessage requestMessage = PrepareHttpRequest(HttpMethod.Get, endpoint, queryParameters, headers, requestBody);
+                        
+            HttpResponseMessage response = await client.SendAsync(requestMessage, cancellationToken);
+
+            return await ProcessResponse<T>(response, cancellationToken);
+        }
+
+        public async Task<(bool, T?, DockerError?)> PostAsync<T>(
+            string endpoint,
+            string queryParameters,
+            CancellationToken cancellationToken,
+            Dictionary<string, string>? headers = null,
+            HttpContent? body = null)
+        {
+            var client = GetDockerHttpClient();
+
+            HttpRequestMessage requestMessage = PrepareHttpRequest(HttpMethod.Post, endpoint, queryParameters, headers, body);
+
+            HttpResponseMessage response = await client.SendAsync(requestMessage, cancellationToken);
+
+            return await ProcessResponse<T>(response, cancellationToken);
+        }
+
+        public async Task<(bool, T?, DockerError?)> DeleteAsync<T>(
+            string endpoint,
+            string queryParameters,
+            CancellationToken cancellationToken,
+            Dictionary<string, string>? headers = null,
+            HttpContent? body = null)
+        {
+            var client = GetDockerHttpClient();
+
+            HttpRequestMessage requestMessage = PrepareHttpRequest(HttpMethod.Delete, endpoint, queryParameters, headers, body);
+
+            HttpResponseMessage responseMessage = await client.SendAsync(requestMessage, cancellationToken);
+
+            return await ProcessResponse<T>(responseMessage, cancellationToken);
+        }
+
+        private async Task<(bool, T?, DockerError?)> ProcessResponse<T>(HttpResponseMessage response, CancellationToken cancellationToken)
+        {
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorContent = await response.Content.ReadFromJsonAsync<DockerErrorResponse>(cancellationToken);
+                return (false, default, new DockerError(response.StatusCode, errorContent.Message));
+            }
+
+            object content;
+            if(typeof(T) == typeof(string))
+            {
+                content = await response.Content.ReadAsStringAsync(cancellationToken);
+            }
+            else
+            {
+                JsonSerializerOptions options = new JsonSerializerOptions(_jsonSerializerOptions);
+                content = await response.Content.ReadFromJsonAsync<T>(options, cancellationToken);
+            }
+            return (true, (T)content, null);
+        }
+
+        private void AddHeadersToRequest(HttpRequestMessage requestMessage, Dictionary<string, string>? headers)
+        {
+            if (headers == null) return;
+
+            foreach (var header in headers)
+            {
+                requestMessage.Headers.TryAddWithoutValidation(header.Key, header.Value);
+            }
+        }
+    }
+
+    public record DockerErrorResponse
+    {
+        public string Message { get; set; } = string.Empty;
+    }
+
+    public class DockerError
+    {
+        public HttpStatusCode StatusCode { get; set; }
+        public string Message { get; set; }
+        public string? Details { get; set; }
+
+        public DockerError(HttpStatusCode statusCode, string message, string? details = null)
+        {
+            StatusCode = statusCode;
+            Message = message;
+            Details = details;
+        }
     }
 
     public enum OSPlatform
@@ -239,3 +351,4 @@ namespace DockerDotNet.Core
         MacOS = 3,
     }
 }
+

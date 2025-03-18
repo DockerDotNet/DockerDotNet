@@ -1,5 +1,6 @@
 using DockerDotNet.Core;
 using DockerDotNet.Core.Services;
+using DockerDotNet.Core.Extensions;
 
 namespace DockerDotNet.APIClient
 {
@@ -11,7 +12,7 @@ namespace DockerDotNet.APIClient
 
             // Add services to the container.
 
-            builder.Services.AddControllers();
+            builder.Services.AddControllers();//.AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = null);
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -23,6 +24,11 @@ namespace DockerDotNet.APIClient
 
             builder.Services.AddScoped<DockerClient>();
             builder.Services.AddScoped<ContainerService>();
+            builder.Services.AddScoped<ImageService>();
+            builder.Services.AddScoped<ExecService>();
+            builder.Services.AddScoped<SystemService>();
+            builder.Services.AddScoped<VolumeService>();
+            builder.Services.AddJsonSerializerOptions();
 
             var app = builder.Build();
 

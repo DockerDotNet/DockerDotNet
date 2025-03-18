@@ -25,7 +25,7 @@ namespace DockerDotNet.API.Tests
         public ExecControllerTests(ITestOutputHelper testOutputHelper)
         {
             _output = testOutputHelper;
-            Controller = new ExecController();
+            //Controller = new ExecController();
             Controller.ControllerContext = new ControllerContext
             {
                 HttpContext = new DefaultHttpContext()

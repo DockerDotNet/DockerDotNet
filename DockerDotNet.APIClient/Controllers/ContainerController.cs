@@ -8,6 +8,7 @@ using System.Text.Json.Serialization;
 using DockerDotNet.Core;
 using DockerDotNet.Core.Models;
 using DockerDotNet.Core.Services;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace DockerDotNet.APIClient.Controllers
 {
@@ -19,9 +20,9 @@ namespace DockerDotNet.APIClient.Controllers
 
         private readonly ContainerService _containerService;
 
-        public ContainerController(ContainerService containerService)
+        public ContainerController(DockerClient dockerClient, ContainerService containerService)
         {
-            _dockerClient = new DockerClient();
+            _dockerClient = dockerClient;
             _containerService = containerService;
         }
 
@@ -31,70 +32,89 @@ namespace DockerDotNet.APIClient.Controllers
         //}
 
         [HttpGet]
-        public async Task<IList<ContainerListResponse>> GetContainers([FromQuery] ContainersListParameters containersListParameters, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetContainers([FromQuery] ContainersListParameters containersListParameters, CancellationToken cancellationToken)
         {
-            return await _containerService.GetContainers(containersListParameters, cancellationToken);
+            var(success, response, error) = await _containerService.GetContainers(containersListParameters, cancellationToken);
+            return success ? Ok(response) : StatusCode((int)error.StatusCode, error.Message);
+            //return await _containerService.GetContainers(containersListParameters, cancellationToken);
         }
 
         [HttpPost]
         [Route("create")]
-        public async Task<CreateContainerResponse> CreateContainer([FromQuery] CreateContainerQueryParameters createContainerQueryParameters, [FromBody] CreateContainerParameters createContainer, CancellationToken cancellationToken)
+        public async Task<IActionResult> CreateContainer([FromQuery] CreateContainerQueryParameters createContainerQueryParameters, [FromBody] ContainerCreateRequest createContainer, CancellationToken cancellationToken)
         {
-            return await _containerService.CreateContainer(createContainerQueryParameters, createContainer, cancellationToken);
+            var(success, response, error) = await _containerService.CreateContainer(createContainerQueryParameters, createContainer, cancellationToken);    
+            return success ? Ok(response) : StatusCode((int)error.StatusCode, error.Message);
         }
 
         [HttpGet]
         [Route("{id}")]
-        public async Task<ContainerInspectResponse> GetContainer(string id, [FromQuery] ContainerInspectParameters containerInspectParameters, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetContainer(string id, [FromQuery] ContainerInspectParameters containerInspectParameters, CancellationToken cancellationToken)
         {
-            return await _containerService.GetContainer(id, containerInspectParameters, cancellationToken);
+            var(success, response, error) = await _containerService.GetContainer(id, containerInspectParameters, cancellationToken);
+            return success? Ok(response) : StatusCode((int)error!.StatusCode, error.Message);
+            //return await _containerService.GetContainer(id, containerInspectParameters, cancellationToken);
         }
 
         [HttpPost]
         [Route("{id}/restart")]
         public async Task<IActionResult> RestartContainer(string id, CancellationToken cancellationToken)
         {
-            return Ok(await _containerService.RestartContainer(id, cancellationToken));
+            var (success, _, error) = await _containerService.RestartContainer(id, cancellationToken);
+            return success ? Ok() : StatusCode((int)error!.StatusCode, error.Message);
         }
 
         [HttpPost]
         [Route("{id}/start")]
         public async Task<IActionResult> StartContainer(string id, CancellationToken cancellationToken)
         {
-            return Ok(await _containerService.StartContainer(id, cancellationToken));
+            var (success, _, error) = await _containerService.StartContainer(id, cancellationToken);
+            return success ? Ok() : StatusCode((int)error!.StatusCode, error.Message);
         }
 
         [HttpPost]
         [Route("{id}/stop")]
         public async Task<IActionResult> StopContainer(string id, CancellationToken cancellationToken)
         {
-            return Ok(await _containerService.StopContainer(id, cancellationToken));
+            var (success, _, error) = await _containerService.StopContainer(id, cancellationToken);
+            return success ? Ok() : StatusCode((int)error!.StatusCode, error.Message);
         }
 
         [HttpPost]
         [Route("{id}/kill")]
         public async Task<IActionResult> KillContainer(string id, CancellationToken cancellationToken)
         {
-            return Ok(await _containerService.KillContainer(id, cancellationToken));
+            var (success, _, error) = await _containerService.KillContainer(id, cancellationToken);
+            return success ? Ok() : StatusCode((int)error!.StatusCode, error.Message);
         }
 
         [HttpPost]
         [Route("{id}/pause")]
         public async Task<IActionResult> PauseContainer(string id, CancellationToken cancellationToken)
         {
-            return Ok(await _containerService.PauseContainer(id, cancellationToken));
+            var (success, _, error) = await _containerService.PauseContainer(id, cancellationToken);
+            return success ? Ok() : StatusCode((int)error!.StatusCode, error.Message);
         }
 
         [HttpPost]
         [Route("{id}/unpause")]
         public async Task<IActionResult> UnpauseContainer(string id, CancellationToken cancellationToken)
         {
-            return Ok(await _containerService.UnpauseContainer(id, cancellationToken));
+            var (success, _, error) = await _containerService.UnpauseContainer(id, cancellationToken);
+            return success ? Ok() : StatusCode((int)error!.StatusCode, error.Message);
+        }
+
+        [HttpDelete]
+        [Route("{id}")]
+        public async Task<IActionResult> DeleteContainer(string id, [FromQuery]ContainerDeleteParameters parameters, CancellationToken cancellationToken)
+        {
+            var (success, _, error) = await _containerService.DeleteContainer(id, parameters, cancellationToken);
+            return success ? Ok() : StatusCode((int)error!.StatusCode, error.Message);
         }
 
         [HttpGet]
         [Route("{id}/logs")]
-        public async Task GetContainerLogs(string id, CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task GetContainerLogs(string id, CancellationToken cancellationToken)
         {
             var (logStream, statusCode, contentType) = await _containerService.GetContainerLogs(id, cancellationToken);
 
@@ -110,7 +130,7 @@ namespace DockerDotNet.APIClient.Controllers
 
         [HttpGet]
         [Route("{id}/stats")]
-        public async Task GetContainerStats(string id, CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task GetContainerStats(string id, CancellationToken cancellationToken)
         {
             var (logStream, statusCode, contentType) = await _containerService.GetContainerStats(id, cancellationToken);
 
@@ -146,9 +166,10 @@ namespace DockerDotNet.APIClient.Controllers
 
         [HttpPost]
         [Route("{id}/exec")]
-        public async Task<ContainerExecCreateResponse> CreateExec(string id, [FromBody] ContainerExecCreateParameters createParameters, CancellationToken cancellationToken)
+        public async Task<IActionResult> CreateExec(string id, [FromBody] ContainerExecCreateParameters createParameters, CancellationToken cancellationToken)
         {
-            return await _containerService.CreateExec(id, createParameters, cancellationToken);
+            var (success, response, error) = await _containerService.CreateExec(id, createParameters, cancellationToken);
+            return success ? Ok(response) : StatusCode((int)error.StatusCode, error.Message);
         }
     }
 }
