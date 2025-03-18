@@ -27,6 +27,7 @@ namespace DockerDotNet.APIClient
             builder.Services.AddScoped<ImageService>();
             builder.Services.AddScoped<ExecService>();
             builder.Services.AddScoped<SystemService>();
+            builder.Services.AddScoped<VolumeService>();
             builder.Services.AddJsonSerializerOptions();
 
             var app = builder.Build();

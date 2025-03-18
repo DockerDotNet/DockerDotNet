@@ -30,6 +30,7 @@ namespace DockerDotNet.API.Tests
                 services.AddScoped<ContainerService>();
                 services.AddScoped<SystemService>();
                 services.AddScoped<ExecService>();
+                services.AddScoped<VolumeService>();
             });
     }
 }
