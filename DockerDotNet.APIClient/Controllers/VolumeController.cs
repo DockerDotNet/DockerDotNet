@@ -25,8 +25,8 @@ namespace DockerDotNet.APIClient.Controllers
         [HttpGet]
         public async Task<IActionResult> GetVolumes([FromQuery] VolumesListParameters volumesListParameters, CancellationToken cancellationToken)
         {
-            var (success, response, error) = await _volumeService.GetVolumes(volumesListParameters, cancellationToken);
-            return success ? Ok(response) : StatusCode((int)error.StatusCode, error.Message);
+            var response = await _volumeService.GetVolumes(volumesListParameters, cancellationToken);
+            return response.Match(Left: error => StatusCode((int)error.StatusCode, error.Message), Right: result => Ok(result));
         }
     }
 }

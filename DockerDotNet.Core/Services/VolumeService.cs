@@ -1,5 +1,7 @@
 ﻿using DockerDotNet.Core.Models;
 
+using LanguageExt;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +19,7 @@ namespace DockerDotNet.Core.Services
             _client = dockerClient;
         }
 
-        public async Task<(bool, VolumeListResponse?, DockerError?)> GetVolumes(VolumesListParameters volumesListParameters, CancellationToken cancellationToken)
+        public async Task<Either<DockerError?, VolumeListResponse?>> GetVolumes(VolumesListParameters volumesListParameters, CancellationToken cancellationToken)
         {
             string query = _client.GetQueryString(volumesListParameters);
             return await _client.GetAsync<VolumeListResponse>("volumes", query, cancellationToken);

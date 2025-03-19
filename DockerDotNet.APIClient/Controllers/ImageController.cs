@@ -23,32 +23,35 @@ namespace DockerDotNet.APIClient.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllImages([FromQuery] ImagesListParameters imagesListParameters, CancellationToken cancellationToken)
         {
-            var(success, response, error) = await _imageService.GetImages(imagesListParameters, cancellationToken);   
-            return success ? Ok(response) : StatusCode((int)error.StatusCode, error.Message);
+            var response = await _imageService.GetImages(imagesListParameters, cancellationToken);   
+            return response.Match(
+                Left: error => StatusCode((int)error.StatusCode, error.Message),
+                Right: result => Ok(result)
+                );
         }
 
         [HttpGet]
         [Route("{name}")]
         public async Task<IActionResult> GetImage(string name, CancellationToken cancellationToken)
         {
-            var(success, response, error) = await _imageService.GetImage(name, cancellationToken);
-            return success ? Ok(response) : StatusCode((int)error.StatusCode, error.Message);
+            var response = await _imageService.GetImage(name, cancellationToken);
+            return response.Match(Left: error => StatusCode((int)error.StatusCode, error.Message), Right: result => Ok(result));
         }
 
         [HttpGet]
         [Route("{name}/history")]
         public async Task<IActionResult> GetImageHistory(string name, CancellationToken cancellationToken)
         {
-            var (success, response, error) = await _imageService.GetImageHistory(name, cancellationToken);
-            return success ? Ok(response) : StatusCode((int)error.StatusCode, error.Message);
+            var response = await _imageService.GetImageHistory(name, cancellationToken);
+            return response.Match(Left: error => StatusCode((int)error.StatusCode, error.Message), Right: result => Ok(result));
         }
 
         [HttpPost]
         [Route("{name}/tag")]
         public async Task<IActionResult> TagImage(string name, ImageTagParameters imageTagParameters, CancellationToken cancellationToken)
         {
-            var (success, response, error) = await _imageService.TagImage(name, imageTagParameters, cancellationToken);
-            return success ? Ok(response) : StatusCode((int)error.StatusCode, error.Message);
+            var response = await _imageService.TagImage(name, imageTagParameters, cancellationToken);
+            return response.Match(Left: error => StatusCode((int)error.StatusCode, error.Message), Right: result => Ok(result));
         }
 
         [HttpPost]

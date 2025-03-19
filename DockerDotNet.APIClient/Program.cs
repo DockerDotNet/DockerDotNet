@@ -45,6 +45,7 @@ namespace DockerDotNet.APIClient
 
             app.UseCors("AllowAll");
 
+            app.UseWebSockets();
             app.MapControllers();
 
             app.Run();

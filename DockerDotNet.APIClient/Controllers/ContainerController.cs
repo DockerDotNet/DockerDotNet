@@ -9,6 +9,9 @@ using DockerDotNet.Core;
 using DockerDotNet.Core.Models;
 using DockerDotNet.Core.Services;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Net.WebSockets;
+using System.Text;
+using LanguageExt.Pipes;
 
 namespace DockerDotNet.APIClient.Controllers
 {
@@ -34,8 +37,12 @@ namespace DockerDotNet.APIClient.Controllers
         [HttpGet]
         public async Task<IActionResult> GetContainers([FromQuery] ContainersListParameters containersListParameters, CancellationToken cancellationToken)
         {
-            var(success, response, error) = await _containerService.GetContainers(containersListParameters, cancellationToken);
-            return success ? Ok(response) : StatusCode((int)error.StatusCode, error.Message);
+            var response = await _containerService.GetContainers(containersListParameters, cancellationToken);
+            return response.Match(
+                Left: error => StatusCode((int)error.StatusCode, error.Message),
+                Right: containers => Ok(containers)
+                );
+            //return success ? Ok(response) : StatusCode((int)error.StatusCode, error.Message);
             //return await _containerService.GetContainers(containersListParameters, cancellationToken);
         }
 
@@ -43,89 +50,114 @@ namespace DockerDotNet.APIClient.Controllers
         [Route("create")]
         public async Task<IActionResult> CreateContainer([FromQuery] CreateContainerQueryParameters createContainerQueryParameters, [FromBody] ContainerCreateRequest createContainer, CancellationToken cancellationToken)
         {
-            var(success, response, error) = await _containerService.CreateContainer(createContainerQueryParameters, createContainer, cancellationToken);    
-            return success ? Ok(response) : StatusCode((int)error.StatusCode, error.Message);
+            var response = await _containerService.CreateContainer(createContainerQueryParameters, createContainer, cancellationToken);    
+            return response.Match(
+                Left: error => StatusCode((int)error.StatusCode, error.Message),
+                Right: containers => Ok(containers)
+                );
         }
 
         [HttpGet]
         [Route("{id}")]
         public async Task<IActionResult> GetContainer(string id, [FromQuery] ContainerInspectParameters containerInspectParameters, CancellationToken cancellationToken)
         {
-            var(success, response, error) = await _containerService.GetContainer(id, containerInspectParameters, cancellationToken);
-            return success? Ok(response) : StatusCode((int)error!.StatusCode, error.Message);
-            //return await _containerService.GetContainer(id, containerInspectParameters, cancellationToken);
+            var response = await _containerService.GetContainer(id, containerInspectParameters, cancellationToken);
+            return response.Match(
+                Left: error => StatusCode((int)error!.StatusCode, error.Message),
+                Right: containers => Ok(containers)
+            );
         }
 
         [HttpPost]
         [Route("{id}/restart")]
         public async Task<IActionResult> RestartContainer(string id, CancellationToken cancellationToken)
         {
-            var (success, _, error) = await _containerService.RestartContainer(id, cancellationToken);
-            return success ? Ok() : StatusCode((int)error!.StatusCode, error.Message);
+            var response = await _containerService.RestartContainer(id, cancellationToken);
+            return response.Match(
+                Left: error => StatusCode((int)error.StatusCode, error.Message),
+                Right: result => Ok(null)
+                );
         }
 
         [HttpPost]
         [Route("{id}/start")]
         public async Task<IActionResult> StartContainer(string id, CancellationToken cancellationToken)
         {
-            var (success, _, error) = await _containerService.StartContainer(id, cancellationToken);
-            return success ? Ok() : StatusCode((int)error!.StatusCode, error.Message);
+            var response = await _containerService.StartContainer(id, cancellationToken);
+            return response.Match(
+                Left: error => StatusCode((int)error.StatusCode, error.Message),
+                Right: result => Ok(null)
+                );
         }
 
         [HttpPost]
         [Route("{id}/stop")]
         public async Task<IActionResult> StopContainer(string id, CancellationToken cancellationToken)
         {
-            var (success, _, error) = await _containerService.StopContainer(id, cancellationToken);
-            return success ? Ok() : StatusCode((int)error!.StatusCode, error.Message);
+            var response = await _containerService.StopContainer(id, cancellationToken);
+            return response.Match(
+                Left: error => StatusCode((int)error.StatusCode, error.Message),
+                Right: result => Ok(null)
+                );
         }
 
         [HttpPost]
         [Route("{id}/kill")]
         public async Task<IActionResult> KillContainer(string id, CancellationToken cancellationToken)
         {
-            var (success, _, error) = await _containerService.KillContainer(id, cancellationToken);
-            return success ? Ok() : StatusCode((int)error!.StatusCode, error.Message);
+            var response = await _containerService.KillContainer(id, cancellationToken);
+            return response.Match(
+                Left: error => StatusCode((int)error.StatusCode, error.Message),
+                Right: result => Ok(null)
+                );
         }
 
         [HttpPost]
         [Route("{id}/pause")]
         public async Task<IActionResult> PauseContainer(string id, CancellationToken cancellationToken)
         {
-            var (success, _, error) = await _containerService.PauseContainer(id, cancellationToken);
-            return success ? Ok() : StatusCode((int)error!.StatusCode, error.Message);
+            var response = await _containerService.PauseContainer(id, cancellationToken);
+            return response.Match(
+                Left: error => StatusCode((int)error.StatusCode, error.Message),
+                Right: result => Ok(null)
+                );
         }
 
         [HttpPost]
         [Route("{id}/unpause")]
         public async Task<IActionResult> UnpauseContainer(string id, CancellationToken cancellationToken)
         {
-            var (success, _, error) = await _containerService.UnpauseContainer(id, cancellationToken);
-            return success ? Ok() : StatusCode((int)error!.StatusCode, error.Message);
+            var response = await _containerService.UnpauseContainer(id, cancellationToken);
+            return response.Match(
+                Left: error => StatusCode((int)error.StatusCode, error.Message),
+                Right: result => Ok(null)
+                );
         }
 
         [HttpDelete]
         [Route("{id}")]
         public async Task<IActionResult> DeleteContainer(string id, [FromQuery]ContainerDeleteParameters parameters, CancellationToken cancellationToken)
         {
-            var (success, _, error) = await _containerService.DeleteContainer(id, parameters, cancellationToken);
-            return success ? Ok() : StatusCode((int)error!.StatusCode, error.Message);
+            var response = await _containerService.DeleteContainer(id, parameters, cancellationToken);
+            return response.Match(
+                Left: error => StatusCode((int)error.StatusCode, error.Message),
+                Right: result => Ok(null)
+                );
         }
 
         [HttpGet]
         [Route("{id}/logs")]
-        public async System.Threading.Tasks.Task GetContainerLogs(string id, CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task GetContainerLogs(string id, [FromQuery]ContainerLogsParameters parameters, CancellationToken cancellationToken)
         {
-            var (logStream, statusCode, contentType) = await _containerService.GetContainerLogs(id, cancellationToken);
-
-            Response.StatusCode = (int)statusCode;
-            Response.ContentType = contentType;
-
-            if (logStream != null)
+            if (!HttpContext.WebSockets.IsWebSocketRequest)
             {
-                await logStream.CopyToAsync(Response.Body, cancellationToken);
-                await Response.Body.FlushAsync(cancellationToken);
+                HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+                await HttpContext.Response.WriteAsync("Expected a WebSocket request.");
+                return;
             }
+            using var webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
+
+            var (success, stream, error) = await _containerService.GetContainerLogs(id, parameters, webSocket, cancellationToken);
         }
 
         [HttpGet]
@@ -168,8 +200,11 @@ namespace DockerDotNet.APIClient.Controllers
         [Route("{id}/exec")]
         public async Task<IActionResult> CreateExec(string id, [FromBody] ContainerExecCreateParameters createParameters, CancellationToken cancellationToken)
         {
-            var (success, response, error) = await _containerService.CreateExec(id, createParameters, cancellationToken);
-            return success ? Ok(response) : StatusCode((int)error.StatusCode, error.Message);
+            var response = await _containerService.CreateExec(id, createParameters, cancellationToken);
+            return response.Match(
+                Left: error => StatusCode((int)error.StatusCode, error.Message),
+                Right: result => Ok(result)
+                );
         }
     }
 }

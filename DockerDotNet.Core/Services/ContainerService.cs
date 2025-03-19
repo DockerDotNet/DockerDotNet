@@ -9,6 +9,8 @@ using System.Text.Json.Serialization;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Net;
+using System.Net.WebSockets;
+using LanguageExt;
 
 namespace DockerDotNet.Core.Services
 {
@@ -21,88 +23,112 @@ namespace DockerDotNet.Core.Services
             _dockerClient = dockerClient;
         }
 
-        public async Task<(bool, IList<ContainerSummary>?, DockerError?)> GetContainers(ContainersListParameters parameters, CancellationToken cancellationToken)
+        public async Task<Either<DockerError?, IList<ContainerSummary>?>> GetContainers(ContainersListParameters parameters, CancellationToken cancellationToken)
         {
             string queryString = _dockerClient.GetQueryString(parameters);
             return await _dockerClient.GetAsync<IList<ContainerSummary>>("containers/json", queryString,  cancellationToken);
         }
 
-        public async Task<(bool, ContainerInspectResponse?, DockerError?)> GetContainer(string id, ContainerInspectParameters queryParameters, CancellationToken cancellationToken)
+        public async Task<Either<DockerError?, ContainerInspectResponse?>> GetContainer(string id, ContainerInspectParameters queryParameters, CancellationToken cancellationToken)
         {
             string parameters = _dockerClient.GetQueryString(queryParameters);
             return await _dockerClient.GetAsync<ContainerInspectResponse>($"containers/{id}/json", parameters,  cancellationToken);
         }
 
-        public async Task<(bool, ContainerCreateResponse?, DockerError?)> CreateContainer(CreateContainerQueryParameters createContainerQueryParameters, ContainerCreateRequest createContainer, CancellationToken cancellationToken)
+        public async Task<Either<DockerError?, ContainerCreateResponse?>> CreateContainer(CreateContainerQueryParameters createContainerQueryParameters, ContainerCreateRequest createContainer, CancellationToken cancellationToken)
         {
             string queryString = _dockerClient.GetQueryString(createContainerQueryParameters);
             return await _dockerClient.PostAsync<ContainerCreateResponse>("containers/create", queryString,  cancellationToken, body: JsonContent.Create(createContainer));
         }
 
-        public async Task<(bool ,string?, DockerError?)> DeleteContainer(string id, ContainerDeleteParameters containerDeleteParameters, CancellationToken cancellationToken)
+        public async Task<Either<DockerError?, string?>> DeleteContainer(string id, ContainerDeleteParameters containerDeleteParameters, CancellationToken cancellationToken)
         {
             string queryString = _dockerClient.GetQueryString(containerDeleteParameters);
             return await _dockerClient.DeleteAsync<string>($"containers/{id}", queryString,  cancellationToken);
         }
 
-        public async Task<(bool, string?, DockerError?)> RestartContainer(string id, CancellationToken cancellationToken)
+        public async Task<Either<DockerError?, string?>> RestartContainer(string id, CancellationToken cancellationToken)
         {
             return await _dockerClient.PostAsync<string>($"containers/{id}/restart", string.Empty,  cancellationToken);
         }
 
-        public async Task<(bool, string?, DockerError?)> StartContainer(string id, CancellationToken cancellationToken)
+        public async Task<Either<DockerError?, string?>> StartContainer(string id, CancellationToken cancellationToken)
         {
             return await _dockerClient.PostAsync<string>($"containers/{id}/start", string.Empty,  cancellationToken);
         }
 
-        public async Task<(bool, string?, DockerError?)> StopContainer(string id, CancellationToken cancellationToken)
+        public async Task<Either<DockerError?, string?>> StopContainer(string id, CancellationToken cancellationToken)
         {
             return await _dockerClient.PostAsync<string>($"containers/{id}/stop", string.Empty, cancellationToken);
         }
 
-        public async Task<(bool, string?, DockerError?)> KillContainer(string id, CancellationToken cancellationToken)
+        public async Task<Either<DockerError?, string?>> KillContainer(string id, CancellationToken cancellationToken)
         {
             return await _dockerClient.PostAsync<string>($"containers/{id}/kill", string.Empty,  cancellationToken);
         }
 
-        public async Task<(bool, string?, DockerError?)> PauseContainer(string id, CancellationToken cancellationToken)
+        public async Task<Either<DockerError?, string?>> PauseContainer(string id, CancellationToken cancellationToken)
         {
             return await _dockerClient.PostAsync<string>($"containers/{id}/pause", string.Empty,  cancellationToken);
         }
 
-        public async Task<(bool, string?, DockerError?)> UnpauseContainer(string id, CancellationToken cancellationToken)
+        public async Task<Either<DockerError?, string?>> UnpauseContainer(string id, CancellationToken cancellationToken)
         {
             return await _dockerClient.PostAsync<string>($"containers/{id}/unpause", string.Empty,  cancellationToken);
         }
 
-        public async Task<(bool, ContainerExecCreateResponse?, DockerError?)> CreateExec(string id, ContainerExecCreateParameters createParameters, CancellationToken cancellationToken)
+        public async Task<Either<DockerError?, ContainerExecCreateResponse?>> CreateExec(string id, ContainerExecCreateParameters createParameters, CancellationToken cancellationToken)
         {
             return await _dockerClient.PostAsync<ContainerExecCreateResponse>($"containers/{id}/exec", string.Empty,  cancellationToken, body: JsonContent.Create(createParameters));
         }
 
-        public async Task<(Stream?, HttpStatusCode, string)> GetContainerLogs(string id, CancellationToken cancellationToken)
+        public async Task<(bool, Stream?, DockerError?)> GetContainerLogs(string id, ContainerLogsParameters parameters, WebSocket webSocket, CancellationToken cancellationToken)
         {
             try
             {
-                HttpClient httpClient = _dockerClient.GetDockerHttpClient();
+                string query = _dockerClient.GetQueryString(parameters);
+                var (success, logStream, contentType, error) = await _dockerClient.GetStreamAsync($"containers/{id}/logs", query, cancellationToken);
 
-                HttpRequestMessage requestMessage = _dockerClient.PrepareHttpRequest(HttpMethod.Get, $"containers/{id}/logs?follow=true&stdout=true&tail=50", string.Empty);
+                if (success && contentType == "application/vnd.docker.multiplexed-stream")
+                {
+                    var dockerStreamReader = new StreamReader(logStream!);
 
-                HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+                    // Task to forward Docker output to WebSocket
+                    var sendTask = System.Threading.Tasks.Task.Run(async () =>
+                    {
+                        var buffer = new byte[16384];
+                        while (!dockerStreamReader.EndOfStream && webSocket.State == WebSocketState.Open)
+                        {
+                            string readLine = await dockerStreamReader.ReadLineAsync();
+                            if (string.IsNullOrEmpty(readLine)) break;
+                            var bytes = Encoding.ASCII.GetBytes(readLine);
 
-                string contentType = httpResponseMessage.Content.Headers.ContentType?.ToString() ?? "application/octet-stream";
+                            await webSocket.SendAsync(bytes[8..], WebSocketMessageType.Text, true, cancellationToken);
+                        }
+                    });
 
-                return  (await httpResponseMessage.Content.ReadAsStreamAsync(cancellationToken), httpResponseMessage.StatusCode, contentType);
+                    await System.Threading.Tasks.Task.WhenAll(sendTask);
+
+                    await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Session ended", CancellationToken.None);
+
+                    return (true, logStream, null);
+                }
+                else
+                {
+                    return (false, null, new DockerError(HttpStatusCode.InternalServerError, "Need to implement"));
+                }
+
+                
             }
             catch (OperationCanceledException ex)
             {
                 Console.WriteLine(ex.ToString());
-                return (null, HttpStatusCode.RequestTimeout, "application/octet-stream");
+                return (false, null, new DockerError(HttpStatusCode.RequestTimeout, ex.Message));
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
-                return (null, HttpStatusCode.InternalServerError, "application/octet-stream");
+                return (false, null, new DockerError(HttpStatusCode.InternalServerError, ex.Message));
             }
         }
 

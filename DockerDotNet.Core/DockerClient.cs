@@ -10,6 +10,10 @@ using System.Text.Json.Serialization;
 using System.Web;
 using DockerDotNet.Core.Models;
 
+using LanguageExt;
+
+using Task = System.Threading.Tasks.Task;
+
 namespace DockerDotNet.Core
 {
     public class DockerClient
@@ -244,7 +248,7 @@ namespace DockerDotNet.Core
             return System.Text.Json.JsonSerializer.Serialize(dictionary);
         }
 
-        public async Task<(bool, T?, DockerError?)> GetAsync<T>(
+        public async Task<Either<DockerError?, T?>> GetAsync<T>(
             string endpoint,
             string queryParameters,
             CancellationToken cancellationToken,
@@ -260,7 +264,7 @@ namespace DockerDotNet.Core
             return await ProcessResponse<T>(response, cancellationToken);
         }
 
-        public async Task<(bool, T?, DockerError?)> PostAsync<T>(
+        public async Task<Either<DockerError?, T?>> PostAsync<T>(
             string endpoint,
             string queryParameters,
             CancellationToken cancellationToken,
@@ -276,7 +280,7 @@ namespace DockerDotNet.Core
             return await ProcessResponse<T>(response, cancellationToken);
         }
 
-        public async Task<(bool, T?, DockerError?)> DeleteAsync<T>(
+        public async Task<Either<DockerError?, T?>> DeleteAsync<T>(
             string endpoint,
             string queryParameters,
             CancellationToken cancellationToken,
@@ -292,12 +296,46 @@ namespace DockerDotNet.Core
             return await ProcessResponse<T>(responseMessage, cancellationToken);
         }
 
-        private async Task<(bool, T?, DockerError?)> ProcessResponse<T>(HttpResponseMessage response, CancellationToken cancellationToken)
+        public async Task<(bool, Stream?, string, DockerError?)> GetStreamAsync(
+            string endpoint,
+            string queryParameters,
+            CancellationToken cancellationToken)
+        {
+            var client = GetDockerHttpClient();
+
+            HttpRequestMessage requestMessage = PrepareHttpRequest(HttpMethod.Get, endpoint, queryParameters);
+
+            HttpResponseMessage response = await client.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+
+            return await ProcessStreamResponse<Stream>(response, cancellationToken);
+        }
+
+        private async Task<(bool, Stream?, string, DockerError?)> ProcessStreamResponse<T>(HttpResponseMessage response, CancellationToken cancellationToken)
+        {
+            string contentType = response.Content.Headers.ContentType.ToString();
+
+            if(response.IsSuccessStatusCode)
+            {
+                Stream stream = await response.Content.ReadAsStreamAsync();
+                return (true, stream, contentType, null);
+            }
+
+            if (contentType == "application/json")
+            {
+                var errorContent = await response.Content.ReadFromJsonAsync<DockerErrorResponse>(cancellationToken);
+                return (false, null, contentType, new DockerError(response.StatusCode, errorContent.Message));
+            }
+
+            return (false, default,  default, new DockerError(response.StatusCode, "Unable to handle string"));
+            
+        }
+
+        private async Task<Either<DockerError?, T?>> ProcessResponse<T>(HttpResponseMessage response, CancellationToken cancellationToken)
         {
             if (!response.IsSuccessStatusCode)
             {
                 var errorContent = await response.Content.ReadFromJsonAsync<DockerErrorResponse>(cancellationToken);
-                return (false, default, new DockerError(response.StatusCode, errorContent.Message));
+                return new DockerError(response.StatusCode, errorContent.Message);
             }
 
             object content;
@@ -305,12 +343,16 @@ namespace DockerDotNet.Core
             {
                 content = await response.Content.ReadAsStringAsync(cancellationToken);
             }
+            //else if(typeof(T) == typeof(Stream))
+            //{
+            //    content = await response.
+            //}
             else
             {
                 JsonSerializerOptions options = new JsonSerializerOptions(_jsonSerializerOptions);
                 content = await response.Content.ReadFromJsonAsync<T>(options, cancellationToken);
             }
-            return (true, (T)content, null);
+            return (T)content;
         }
 
         private void AddHeadersToRequest(HttpRequestMessage requestMessage, Dictionary<string, string>? headers)
