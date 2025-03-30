@@ -1,7 +1,6 @@
-using Newtonsoft.Json;
-
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace DockerDotNet.Core.Models
 {
@@ -9,10 +8,10 @@ namespace DockerDotNet.Core.Models
     public class ContainersListParameters // (main.ContainersListParameters)
     {
         //[QueryStringParameter("size", false, typeof(BoolQueryStringConverter))]
-        [JsonProperty("size")]
+        [JsonPropertyName("size")]
         public bool? Size { get; set; }
 
-        [JsonProperty("all")]
+        [JsonPropertyName("all")]
         //[QueryStringParameter("all", false, typeof(BoolQueryStringConverter))]
         public bool? All { get; set; }
 
@@ -23,11 +22,11 @@ namespace DockerDotNet.Core.Models
         //public string Before { get; set; }
 
         //[QueryStringParameter("limit", false)]
-        [JsonProperty("limit")]
+        [JsonPropertyName("limit")]
         public long? Limit { get; set; }
 
         //[QueryStringParameter("filters", false, typeof(MapQueryStringConverter))]
-        [JsonProperty("filters")]
+        [JsonPropertyName("filters")]
         public IDictionary<string, IDictionary<string, bool>>? Filters { get; set; }
     }
 }
