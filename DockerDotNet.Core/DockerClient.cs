@@ -9,7 +9,6 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Web;
 using DockerDotNet.Core.Models;
-using Newtonsoft.Json;
 
 namespace DockerDotNet.Core
 {
@@ -218,9 +217,9 @@ namespace DockerDotNet.Core
 
                 // Check if the property has a JsonPropertyName attribute
                 var jsonPropertyNameAttribute = property
-                    .GetCustomAttribute<JsonPropertyAttribute>();
+                    .GetCustomAttribute<JsonPropertyNameAttribute>();
 
-                string propertyName = jsonPropertyNameAttribute?.PropertyName ?? property.Name;
+                string propertyName = jsonPropertyNameAttribute?.Name ?? property.Name;
                 string encodedKey = HttpUtility.UrlEncode(propertyName);
                 string encodedValue = string.Empty;
 
@@ -235,7 +234,7 @@ namespace DockerDotNet.Core
                     //encodedValue = HttpUtility.UrlEncode(value.ToString());
                     encodedValue = value?.ToString();
                 }
-                keyValuePairs.Add($"{Uri.EscapeDataString(encodedKey)}={Uri.EscapeDataString(encodedValue)}");
+                keyValuePairs.Add($"{Uri.EscapeUriString(encodedKey)}={Uri.EscapeDataString(encodedValue)}");
             }
             return string.Join("&", keyValuePairs);
         }
