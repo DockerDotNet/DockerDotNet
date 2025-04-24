@@ -35,15 +35,14 @@ namespace DockerDotNet.APIClient.Controllers
         //}
 
         [HttpGet]
-        public async Task<IActionResult> GetContainers([FromQuery] ContainersListParameters containersListParameters, CancellationToken cancellationToken)
+        [ProducesResponseType(typeof(IList<ContainerSummary>),200)]
+        public async Task<ActionResult> GetContainers([FromQuery] ContainersListParameters containersListParameters, CancellationToken cancellationToken)
         {
             var response = await _containerService.GetContainers(containersListParameters, cancellationToken);
             return response.Match(
                 Left: error => StatusCode((int)error.StatusCode, error.Message),
                 Right: containers => Ok(containers)
                 );
-            //return success ? Ok(response) : StatusCode((int)error.StatusCode, error.Message);
-            //return await _containerService.GetContainers(containersListParameters, cancellationToken);
         }
 
         [HttpPost]
@@ -162,18 +161,17 @@ namespace DockerDotNet.APIClient.Controllers
 
         [HttpGet]
         [Route("{id}/stats")]
-        public async System.Threading.Tasks.Task GetContainerStats(string id, CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task GetContainerStats(string id, [FromQuery]ContainerStatsParameters parameters, CancellationToken cancellationToken)
         {
-            var (logStream, statusCode, contentType) = await _containerService.GetContainerStats(id, cancellationToken);
-
-            Response.StatusCode = (int)statusCode;
-            Response.ContentType = contentType;
-
-            if (logStream != null)
+            if (!HttpContext.WebSockets.IsWebSocketRequest)
             {
-                await logStream.CopyToAsync(Response.Body, cancellationToken);
-                await Response.Body.FlushAsync(cancellationToken);
+                HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+                await HttpContext.Response.WriteAsync("Expected a WebSocket request.");
+                return;
             }
+            using var webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
+
+            var (success, stream, error) = await _containerService.GetContainerStats(id, parameters, webSocket, cancellationToken);
         }
 
         [HttpPost]

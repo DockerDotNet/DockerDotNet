@@ -132,29 +132,52 @@ namespace DockerDotNet.Core.Services
             }
         }
 
-        public async Task<(Stream?, HttpStatusCode, string)> GetContainerStats(string id, CancellationToken cancellationToken)
+        public async Task<(bool, Stream?, DockerError?)> GetContainerStats(string id, ContainerStatsParameters parameters, WebSocket webSocket, CancellationToken cancellationToken)
         {
             try
             {
-                HttpClient httpClient = _dockerClient.GetDockerHttpClient();
+                string query = _dockerClient.GetQueryString(parameters);
 
-                HttpRequestMessage requestMessage = _dockerClient.PrepareHttpRequest(HttpMethod.Get, $"containers/{id}/stats?stream=true", string.Empty);
+                var (success, logStream, contentType, error) = await _dockerClient.GetStreamAsync($"containers/{id}/stats", query, cancellationToken);
 
-                HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+                if (success && contentType == "application/vnd.docker.multiplexed-stream")
+                {
+                    var dockerStreamReader = new StreamReader(logStream!);
 
-                string contentType = httpResponseMessage.Content.Headers.ContentType?.ToString() ?? "application/octet-stream";
+                    // Task to forward Docker output to WebSocket
+                    var sendTask = System.Threading.Tasks.Task.Run(async () =>
+                    {
+                        var buffer = new byte[16384];
+                        while (!dockerStreamReader.EndOfStream && webSocket.State == WebSocketState.Open)
+                        {
+                            string readLine = await dockerStreamReader.ReadLineAsync();
+                            if (string.IsNullOrEmpty(readLine)) break;
+                            var bytes = Encoding.ASCII.GetBytes(readLine);
 
-                return (await httpResponseMessage.Content.ReadAsStreamAsync(cancellationToken), httpResponseMessage.StatusCode, contentType);
+                            await webSocket.SendAsync(bytes[8..], WebSocketMessageType.Text, true, cancellationToken);
+                        }
+                    });
+
+                    await System.Threading.Tasks.Task.WhenAll(sendTask);
+
+                    await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Session ended", CancellationToken.None);
+
+                    return (true, logStream, null);
+                }
+                else
+                {
+                    return (false, null, new DockerError(HttpStatusCode.InternalServerError, "Need to implement"));
+                }
             }
             catch (OperationCanceledException ex)
             {
                 Console.WriteLine(ex.ToString());
-                return (null, HttpStatusCode.RequestTimeout, "application/octet-stream");
+                return (false, null, new DockerError(HttpStatusCode.RequestTimeout, ex.Message));
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
-                return (null, HttpStatusCode.InternalServerError, "application/octet-stream");
+                return (false, null, new DockerError(HttpStatusCode.InternalServerError, ex.Message));
             }
         }
     }

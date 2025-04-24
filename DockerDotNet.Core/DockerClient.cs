@@ -291,9 +291,9 @@ namespace DockerDotNet.Core
 
             HttpRequestMessage requestMessage = PrepareHttpRequest(HttpMethod.Delete, endpoint, queryParameters, headers, body);
 
-            HttpResponseMessage responseMessage = await client.SendAsync(requestMessage, cancellationToken);
+            HttpResponseMessage response = await client.SendAsync(requestMessage, cancellationToken);
 
-            return await ProcessResponse<T>(responseMessage, cancellationToken);
+            return await ProcessResponse<T>(response, cancellationToken);
         }
 
         public async Task<(bool, Stream?, string, DockerError?)> GetStreamAsync(
@@ -302,17 +302,17 @@ namespace DockerDotNet.Core
             CancellationToken cancellationToken)
         {
             var client = GetDockerHttpClient();
-
+            
             HttpRequestMessage requestMessage = PrepareHttpRequest(HttpMethod.Get, endpoint, queryParameters);
 
             HttpResponseMessage response = await client.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
 
-            return await ProcessStreamResponse<Stream>(response, cancellationToken);
+            return await ProcessStreamResponse<Stream?>(response, cancellationToken);
         }
 
         private async Task<(bool, Stream?, string, DockerError?)> ProcessStreamResponse<T>(HttpResponseMessage response, CancellationToken cancellationToken)
         {
-            string contentType = response.Content.Headers.ContentType.ToString();
+            string? contentType = response.Content.Headers.ContentType?.ToString();
 
             if(response.IsSuccessStatusCode)
             {
