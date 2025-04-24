@@ -316,7 +316,7 @@ namespace DockerDotNet.Core
 
             if(response.IsSuccessStatusCode)
             {
-                Stream stream = await response.Content.ReadAsStreamAsync();
+                Stream stream = await response.Content.ReadAsStreamAsync(cancellationToken);
                 return (true, stream, contentType, null);
             }
 
@@ -326,7 +326,7 @@ namespace DockerDotNet.Core
                 return (false, null, contentType, new DockerError(response.StatusCode, errorContent.Message));
             }
 
-            return (false, default,  default, new DockerError(response.StatusCode, "Unable to handle string"));
+            return (false, default, default, new DockerError(response.StatusCode, "Unable to handle string"));
             
         }
 

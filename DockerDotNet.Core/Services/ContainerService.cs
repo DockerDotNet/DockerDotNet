@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Net.WebSockets;
 using LanguageExt;
+using System.Runtime.CompilerServices;
 
 namespace DockerDotNet.Core.Services
 {
@@ -138,11 +139,11 @@ namespace DockerDotNet.Core.Services
             {
                 string query = _dockerClient.GetQueryString(parameters);
 
-                var (success, logStream, contentType, error) = await _dockerClient.GetStreamAsync($"containers/{id}/stats", query, cancellationToken);
+                var (success, statStream, contentType, error) = await _dockerClient.GetStreamAsync($"containers/{id}/stats", query, cancellationToken);
 
                 if (success && contentType == "application/vnd.docker.multiplexed-stream")
                 {
-                    var dockerStreamReader = new StreamReader(logStream!);
+                    var dockerStreamReader = new StreamReader(statStream!);
 
                     // Task to forward Docker output to WebSocket
                     var sendTask = System.Threading.Tasks.Task.Run(async () =>
@@ -156,13 +157,25 @@ namespace DockerDotNet.Core.Services
 
                             await webSocket.SendAsync(bytes[8..], WebSocketMessageType.Text, true, cancellationToken);
                         }
-                    });
+                    }, cancellationToken);
 
                     await System.Threading.Tasks.Task.WhenAll(sendTask);
 
                     await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Session ended", CancellationToken.None);
 
-                    return (true, logStream, null);
+                    return (true, statStream, null);
+                }
+                else if (success)
+                {
+                    string statsString = string.Empty;
+                    await foreach (var stats in ReadStatsAsync(statStream, cancellationToken))
+                    {
+                        var line = JsonSerializer.Serialize(stats) + "\n";
+                        statsString += line;
+                        //await ctx.Response.WriteAsync(line, cancellationToken);
+                        //await ctx.Response.Body.FlushAsync(cancellationToken); // nudge TCP
+                    }
+                    return (true, statStream, null);
                 }
                 else
                 {
@@ -178,6 +191,25 @@ namespace DockerDotNet.Core.Services
             {
                 Console.WriteLine(ex.ToString());
                 return (false, null, new DockerError(HttpStatusCode.InternalServerError, ex.Message));
+            }
+        }
+
+        public static async IAsyncEnumerable<ContainerStatsResponse> ReadStatsAsync(
+            Stream stream,
+            [EnumeratorCancellation] CancellationToken ct = default)
+        {
+            using var reader = new StreamReader(stream, leaveOpen: false);
+
+            string? line;
+            while ((line = await reader.ReadLineAsync(ct)) is not null)
+            {
+                if (line.Length is 0) continue; // keep‑alive ping
+
+                ContainerStatsResponse? stats =
+                    JsonSerializer.Deserialize<ContainerStatsResponse>(line);
+
+                if (stats is not null)
+                    yield return stats;
             }
         }
     }
