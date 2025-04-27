@@ -38,7 +38,7 @@ namespace DockerDotNet.Core.Models
         /// <param name="writeCountNormalized">writeCountNormalized</param>
         /// <param name="writeSizeBytes">writeSizeBytes</param>
         [JsonConstructor]
-        public ContainerStorageStats(Option<int?> readCountNormalized = default, Option<int?> readSizeBytes = default, Option<int?> writeCountNormalized = default, Option<int?> writeSizeBytes = default)
+        public ContainerStorageStats(Option<ulong?> readCountNormalized = default, Option<ulong?> readSizeBytes = default, Option<ulong?> writeCountNormalized = default, Option<ulong?> writeSizeBytes = default)
         {
             ReadCountNormalizedOption = readCountNormalized;
             ReadSizeBytesOption = readSizeBytes;
@@ -54,56 +54,56 @@ namespace DockerDotNet.Core.Models
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> ReadCountNormalizedOption { get; private set; }
+        public Option<ulong?> ReadCountNormalizedOption { get; private set; }
 
         /// <summary>
         /// Gets or Sets ReadCountNormalized
         /// </summary>
         /* <example>7593984</example> */
         [JsonPropertyName("read_count_normalized")]
-        public int? ReadCountNormalized { get { return this.ReadCountNormalizedOption; } set { this.ReadCountNormalizedOption = new(value); } }
+        public ulong? ReadCountNormalized { get { return this.ReadCountNormalizedOption; } set { this.ReadCountNormalizedOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of ReadSizeBytes
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> ReadSizeBytesOption { get; private set; }
+        public Option<ulong?> ReadSizeBytesOption { get; private set; }
 
         /// <summary>
         /// Gets or Sets ReadSizeBytes
         /// </summary>
         /* <example>7593984</example> */
         [JsonPropertyName("read_size_bytes")]
-        public int? ReadSizeBytes { get { return this.ReadSizeBytesOption; } set { this.ReadSizeBytesOption = new(value); } }
+        public ulong? ReadSizeBytes { get { return this.ReadSizeBytesOption; } set { this.ReadSizeBytesOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of WriteCountNormalized
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> WriteCountNormalizedOption { get; private set; }
+        public Option<ulong?> WriteCountNormalizedOption { get; private set; }
 
         /// <summary>
         /// Gets or Sets WriteCountNormalized
         /// </summary>
         /* <example>7593984</example> */
         [JsonPropertyName("write_count_normalized")]
-        public int? WriteCountNormalized { get { return this.WriteCountNormalizedOption; } set { this.WriteCountNormalizedOption = new(value); } }
+        public ulong? WriteCountNormalized { get { return this.WriteCountNormalizedOption; } set { this.WriteCountNormalizedOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of WriteSizeBytes
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> WriteSizeBytesOption { get; private set; }
+        public Option<ulong?> WriteSizeBytesOption { get; private set; }
 
         /// <summary>
         /// Gets or Sets WriteSizeBytes
         /// </summary>
         /* <example>7593984</example> */
         [JsonPropertyName("write_size_bytes")]
-        public int? WriteSizeBytes { get { return this.WriteSizeBytesOption; } set { this.WriteSizeBytesOption = new(value); } }
+        public ulong? WriteSizeBytes { get { return this.WriteSizeBytesOption; } set { this.WriteSizeBytesOption = new(value); } }
 
         /// <summary>
         /// Returns the string presentation of the object
@@ -154,10 +154,10 @@ namespace DockerDotNet.Core.Models
 
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
-            Option<int?> readCountNormalized = default;
-            Option<int?> readSizeBytes = default;
-            Option<int?> writeCountNormalized = default;
-            Option<int?> writeSizeBytes = default;
+            Option<ulong?> readCountNormalized = default;
+            Option<ulong?> readSizeBytes = default;
+            Option<ulong?> writeCountNormalized = default;
+            Option<ulong?> writeSizeBytes = default;
 
             while (utf8JsonReader.Read())
             {
@@ -176,19 +176,19 @@ namespace DockerDotNet.Core.Models
                     {
                         case "read_count_normalized":
                             if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                readCountNormalized = new Option<int?>(utf8JsonReader.GetInt32());
+                                readCountNormalized = new Option<ulong?>(utf8JsonReader.GetUInt64());
                             break;
                         case "read_size_bytes":
                             if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                readSizeBytes = new Option<int?>(utf8JsonReader.GetInt32());
+                                readSizeBytes = new Option<ulong?>(utf8JsonReader.GetUInt64());
                             break;
                         case "write_count_normalized":
                             if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                writeCountNormalized = new Option<int?>(utf8JsonReader.GetInt32());
+                                writeCountNormalized = new Option<ulong?>(utf8JsonReader.GetUInt64());
                             break;
                         case "write_size_bytes":
                             if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                writeSizeBytes = new Option<int?>(utf8JsonReader.GetInt32());
+                                writeSizeBytes = new Option<ulong?>(utf8JsonReader.GetUInt64());
                             break;
                         default:
                             break;

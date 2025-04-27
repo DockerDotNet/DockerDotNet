@@ -38,7 +38,7 @@ namespace DockerDotNet.Core.Models
         /// <param name="onlineCpus">Number of online CPUs.  This field is Linux-specific and omitted for Windows containers. </param>
         /// <param name="throttlingData">throttlingData</param>
         [JsonConstructor]
-        public ContainerCPUStats(Option<ContainerCPUUsage?> cpuUsage = default, Option<int?> systemCpuUsage = default, Option<int?> onlineCpus = default, Option<ContainerThrottlingData?> throttlingData = default)
+        public ContainerCPUStats(Option<ContainerCPUUsage?> cpuUsage = default, Option<ulong?> systemCpuUsage = default, Option<uint?> onlineCpus = default, Option<ContainerThrottlingData?> throttlingData = default)
         {
             CpuUsageOption = cpuUsage;
             SystemCpuUsageOption = systemCpuUsage;
@@ -67,7 +67,7 @@ namespace DockerDotNet.Core.Models
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> SystemCpuUsageOption { get; private set; }
+        public Option<ulong?> SystemCpuUsageOption { get; private set; }
 
         /// <summary>
         /// System Usage.  This field is Linux-specific and omitted for Windows containers. 
@@ -75,14 +75,14 @@ namespace DockerDotNet.Core.Models
         /// <value>System Usage.  This field is Linux-specific and omitted for Windows containers. </value>
         /* <example>5</example> */
         [JsonPropertyName("system_cpu_usage")]
-        public int? SystemCpuUsage { get { return this.SystemCpuUsageOption; } set { this.SystemCpuUsageOption = new(value); } }
+        public ulong? SystemCpuUsage { get { return this.SystemCpuUsageOption; } set { this.SystemCpuUsageOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of OnlineCpus
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> OnlineCpusOption { get; private set; }
+        public Option<uint?> OnlineCpusOption { get; private set; }
 
         /// <summary>
         /// Number of online CPUs.  This field is Linux-specific and omitted for Windows containers. 
@@ -90,7 +90,7 @@ namespace DockerDotNet.Core.Models
         /// <value>Number of online CPUs.  This field is Linux-specific and omitted for Windows containers. </value>
         /* <example>5</example> */
         [JsonPropertyName("online_cpus")]
-        public int? OnlineCpus { get { return this.OnlineCpusOption; } set { this.OnlineCpusOption = new(value); } }
+        public uint? OnlineCpus { get { return this.OnlineCpusOption; } set { this.OnlineCpusOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of ThrottlingData
@@ -155,8 +155,8 @@ namespace DockerDotNet.Core.Models
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
             Option<ContainerCPUUsage?> cpuUsage = default;
-            Option<int?> systemCpuUsage = default;
-            Option<int?> onlineCpus = default;
+            Option<ulong?> systemCpuUsage = default;
+            Option<uint?> onlineCpus = default;
             Option<ContainerThrottlingData?> throttlingData = default;
 
             while (utf8JsonReader.Read())
@@ -180,11 +180,11 @@ namespace DockerDotNet.Core.Models
                             break;
                         case "system_cpu_usage":
                             if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                systemCpuUsage = new Option<int?>(utf8JsonReader.GetInt32());
+                                systemCpuUsage = new Option<ulong?>(utf8JsonReader.GetUInt64());
                             break;
                         case "online_cpus":
                             if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                onlineCpus = new Option<int?>(utf8JsonReader.GetInt32());
+                                onlineCpus = new Option<uint?>(utf8JsonReader.GetUInt32());
                             break;
                         case "throttling_data":
                             if (utf8JsonReader.TokenType != JsonTokenType.Null)

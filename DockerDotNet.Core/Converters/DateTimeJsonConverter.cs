@@ -11,6 +11,7 @@ using System;
 using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
 
 namespace DockerDotNet.Core.Converters
 {
@@ -55,12 +56,29 @@ namespace DockerDotNet.Core.Converters
                 throw new NotSupportedException();
 
             string value = reader.GetString()!;
+            value = NormalizeFractionalSeconds(value);
 
             foreach(string format in Formats)
                 if (DateTime.TryParseExact(value, format, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal | DateTimeStyles.AssumeUniversal, out DateTime result))
                     return result;
 
             throw new NotSupportedException();
+        }
+
+        private static string NormalizeFractionalSeconds(string input)
+        {
+            // Looks for .<digits>Z or .<digits>+hh:mm or -hh:mm
+            var match = Regex.Match(input, @"\.(\d{7,})(Z|[\+\-]\d{2}:\d{2})");
+
+            if (match.Success)
+            {
+                var fractional = match.Groups[1].Value.Substring(0, 7); // take only 7 digits
+                var timezone = match.Groups[2].Value;
+                var start = input.Substring(0, match.Index);
+                return $"{start}.{fractional}{timezone}";
+            }
+
+            return input; // no change needed
         }
 
         /// <summary>

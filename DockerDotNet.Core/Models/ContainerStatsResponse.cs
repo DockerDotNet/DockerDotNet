@@ -46,7 +46,7 @@ namespace DockerDotNet.Core.Models
         /// <param name="memoryStats">memoryStats</param>
         /// <param name="networks">Network statistics for the container per interface.  This field is omitted if the container has no networking enabled. </param>
         [JsonConstructor]
-        public ContainerStatsResponse(Option<string?> name = default, Option<string?> id = default, Option<DateTime?> read = default, Option<DateTime?> preread = default, Option<ContainerPidsStats?> pidsStats = default, Option<ContainerBlkioStats?> blkioStats = default, Option<int?> numProcs = default, Option<ContainerStorageStats?> storageStats = default, Option<ContainerCPUStats?> cpuStats = default, Option<ContainerCPUStats?> precpuStats = default, Option<ContainerMemoryStats?> memoryStats = default, Option<Object?> networks = default)
+        public ContainerStatsResponse(Option<string?> name = default, Option<string?> id = default, Option<DateTime?> read = default, Option<DateTime?> preread = default, Option<ContainerPidsStats?> pidsStats = default, Option<ContainerBlkioStats?> blkioStats = default, Option<uint?> numProcs = default, Option<ContainerStorageStats?> storageStats = default, Option<ContainerCPUStats?> cpuStats = default, Option<ContainerCPUStats?> precpuStats = default, Option<ContainerMemoryStats?> memoryStats = default, Option<Object?> networks = default)
         {
             NameOption = name;
             IdOption = id;
@@ -156,7 +156,7 @@ namespace DockerDotNet.Core.Models
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> NumProcsOption { get; private set; }
+        public Option<uint?> NumProcsOption { get; private set; }
 
         /// <summary>
         /// The number of processors on the system.  This field is Windows-specific and always zero for Linux containers. 
@@ -164,7 +164,7 @@ namespace DockerDotNet.Core.Models
         /// <value>The number of processors on the system.  This field is Windows-specific and always zero for Linux containers. </value>
         /* <example>16</example> */
         [JsonPropertyName("num_procs")]
-        public int? NumProcs { get { return this.NumProcsOption; } set { this.NumProcsOption = new(value); } }
+        public uint? NumProcs { get { return this.NumProcsOption; } set { this.NumProcsOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of StorageStats
@@ -305,7 +305,7 @@ namespace DockerDotNet.Core.Models
             Option<DateTime?> preread = default;
             Option<ContainerPidsStats?> pidsStats = default;
             Option<ContainerBlkioStats?> blkioStats = default;
-            Option<int?> numProcs = default;
+            Option<uint?> numProcs = default;
             Option<ContainerStorageStats?> storageStats = default;
             Option<ContainerCPUStats?> cpuStats = default;
             Option<ContainerCPUStats?> precpuStats = default;
@@ -351,7 +351,7 @@ namespace DockerDotNet.Core.Models
                             break;
                         case "num_procs":
                             if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                numProcs = new Option<int?>(utf8JsonReader.GetInt32());
+                                numProcs = new Option<uint?>(utf8JsonReader.GetUInt32());
                             break;
                         case "storage_stats":
                             if (utf8JsonReader.TokenType != JsonTokenType.Null)

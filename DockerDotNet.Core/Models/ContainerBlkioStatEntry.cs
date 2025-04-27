@@ -38,7 +38,7 @@ namespace DockerDotNet.Core.Models
         /// <param name="op">op</param>
         /// <param name="value">value</param>
         [JsonConstructor]
-        public ContainerBlkioStatEntry(Option<int?> major = default, Option<int?> minor = default, Option<string?> op = default, Option<int?> value = default)
+        public ContainerBlkioStatEntry(Option<ulong?> major = default, Option<ulong?> minor = default, Option<string?> op = default, Option<ulong?> value = default)
         {
             MajorOption = major;
             MinorOption = minor;
@@ -54,28 +54,28 @@ namespace DockerDotNet.Core.Models
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> MajorOption { get; private set; }
+        public Option<ulong?> MajorOption { get; private set; }
 
         /// <summary>
         /// Gets or Sets Major
         /// </summary>
         /* <example>254</example> */
         [JsonPropertyName("major")]
-        public int? Major { get { return this.MajorOption; } set { this.MajorOption = new(value); } }
+        public ulong? Major { get { return this.MajorOption; } set { this.MajorOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of Minor
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> MinorOption { get; private set; }
+        public Option<ulong?> MinorOption { get; private set; }
 
         /// <summary>
         /// Gets or Sets Minor
         /// </summary>
         /* <example>0</example> */
         [JsonPropertyName("minor")]
-        public int? Minor { get { return this.MinorOption; } set { this.MinorOption = new(value); } }
+        public ulong? Minor { get { return this.MinorOption; } set { this.MinorOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of Op
@@ -96,14 +96,14 @@ namespace DockerDotNet.Core.Models
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> ValueOption { get; private set; }
+        public Option<ulong?> ValueOption { get; private set; }
 
         /// <summary>
         /// Gets or Sets Value
         /// </summary>
         /* <example>7593984</example> */
         [JsonPropertyName("value")]
-        public int? Value { get { return this.ValueOption; } set { this.ValueOption = new(value); } }
+        public ulong? Value { get { return this.ValueOption; } set { this.ValueOption = new(value); } }
 
         /// <summary>
         /// Returns the string presentation of the object
@@ -154,10 +154,10 @@ namespace DockerDotNet.Core.Models
 
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
-            Option<int?> major = default;
-            Option<int?> minor = default;
+            Option<ulong?> major = default;
+            Option<ulong?> minor = default;
             Option<string?> op = default;
-            Option<int?> value = default;
+            Option<ulong?> value = default;
 
             while (utf8JsonReader.Read())
             {
@@ -176,18 +176,18 @@ namespace DockerDotNet.Core.Models
                     {
                         case "major":
                             if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                major = new Option<int?>(utf8JsonReader.GetInt32());
+                                major = new Option<ulong?>(utf8JsonReader.GetUInt64());
                             break;
                         case "minor":
                             if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                minor = new Option<int?>(utf8JsonReader.GetInt32());
+                                minor = new Option<ulong?>(utf8JsonReader.GetUInt64());
                             break;
                         case "op":
                             op = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
                         case "value":
                             if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                value = new Option<int?>(utf8JsonReader.GetInt32());
+                                value = new Option<ulong?>(utf8JsonReader.GetUInt64());
                             break;
                         default:
                             break;

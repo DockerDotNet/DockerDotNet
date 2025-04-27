@@ -64,7 +64,7 @@ namespace DockerDotNet.Core
             }
 
             httpClient = new HttpClient(handler);
-            httpClient.BaseAddress =new UriBuilder("http", BaseUri.Segments.Last()).Uri; ;   
+            httpClient.BaseAddress =new UriBuilder("http", BaseUri.Segments.Last()).Uri;   
             BaseUri = httpClient.BaseAddress;
 
             return httpClient;

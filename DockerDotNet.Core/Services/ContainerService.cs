@@ -18,10 +18,12 @@ namespace DockerDotNet.Core.Services
     public class ContainerService
     {
         private readonly DockerClient _dockerClient;
+        private readonly JsonSerializerOptions jsonSerializerOptions;
 
-        public ContainerService(DockerClient dockerClient)
+        public ContainerService(DockerClient dockerClient, JsonSerializerOptions jsonSerializerOptions)
         {
             _dockerClient = dockerClient;
+            this.jsonSerializerOptions = jsonSerializerOptions;
         }
 
         public async Task<Either<DockerError?, IList<ContainerSummary>?>> GetContainers(ContainersListParameters parameters, CancellationToken cancellationToken)
@@ -167,14 +169,28 @@ namespace DockerDotNet.Core.Services
                 }
                 else if (success)
                 {
-                    string statsString = string.Empty;
-                    await foreach (var stats in ReadStatsAsync(statStream, cancellationToken))
+                    //string statsString = string.Empty;
+                    var sendTask = System.Threading.Tasks.Task.Run(async () =>
                     {
-                        var line = JsonSerializer.Serialize(stats) + "\n";
-                        statsString += line;
-                        //await ctx.Response.WriteAsync(line, cancellationToken);
-                        //await ctx.Response.Body.FlushAsync(cancellationToken); // nudge TCP
-                    }
+                        await foreach (var stats in ReadStatsAsync(statStream, cancellationToken))
+                        {
+                            string line = JsonSerializer.Serialize(stats) + "\n";
+
+                            if(string.IsNullOrWhiteSpace(line)) continue;
+                            var bytes = Encoding.ASCII.GetBytes(line);
+
+                            await webSocket.SendAsync(bytes, WebSocketMessageType.Text, true, cancellationToken);
+
+                            //statsString += line;
+                            //await ctx.Response.WriteAsync(line, cancellationToken);
+                            //await ctx.Response.Body.FlushAsync(cancellationToken); // nudge TCP
+                        }
+                    }, cancellationToken);
+
+                    await System.Threading.Tasks.Task.WhenAll(sendTask);
+
+                    await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Session ended", CancellationToken.None);
+
                     return (true, statStream, null);
                 }
                 else
@@ -194,7 +210,7 @@ namespace DockerDotNet.Core.Services
             }
         }
 
-        public static async IAsyncEnumerable<ContainerStatsResponse> ReadStatsAsync(
+        public async IAsyncEnumerable<ContainerStatsResponse> ReadStatsAsync(
             Stream stream,
             [EnumeratorCancellation] CancellationToken ct = default)
         {
@@ -206,7 +222,7 @@ namespace DockerDotNet.Core.Services
                 if (line.Length is 0) continue; // keep‑alive ping
 
                 ContainerStatsResponse? stats =
-                    JsonSerializer.Deserialize<ContainerStatsResponse>(line);
+                    JsonSerializer.Deserialize<ContainerStatsResponse>(line, jsonSerializerOptions);
 
                 if (stats is not null)
                     yield return stats;
