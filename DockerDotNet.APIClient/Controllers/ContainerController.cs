@@ -151,7 +151,7 @@ namespace DockerDotNet.APIClient.Controllers
             if (!HttpContext.WebSockets.IsWebSocketRequest)
             {
                 HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
-                await HttpContext.Response.WriteAsync("Expected a WebSocket request.");
+                await HttpContext.Response.WriteAsync("Expected a WebSocket request.", cancellationToken: cancellationToken);
                 return;
             }
             using var webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();

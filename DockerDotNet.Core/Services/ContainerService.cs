@@ -143,31 +143,7 @@ namespace DockerDotNet.Core.Services
 
                 var (success, statStream, contentType, error) = await _dockerClient.GetStreamAsync($"containers/{id}/stats", query, cancellationToken);
 
-                if (success && contentType == "application/vnd.docker.multiplexed-stream")
-                {
-                    var dockerStreamReader = new StreamReader(statStream!);
-
-                    // Task to forward Docker output to WebSocket
-                    var sendTask = System.Threading.Tasks.Task.Run(async () =>
-                    {
-                        var buffer = new byte[16384];
-                        while (!dockerStreamReader.EndOfStream && webSocket.State == WebSocketState.Open)
-                        {
-                            string readLine = await dockerStreamReader.ReadLineAsync();
-                            if (string.IsNullOrEmpty(readLine)) break;
-                            var bytes = Encoding.ASCII.GetBytes(readLine);
-
-                            await webSocket.SendAsync(bytes[8..], WebSocketMessageType.Text, true, cancellationToken);
-                        }
-                    }, cancellationToken);
-
-                    await System.Threading.Tasks.Task.WhenAll(sendTask);
-
-                    await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Session ended", CancellationToken.None);
-
-                    return (true, statStream, null);
-                }
-                else if (success)
+                if (success)
                 {
                     //string statsString = string.Empty;
                     var sendTask = System.Threading.Tasks.Task.Run(async () =>

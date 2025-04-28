@@ -28,6 +28,6 @@ namespace DockerDotNet.Core.Models
         public bool TimeStamps { get; set; }
 
         [JsonPropertyName("tail")]
-        public string Tail { get; set; }
+        public string? Tail { get; set; }
     }
 }
