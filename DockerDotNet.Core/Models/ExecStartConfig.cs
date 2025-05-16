@@ -35,8 +35,6 @@ namespace DockerDotNet.Core.Models
         /// </summary>
         /// <param name="detach">Detach from the command.</param>
         /// <param name="tty">Allocate a pseudo-TTY.</param>
-        /// <param name="consoleSize">Initial console size, as an &#x60;[height, width]&#x60; array.</param>
-        [JsonConstructor]
         public ExecStartConfig(Option<bool?> detach = default, Option<bool?> tty = default, Option<List<int>?> consoleSize = default)
         {
             DetachOption = detach;
@@ -45,6 +43,11 @@ namespace DockerDotNet.Core.Models
             OnCreated();
         }
 
+        [JsonConstructor]
+        public ExecStartConfig()
+        {
+
+        }
         partial void OnCreated();
 
         /// <summary>
@@ -90,6 +93,7 @@ namespace DockerDotNet.Core.Models
         /// <value>Initial console size, as an &#x60;[height, width]&#x60; array.</value>
         /* <example>[80, 64]</example> */
         [JsonPropertyName("ConsoleSize")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public List<int>? ConsoleSize { get { return this.ConsoleSizeOption; } set { this.ConsoleSizeOption = new(value); } }
 
         /// <summary>

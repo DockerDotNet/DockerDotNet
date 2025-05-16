@@ -44,7 +44,7 @@ namespace DockerDotNet.Core.Models
         /// <param name="privileged">Runs the exec process with extended privileges. (default to false)</param>
         /// <param name="user">The user, and optionally, group to run the exec process inside the container. Format is one of: &#x60;user&#x60;, &#x60;user:group&#x60;, &#x60;uid&#x60;, or &#x60;uid:gid&#x60;. </param>
         /// <param name="workingDir">The working directory for the exec process inside the container. </param>
-        [JsonConstructor]
+        
         public ExecConfig(Option<bool?> attachStdin = default, Option<bool?> attachStdout = default, Option<bool?> attachStderr = default, Option<List<int>?> consoleSize = default, Option<string?> detachKeys = default, Option<bool?> tty = default, Option<List<string>?> env = default, Option<List<string>?> cmd = default, Option<bool?> privileged = default, Option<string?> user = default, Option<string?> workingDir = default)
         {
             AttachStdinOption = attachStdin;
@@ -59,6 +59,12 @@ namespace DockerDotNet.Core.Models
             UserOption = user;
             WorkingDirOption = workingDir;
             OnCreated();
+        }
+
+        [JsonConstructor]
+        public ExecConfig()
+        {
+
         }
 
         partial void OnCreated();

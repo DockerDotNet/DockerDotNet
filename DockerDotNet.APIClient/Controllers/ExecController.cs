@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Text.Json.Serialization;
 
 using System.Text.Json;
+using DockerDotNet.Core.Services;
 
 namespace DockerDotNet.APIClient.Controllers
 {
@@ -14,35 +15,43 @@ namespace DockerDotNet.APIClient.Controllers
     [ApiController]
     public class ExecController : ControllerBase
     {
+        private readonly ExecService execService;
+
         DockerClient DockerClient { get; set; }
 
-        public ExecController(DockerClient dockerClient)
+        public ExecController(DockerClient dockerClient, ExecService execService)
         {
             DockerClient = dockerClient;
-        }
-
-        [HttpGet]
-        [Route("{id}")]
-        public async System.Threading.Tasks.Task<ContainerExecInspectResponse> InspectExecInstance(string id, CancellationToken cancellationToken)
-        {
-            using HttpClient httpClient = DockerClient.GetDockerHttpClient();
-            HttpRequestMessage requestMessage = DockerClient.PrepareHttpRequest(HttpMethod.Get, $"exec/{id}/json", string.Empty);
-
-            HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(requestMessage, cancellationToken);
-            httpResponseMessage.EnsureSuccessStatusCode();
-
-            JsonSerializerOptions jsonSerializerOptions = new JsonSerializerOptions();
-            jsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-            ContainerExecInspectResponse? responseContent = await httpResponseMessage.Content.ReadFromJsonAsync<ContainerExecInspectResponse>(jsonSerializerOptions, cancellationToken);
-
-            return responseContent;
+            this.execService = execService;
         }
 
         [HttpPost]
+        [Route("{id}")]
+        //[ProducesDefaultResponseType(typeof(ContainerExecCreateResponse))]
+        public async Task<IActionResult> CreateExecInstance(string id, [FromBody]ExecConfig execConfig, CancellationToken cancellationToken)
+        {
+            var response = await execService.CreateExec(id, execConfig, cancellationToken);
+            return response.Match(
+                Left: error => StatusCode((int)error.StatusCode, error.Message),
+                Right: exec => Ok(exec)
+                );
+        }
+
+        [HttpGet]
         [Route("{id}/start")]
-        public async System.Threading.Tasks.Task StartExecInstance(string id, CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task StartExecInstance(string id, [FromQuery]ExecStartConfig parameters, CancellationToken cancellationToken)
         {
             // TODO: Merge the changes from Attach branch
+            if (!HttpContext.WebSockets.IsWebSocketRequest)
+            {
+                HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+                await HttpContext.Response.WriteAsync("Expected a WebSocket request.", cancellationToken: cancellationToken);
+                return;
+            }
+            using var webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
+
+            var (success, stream, error) = await execService.StartExecInstance(id, parameters, webSocket, cancellationToken);
+
         }
     }
 }

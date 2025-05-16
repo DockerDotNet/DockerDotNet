@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.IO.Pipes;
 using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Net.Sockets;
 using System.Reflection;
@@ -11,6 +12,7 @@ using System.Web;
 using DockerDotNet.Core.Models;
 
 using LanguageExt;
+using LanguageExt.Pipes;
 
 using Task = System.Threading.Tasks.Task;
 
@@ -299,7 +301,8 @@ namespace DockerDotNet.Core
         public async Task<(bool, Stream?, string, DockerError?)> GetStreamAsync(
             string endpoint,
             string queryParameters,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken,
+            HttpContent? body = null)
         {
             var client = GetDockerHttpClient();
             
@@ -310,11 +313,29 @@ namespace DockerDotNet.Core
             return await ProcessStreamResponse<Stream?>(response, cancellationToken);
         }
 
+        public async Task<(bool, Stream?, string, DockerError?)> PostStreamAsync(
+            string endpoint,
+            string queryParameters,
+            CancellationToken cancellationToken,
+            HttpContent? body = null)
+        {
+            var client = GetDockerHttpClient();
+
+            HttpRequestMessage requestMessage = PrepareHttpRequest(HttpMethod.Post, endpoint, queryParameters, requestBody: body);
+
+            requestMessage.Headers.Connection.Add("Upgrade");
+            requestMessage.Headers.Upgrade.Add(new ProductHeaderValue("hijack"));
+
+            HttpResponseMessage response = await client.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+
+            return await ProcessStreamResponse<Stream?>(response, cancellationToken);
+        }
+
         private async Task<(bool, Stream?, string, DockerError?)> ProcessStreamResponse<T>(HttpResponseMessage response, CancellationToken cancellationToken)
         {
             string? contentType = response.Content.Headers.ContentType?.ToString();
 
-            if(response.IsSuccessStatusCode)
+            if(response.IsSuccessStatusCode || response.StatusCode == HttpStatusCode.SwitchingProtocols)
             {
                 Stream stream = await response.Content.ReadAsStreamAsync(cancellationToken);
                 return (true, stream, contentType, null);
@@ -343,10 +364,6 @@ namespace DockerDotNet.Core
             {
                 content = await response.Content.ReadAsStringAsync(cancellationToken);
             }
-            //else if(typeof(T) == typeof(Stream))
-            //{
-            //    content = await response.
-            //}
             else
             {
                 JsonSerializerOptions options = new JsonSerializerOptions(_jsonSerializerOptions);
