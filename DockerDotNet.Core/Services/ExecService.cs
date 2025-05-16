@@ -32,13 +32,17 @@ namespace DockerDotNet.Core.Services
         {
             try
             {
+                bool isTty = execStartConfig.Tty.GetValueOrDefault();
                 //string query = _dockerClient.GetQueryString(execStartConfig);
                 var (success, execStream, contentType, error) = await _dockerClient.PostStreamAsync($"exec/{id}/start", string.Empty, cancellationToken, body: JsonContent.Create(execStartConfig));
                 if (success)
                 {
                     var dockerToWebSocket = System.Threading.Tasks.Task.Run(async () =>
                     {
-                        await ReadMultiplexedStreamAsync(execStream, webSocket, cancellationToken);
+                        if (isTty)
+                            await ReadRawStreamAsync(execStream, webSocket, cancellationToken);
+                        else
+                            await ReadMultiplexedStreamAsync(execStream, webSocket, cancellationToken);
                     }, cancellationToken);
 
                     var webSocketToDocker = System.Threading.Tasks.Task.Run(async () =>
@@ -50,19 +54,27 @@ namespace DockerDotNet.Core.Services
                             if (result.MessageType == WebSocketMessageType.Close)
                                 break;
 
+                            // Handle input
                             var text = Encoding.UTF8.GetString(buffer, 0, result.Count).Replace("\r\n", "\n").Replace("\r", "\n");
                             if (!text.EndsWith("\n")) text += "\n";
                             var payload = Encoding.UTF8.GetBytes(text);
 
-                            // Docker expects raw input to be prefixed with header: stream ID 0
-                            var streamHeader = new byte[8];
-                            streamHeader[0] = 0; // stdin
-                            var lengthBytes = BitConverter.GetBytes(IPAddress.HostToNetworkOrder(result.Count));
-                            Array.Copy(lengthBytes, 0, streamHeader, 4, 4);
+                            if (isTty)
+                            {
+                                await execStream.WriteAsync(payload.AsMemory(0, payload.Length), cancellationToken);
+                            }
+                            else
+                            {
+                                // Docker expects raw input to be prefixed with header: stream ID 0
+                                var streamHeader = new byte[8];
+                                streamHeader[0] = 0; // stdin
+                                var lengthBytes = BitConverter.GetBytes(IPAddress.HostToNetworkOrder(result.Count));
+                                Array.Copy(lengthBytes, 0, streamHeader, 4, 4);
 
-                            // somehow, not passing the header makes multiplexed stream work
-                            //await execStream.WriteAsync(streamHeader, cancellationToken);
-                            await execStream.WriteAsync(payload.AsMemory(0, payload.Length), cancellationToken);
+                                // somehow, not passing the header makes multiplexed stream work
+                                //await execStream.WriteAsync(streamHeader, cancellationToken);
+                                await execStream.WriteAsync(payload.AsMemory(0, payload.Length), cancellationToken);
+                            }
                             await execStream.FlushAsync(cancellationToken);
                         }
                     }, cancellationToken);
@@ -118,5 +130,20 @@ namespace DockerDotNet.Core.Services
             }
         }
 
+        public async System.Threading.Tasks.Task ReadRawStreamAsync(
+        Stream dockerStream,
+        WebSocket ws,
+        CancellationToken ct)
+        {
+            var buf = new byte[8192];
+            while (!ct.IsCancellationRequested && ws.State == WebSocketState.Open)
+            {
+                int r = await dockerStream.ReadAsync(buf, ct);
+                if (r == 0) break;
+                await ws.SendAsync(buf.AsMemory(0, r), WebSocketMessageType.Binary, true, ct);
+            }
+            if (ws.State == WebSocketState.Open)
+                await ws.CloseAsync(WebSocketCloseStatus.NormalClosure, "EOF", ct);
+        }
     }
 }
