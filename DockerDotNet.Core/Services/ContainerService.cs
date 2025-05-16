@@ -12,6 +12,7 @@ using System.Net;
 using System.Net.WebSockets;
 using LanguageExt;
 using System.Runtime.CompilerServices;
+using DockerDotNet.Core.Helpers;
 
 namespace DockerDotNet.Core.Services
 {
@@ -19,11 +20,13 @@ namespace DockerDotNet.Core.Services
     {
         private readonly DockerClient _dockerClient;
         private readonly JsonSerializerOptions jsonSerializerOptions;
+        private readonly StreamHelper streamHelper;
 
-        public ContainerService(DockerClient dockerClient, JsonSerializerOptions jsonSerializerOptions)
+        public ContainerService(DockerClient dockerClient, JsonSerializerOptions jsonSerializerOptions, StreamHelper streamHelper)
         {
             _dockerClient = dockerClient;
             this.jsonSerializerOptions = jsonSerializerOptions;
+            this.streamHelper = streamHelper;
         }
 
         public async Task<Either<DockerError?, IList<ContainerSummary>?>> GetContainers(ContainersListParameters parameters, CancellationToken cancellationToken)
@@ -94,28 +97,8 @@ namespace DockerDotNet.Core.Services
 
                 if (success && contentType == "application/vnd.docker.multiplexed-stream")
                 {
-                    await ReadMultiplexedStreamAsync(logStream, webSocket, cancellationToken);
-                    //var dockerStreamReader = new StreamReader(logStream!);
-
-
-                    // Task to forward Docker output to WebSocket
-                    //var sendTask = System.Threading.Tasks.Task.Run(async () =>
-                    //{
-                    //    var buffer = new byte[16384];
-                    //    while (!dockerStreamReader.EndOfStream && webSocket.State == WebSocketState.Open)
-                    //    {
-                    //        string readLine = await dockerStreamReader.ReadLineAsync();
-                    //        if (string.IsNullOrEmpty(readLine)) break;
-                    //        var bytes = Encoding.ASCII.GetBytes(readLine);
-
-                    //        await webSocket.SendAsync(bytes[8..], WebSocketMessageType.Text, true, cancellationToken);
-                    //    }
-                    //}, cancellationToken);
-
-                    //await sendTask;
-
-                    //await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Session ended", CancellationToken.None);
-
+                    await streamHelper.ReadMultiplexedStreamAsync(logStream, webSocket, cancellationToken);
+                    
                     return (true, logStream, null);
                 }
                 else
@@ -201,36 +184,6 @@ namespace DockerDotNet.Core.Services
                     yield return stats;
             }
         }
-
-        public async System.Threading.Tasks.Task ReadMultiplexedStreamAsync(Stream dockerStream, WebSocket clientWebSocket, CancellationToken ct)
-        {
-            while (!ct.IsCancellationRequested && clientWebSocket.State == WebSocketState.Open)
-            {
-                var header = new byte[8];
-                int read = await dockerStream.ReadAsync(header, 0, 8, ct);
-                if (read == 0) break; // End of stream
-
-                int payloadLength = IPAddress.NetworkToHostOrder(BitConverter.ToInt32(header, 4));
-                int streamType = header[0]; // 0: stdin, 1: stdout, 2: stderr
-
-                var payload = new byte[payloadLength];
-                read = 0;
-                while (read < payloadLength)
-                {
-                    int r = await dockerStream.ReadAsync(payload, read, payloadLength - read, ct);
-                    if (r == 0) break;
-                    read += r;
-                }
-
-                await clientWebSocket.SendAsync(payload, WebSocketMessageType.Text, true, ct);
-            }
-
-            if (clientWebSocket.State == WebSocketState.Open)
-            {
-                await clientWebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Stream complete", ct);
-            }
-        }
-
     }
 }
 

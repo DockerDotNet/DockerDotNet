@@ -1,6 +1,7 @@
 using DockerDotNet.Core;
 using DockerDotNet.Core.Services;
 using DockerDotNet.Core.Extensions;
+using DockerDotNet.Core.Helpers;
 
 namespace DockerDotNet.APIClient
 {
@@ -23,6 +24,7 @@ namespace DockerDotNet.APIClient
             });
 
             builder.Services.AddScoped<DockerClient>();
+            builder.Services.AddScoped<StreamHelper>();
             builder.Services.AddScoped<ContainerService>();
             builder.Services.AddScoped<ImageService>();
             builder.Services.AddScoped<ExecService>();
