@@ -17,7 +17,7 @@ namespace DockerDotNet.APIClient.Controllers
     {
         private readonly ExecService execService;
 
-        DockerClient DockerClient { get; set; }
+        private DockerClient DockerClient { get; set; }
 
         public ExecController(DockerClient dockerClient, ExecService execService)
         {
@@ -25,8 +25,20 @@ namespace DockerDotNet.APIClient.Controllers
             this.execService = execService;
         }
 
+        [HttpGet]
+        [Route("{id}/inspect")]
+        public async Task<ActionResult> InspectExecInstance(string id, CancellationToken cancellationToken)
+        {
+            var response = await execService.InspectExec(id, cancellationToken);
+            return response.Match(
+                Left: error => StatusCode((int)error.StatusCode, error.Message),
+                Right: exec => Ok(exec)
+                );
+        }
+
+
         [HttpPost]
-        [Route("{id}")]
+        [Route("{id}/create")]
         //[ProducesDefaultResponseType(typeof(ContainerExecCreateResponse))]
         public async Task<IActionResult> CreateExecInstance(string id, [FromBody]ExecConfig execConfig, CancellationToken cancellationToken)
         {
@@ -51,6 +63,17 @@ namespace DockerDotNet.APIClient.Controllers
 
             var (success, stream, error) = await execService.StartExecInstance(id, parameters, webSocket, cancellationToken);
 
+        }
+
+        [HttpPost]
+        [Route("{id}/resize")]
+        public async Task<IActionResult> ResizeExecInstance(string id, [FromQuery]int height, [FromQuery]int width, CancellationToken cancellationToken)
+        {
+            var response = await execService.ReizeExec(id, height, width, cancellationToken);
+            return response.Match(
+                Left: error => StatusCode((int)error.StatusCode, error.Message),
+                Right: exec => Ok(exec)
+                );
         }
     }
 }

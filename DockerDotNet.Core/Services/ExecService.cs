@@ -26,11 +26,15 @@ namespace DockerDotNet.Core.Services
             this.streamHelper = streamHelper;
         }
 
+        public async Task<Either<DockerError?, ExecInspectResponse?>> InspectExec(string id, CancellationToken cancellationToken)
+        {
+            return await _dockerClient.PostAsync<ExecInspectResponse>($"exec/{id}/json", string.Empty, cancellationToken);
+        }
+
         public async Task<Either<DockerError?, ContainerExecCreateResponse?>> CreateExec(string id, ExecConfig createExecParameters, CancellationToken cancellationToken)
         {
             return await _dockerClient.PostAsync<ContainerExecCreateResponse>($"containers/{id}/exec", string.Empty, cancellationToken, body: JsonContent.Create(createExecParameters));
         }
-
 
         public async Task<(bool, Stream?, DockerError?)> StartExecInstance(string id, ExecStartConfig execStartConfig, WebSocket webSocket, CancellationToken cancellationToken)
         {
@@ -79,6 +83,12 @@ namespace DockerDotNet.Core.Services
                 return (false, null, new DockerError(HttpStatusCode.InternalServerError, ex.Message));
             }
 
+        }
+
+        public async Task<Either<DockerError?, string?>> ReizeExec(string id, int height, int width, CancellationToken cancellationToken)
+        {
+            string query = $"h={height}&w={width}";
+            return await _dockerClient.PostAsync<string?>($"exec/{id}/resize", query, cancellationToken);
         }
     }
 }
