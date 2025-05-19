@@ -5,11 +5,20 @@ using System.Net.WebSockets;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
+using System.Text.Json;
 
 namespace DockerDotNet.Core.Helpers
 {
     public class StreamHelper
     {
+        private readonly JsonSerializerOptions jsonSerializerOptions;
+
+        public StreamHelper(JsonSerializerOptions jsonSerializerOptions)
+        {
+            this.jsonSerializerOptions = jsonSerializerOptions;
+        }
+
         public async Task ReadMultiplexedStreamAsync(Stream stream, WebSocket webSocket, CancellationToken ct)
         {
             while (!ct.IsCancellationRequested && webSocket.State == WebSocketState.Open)
@@ -97,6 +106,30 @@ namespace DockerDotNet.Core.Helpers
                 //await execStream.WriteAsync(streamHeader, cancellationToken);
                 await stream.WriteAsync(payload.AsMemory(0, payload.Length), cancellationToken);
                 await stream.FlushAsync(cancellationToken);
+            }
+        }
+
+        /// <summary>
+        /// Convert newlineDelimitedStream into an enumerable of Json type
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="stream"></param>
+        /// <param name="ct"></param>
+        /// <returns></returns>
+        public async IAsyncEnumerable<T> ReadNewlineDelimitedJson<T>(Stream stream, [EnumeratorCancellation] CancellationToken ct = default)
+        {
+            using var reader = new StreamReader(stream, leaveOpen: false);
+
+            string? line;
+            while ((line = await reader.ReadLineAsync(ct)) is not null)
+            {
+                if (line.Length is 0) continue; // keep‑alive ping
+
+                T? stats =
+                    JsonSerializer.Deserialize<T>(line, jsonSerializerOptions);
+
+                if (stats is not null)
+                    yield return stats;
             }
         }
 

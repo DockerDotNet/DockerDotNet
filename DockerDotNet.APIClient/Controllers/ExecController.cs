@@ -41,7 +41,6 @@ namespace DockerDotNet.APIClient.Controllers
         [Route("{id}/start")]
         public async System.Threading.Tasks.Task StartExecInstance(string id, [FromQuery]ExecStartConfig parameters, CancellationToken cancellationToken)
         {
-            // TODO: Merge the changes from Attach branch
             if (!HttpContext.WebSockets.IsWebSocketRequest)
             {
                 HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;

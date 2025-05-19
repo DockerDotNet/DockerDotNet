@@ -132,7 +132,7 @@ namespace DockerDotNet.Core.Services
                 {
                     var sendTask = System.Threading.Tasks.Task.Run(async () =>
                     {
-                        await foreach (var stats in ReadStatsAsync(statStream, cancellationToken))
+                        await foreach (var stats in streamHelper.ReadNewlineDelimitedJson<ContainerStatsResponse>(statStream, cancellationToken))
                         {
                             string line = JsonSerializer.Serialize(stats) + "\n";
 
@@ -163,25 +163,6 @@ namespace DockerDotNet.Core.Services
             {
                 Console.WriteLine(ex.ToString());
                 return (false, null, new DockerError(HttpStatusCode.InternalServerError, ex.Message));
-            }
-        }
-
-        public async IAsyncEnumerable<ContainerStatsResponse> ReadStatsAsync(
-            Stream stream,
-            [EnumeratorCancellation] CancellationToken ct = default)
-        {
-            using var reader = new StreamReader(stream, leaveOpen: false);
-
-            string? line;
-            while ((line = await reader.ReadLineAsync(ct)) is not null)
-            {
-                if (line.Length is 0) continue; // keep‑alive ping
-
-                ContainerStatsResponse? stats =
-                    JsonSerializer.Deserialize<ContainerStatsResponse>(line, jsonSerializerOptions);
-
-                if (stats is not null)
-                    yield return stats;
             }
         }
     }
