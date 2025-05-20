@@ -7,9 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DockerDotNet.Core", "Docker
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DockerDotNet.APIClient", "DockerDotNet.APIClient\DockerDotNet.APIClient.csproj", "{505EE707-7C92-47AF-8855-189B43B31CA7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DockerDotNet.API.Tests", "DockerDotNet.API.Tests\DockerDotNet.API.Tests.csproj", "{12ECAE8D-CB57-423E-9450-2B532F35F9E3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DockerDotNet.API.Tests", "DockerDotNet.API.Tests\DockerDotNet.API.Tests.csproj", "{12ECAE8D-CB57-423E-9450-2B532F35F9E3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DockerDotNet.WebServer", "DockerDotNet.WebServer\DockerDotNet.WebServer.csproj", "{06E01F20-D117-4F57-A790-75042EA57AA1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DockerDotNet.WebServer", "DockerDotNet.WebServer\DockerDotNet.WebServer.csproj", "{06E01F20-D117-4F57-A790-75042EA57AA1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,6 +25,10 @@ Global
 		{505EE707-7C92-47AF-8855-189B43B31CA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{505EE707-7C92-47AF-8855-189B43B31CA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{505EE707-7C92-47AF-8855-189B43B31CA7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{12ECAE8D-CB57-423E-9450-2B532F35F9E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{12ECAE8D-CB57-423E-9450-2B532F35F9E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{12ECAE8D-CB57-423E-9450-2B532F35F9E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{12ECAE8D-CB57-423E-9450-2B532F35F9E3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{06E01F20-D117-4F57-A790-75042EA57AA1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{06E01F20-D117-4F57-A790-75042EA57AA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{06E01F20-D117-4F57-A790-75042EA57AA1}.Release|Any CPU.ActiveCfg = Release|Any CPU

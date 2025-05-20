@@ -1,40 +1,39 @@
 using DockerDotNet.Core.Models;
 
-using Newtonsoft.Json;
-
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
-namespace Docker.DotNet.Models
+namespace DockerDotNet.Core.Models
 {
     [DataContract]
     public class ImagesCreateParameters // (main.ImagesCreateParameters)
     {
         //[QueryStringParameter("fromImage", false)]
-        [JsonProperty("fromImage")]
+        [JsonPropertyName("fromImage")]
         public string FromImage { get; set; }
 
         //[QueryStringParameter("fromSrc", false)]
-        [JsonProperty("fromSrc")]
+        [JsonPropertyName("fromSrc")]
         public string FromSrc { get; set; }
 
         //[QueryStringParameter("repo", false)]
-        [JsonProperty("repo")]
+        [JsonPropertyName("repo")]
         public string Repo { get; set; }
 
-        [JsonProperty("tag")]
+        [JsonPropertyName("tag")]
         public string Tag { get; set; }
 
-        [JsonProperty("message")]
+        [JsonPropertyName("message")]
         public string Message { get; set; }
 
-        [JsonProperty("changes")]
+        [JsonPropertyName("changes")]
         public IList<string> Changes { get; set; }
 
-        [JsonProperty("platform")]
+        [JsonPropertyName("platform")]
         public string Platform { get; set; }
 
-        [JsonProperty("x-registry-auth")]
+        [JsonIgnore]
         public AuthConfig RegistryAuth { get; set; }
     }
 }

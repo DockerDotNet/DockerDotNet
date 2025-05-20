@@ -1,8 +1,10 @@
+using DockerDotNet.Core.Models;
+
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace Docker.DotNet.Models
+namespace DockerDotNet.Core.Models
 {
     [DataContract]
     public class ContainerListResponse // (types.Container)

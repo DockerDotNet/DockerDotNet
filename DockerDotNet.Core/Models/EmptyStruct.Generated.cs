@@ -1,4 +1,4 @@
-namespace Docker.DotNet.Models
+namespace DockerDotNet.Core.Models
 {
     /// <summary>
     /// In go something like map[string]struct{} has no correct match so we create the

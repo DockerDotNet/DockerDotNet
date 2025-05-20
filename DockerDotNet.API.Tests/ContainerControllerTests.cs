@@ -1,54 +1,160 @@
-using Docker.DotNet.Models;
-
-using DockerDotNet.APIClient.Controllers;
-
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 using System.Net;
 using System.Text.Json;
-
+using DockerDotNet.Core.Models;
 using Xunit.Abstractions;
 using Xunit.Sdk;
+using DockerDotNet.APIClient.Controllers;
+using Shouldly;
+using DockerDotNet.Core.Services;
+using DockerDotNet.Core;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace DockerDotNet.API.Tests
 {
-    public class ContainerControllerTests
+    public class ContainerControllerTests : DockerTestBase
     {
-        ContainerController Controller { get; set; }
-
         private readonly ITestOutputHelper _output;
+        private readonly ContainerService _containerService;
 
-        public ContainerControllerTests(ITestOutputHelper testOutputHelper)
+        string _containerID = "7733bfa5017ae064b390b3e9428e8dae21c0ffeaf90820c6a9d444fbfc0b08eb";
+
+        public ContainerControllerTests(ITestOutputHelper testOutputHelper) : base(Array.Empty<string>())
         {
+            _containerService = _host.Services.GetRequiredService<ContainerService>();
             _output = testOutputHelper;
-            Controller = new ContainerController();
-            Controller.ControllerContext = new ControllerContext
-            {
-                HttpContext = new DefaultHttpContext()
-            };
         }
 
         [Fact]
-        public async void GetContainerList()
+        public async System.Threading.Tasks.Task CreateContainer()
         {
-            IList<ContainerListResponse> containerListResponse = await Controller.GetContainers(new Docker.DotNet.Models.ContainersListParameters() { All = true }, new CancellationToken());
-            Assert.Equal((int)HttpStatusCode.OK, Controller.Response.StatusCode);
-            Assert.NotNull(containerListResponse);
+            ContainerCreateResponse container = await CreateContainerAsync();
+            container.Id.ShouldNotBeNullOrEmpty();
+            _containerID = container.Id;
+        }
 
-            _output.WriteLine(JsonSerializer.Serialize(containerListResponse));
+        public async Task<ContainerCreateResponse> CreateContainerAsync()
+        {
+            CreateContainerQueryParameters queryParameters = new CreateContainerQueryParameters();
+            queryParameters.Name = "TestContainers";
+            ContainerCreateRequest containerParameters = new ContainerCreateRequest();
+            containerParameters.Image = "nginx:latest";
+            var response = await _containerService.CreateContainer(queryParameters, containerParameters, CancellationToken.None);
 
+            response.IsRight.ShouldBeTrue();
+            var result = response.Match(Left: left => null, Right: right => right);
+            result.ShouldNotBeNull();
+            return result;
         }
 
         [Fact]
-        public async void GetContainerInfo()
+        public async System.Threading.Tasks.Task DeleteContainerAsync()
         {
-            ContainerInspectResponse inspectResponse = await Controller.GetContainer("6c2f5ed47d8a384c0bfa417a6d1c32061c3f149d06f04998a584e6fccb7f3b51", new Docker.DotNet.Models.ContainerInspectParameters(), new CancellationToken());
-            Assert.Equal((int)HttpStatusCode.OK, Controller.Response.StatusCode);
-            Assert.NotNull(inspectResponse);
-            
-            _output.WriteLine(JsonSerializer.Serialize(inspectResponse));
+            ContainerDeleteParameters parameters = new ContainerDeleteParameters();
+
+            var response = await _containerService.DeleteContainer(_containerID, parameters, CancellationToken.None);
+            response.IsRight.ShouldBeTrue();
+            var result = response.Match(Left: left => null, Right: right => right);
+            result.ShouldNotBeNull();
         }
 
+        [Fact]
+        public async System.Threading.Tasks.Task StartContainer()
+        {
+            var response = await _containerService.StartContainer(_containerID, CancellationToken.None);
+            response.IsRight.ShouldBeTrue();
+            var result = response.Match(Left: left => null, Right: right => right);
+            result.ShouldNotBeNull();
+        }
+
+        [Fact]
+        public async System.Threading.Tasks.Task StopContainer()
+        {
+            var response = await _containerService.StopContainer(_containerID, CancellationToken.None);
+            response.IsRight.ShouldBeTrue();
+            var result = response.Match(Left: null, Right: right => right);
+            result.ShouldNotBeNull();
+        }
+
+        [Fact]
+        public async System.Threading.Tasks.Task RestartContainer()
+        {
+            var response = await _containerService.RestartContainer(_containerID, CancellationToken.None);
+            response.IsRight.ShouldBeTrue();
+            var result = response.Match(Left: null, Right: right => right);
+            result.ShouldNotBeNull();
+        }
+
+        [Fact]
+        public async System.Threading.Tasks.Task KillContainer()
+        {
+            var response = await _containerService.KillContainer(_containerID, CancellationToken.None);
+            response.IsRight.ShouldBeTrue();
+            var result = response.Match(Left: null, Right: right => right);
+            result.ShouldNotBeNull();
+        }
+
+        [Fact]
+        public async System.Threading.Tasks.Task PauseContainer()
+        {
+            var response = await _containerService.PauseContainer(_containerID, CancellationToken.None);
+            response.IsRight.ShouldBeTrue();
+            var result = response.Match(Left: null, Right: right => right);
+            result.ShouldNotBeNull();
+        }
+
+        [Fact]
+        public async System.Threading.Tasks.Task UnpauseContainer()
+        {
+            var response = await _containerService.UnpauseContainer(_containerID, CancellationToken.None);
+            response.IsRight.ShouldBeTrue();
+            var result = response.Match(Left: null, Right: right => right);
+            result.ShouldNotBeNull();
+        }
+
+        [Fact]
+        public async System.Threading.Tasks.Task GetContainerList()
+        {
+            ContainersListParameters containersListParameters = new ContainersListParameters();
+            containersListParameters.All = true;
+
+            var response = await _containerService.GetContainers(containersListParameters, new CancellationToken());
+            response.IsRight.ShouldBeTrue();
+            var result = response.Match(Left: null, Right: right => right);
+            result.ShouldNotBeNull();
+
+            _output.WriteLine(JsonSerializer.Serialize(response));
+        }
+
+        [Fact]
+        public async System.Threading.Tasks.Task GetContainerInfo()
+        {
+            var response = await _containerService.GetContainer(_containerID, new ContainerInspectParameters(), new CancellationToken());
+            response.IsRight.ShouldBeTrue();
+            var result = response.Match(Left: null, Right: response => response);
+            result.ShouldNotBeNull();
+
+            _output.WriteLine(JsonSerializer.Serialize(result));
+        }
+
+        [Fact]
+        public async System.Threading.Tasks.Task CreateExec()
+        {
+            ContainerExecCreateParameters containerExecCreateParameters = new ContainerExecCreateParameters();
+            containerExecCreateParameters.AttachStdout = true;
+            containerExecCreateParameters.AttachStderr = true;
+            containerExecCreateParameters.AttachStdin = true;
+            containerExecCreateParameters.DetachKeys = "ctrl-p,ctrl-q";
+            containerExecCreateParameters.Cmd = new List<string>() { "bin/sh" };
+            containerExecCreateParameters.Tty = true;
+            var response = await _containerService.CreateExec(_containerID, containerExecCreateParameters, new CancellationToken());
+            response.IsRight.ShouldBeTrue();
+            var result = response.Match(Left: null, Right: response => response);
+            result.ShouldNotBeNull();
+
+            _output.WriteLine(JsonSerializer.Serialize(result));
+        }
     }
 }
