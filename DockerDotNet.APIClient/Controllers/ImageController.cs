@@ -71,9 +71,17 @@ namespace DockerDotNet.APIClient.Controllers
 
         [HttpPost]
         [Route("build/prune")]
-        public async Task<IActionResult> DeleteBuilderCache([FromQuery]BuildPruneParameters buildPruneParameters, CancellationToken cancellationToken)
+        public async Task<IActionResult> DeleteBuilderCache([FromQuery]BuildPruneParameters parameters, CancellationToken cancellationToken)
         {
-            var response = await _imageService.BuildPrune(buildPruneParameters, cancellationToken);
+            var response = await _imageService.BuildPrune(parameters, cancellationToken);
+            return response.Match(Left: error => StatusCode((int)error.StatusCode, error.Message), Right: result => Ok(result));
+        }
+
+        [HttpDelete]
+        [Route("{name}")]
+        public async Task<IActionResult> DeleteImage(string name, [FromQuery]ImageDeleteParameters parameters, CancellationToken cancellationToken)
+        {
+            var response = await _imageService.DeleteImage(name, parameters, cancellationToken);
             return response.Match(Left: error => StatusCode((int)error.StatusCode, error.Message), Right: result => Ok(result));
         }
     }
