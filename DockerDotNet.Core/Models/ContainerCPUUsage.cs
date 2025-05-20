@@ -38,7 +38,7 @@ namespace DockerDotNet.Core.Models
         /// <param name="usageInKernelmode">Time (in nanoseconds) spent by tasks of the cgroup in kernel mode (Linux), or time spent (in 100&#39;s of nanoseconds) by all container processes in kernel mode (Windows).  Not populated for Windows containers using Hyper-V isolation. </param>
         /// <param name="usageInUsermode">Time (in nanoseconds) spent by tasks of the cgroup in user mode (Linux), or time spent (in 100&#39;s of nanoseconds) by all container processes in kernel mode (Windows).  Not populated for Windows containers using Hyper-V isolation. </param>
         [JsonConstructor]
-        public ContainerCPUUsage(Option<int?> totalUsage = default, Option<List<int>?> percpuUsage = default, Option<int?> usageInKernelmode = default, Option<int?> usageInUsermode = default)
+        public ContainerCPUUsage(Option<ulong?> totalUsage = default, Option<List<ulong>?> percpuUsage = default, Option<ulong?> usageInKernelmode = default, Option<ulong?> usageInUsermode = default)
         {
             TotalUsageOption = totalUsage;
             PercpuUsageOption = percpuUsage;
@@ -54,7 +54,7 @@ namespace DockerDotNet.Core.Models
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> TotalUsageOption { get; private set; }
+        public Option<ulong?> TotalUsageOption { get; private set; }
 
         /// <summary>
         /// Total CPU time consumed in nanoseconds (Linux) or 100&#39;s of nanoseconds (Windows). 
@@ -62,28 +62,28 @@ namespace DockerDotNet.Core.Models
         /// <value>Total CPU time consumed in nanoseconds (Linux) or 100&#39;s of nanoseconds (Windows). </value>
         /* <example>29912000</example> */
         [JsonPropertyName("total_usage")]
-        public int? TotalUsage { get { return this.TotalUsageOption; } set { this.TotalUsageOption = new(value); } }
+        public ulong? TotalUsage { get { return this.TotalUsageOption; } set { this.TotalUsageOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of PercpuUsage
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<List<int>?> PercpuUsageOption { get; private set; }
+        public Option<List<ulong>?> PercpuUsageOption { get; private set; }
 
         /// <summary>
         /// Total CPU time (in nanoseconds) consumed per core (Linux).  This field is Linux-specific when using cgroups v1. It is omitted when using cgroups v2 and Windows containers. 
         /// </summary>
         /// <value>Total CPU time (in nanoseconds) consumed per core (Linux).  This field is Linux-specific when using cgroups v1. It is omitted when using cgroups v2 and Windows containers. </value>
         [JsonPropertyName("percpu_usage")]
-        public List<int>? PercpuUsage { get { return this.PercpuUsageOption; } set { this.PercpuUsageOption = new(value); } }
+        public List<ulong>? PercpuUsage { get { return this.PercpuUsageOption; } set { this.PercpuUsageOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of UsageInKernelmode
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> UsageInKernelmodeOption { get; private set; }
+        public Option<ulong?> UsageInKernelmodeOption { get; private set; }
 
         /// <summary>
         /// Time (in nanoseconds) spent by tasks of the cgroup in kernel mode (Linux), or time spent (in 100&#39;s of nanoseconds) by all container processes in kernel mode (Windows).  Not populated for Windows containers using Hyper-V isolation. 
@@ -91,14 +91,14 @@ namespace DockerDotNet.Core.Models
         /// <value>Time (in nanoseconds) spent by tasks of the cgroup in kernel mode (Linux), or time spent (in 100&#39;s of nanoseconds) by all container processes in kernel mode (Windows).  Not populated for Windows containers using Hyper-V isolation. </value>
         /* <example>21994000</example> */
         [JsonPropertyName("usage_in_kernelmode")]
-        public int? UsageInKernelmode { get { return this.UsageInKernelmodeOption; } set { this.UsageInKernelmodeOption = new(value); } }
+        public ulong? UsageInKernelmode { get { return this.UsageInKernelmodeOption; } set { this.UsageInKernelmodeOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of UsageInUsermode
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> UsageInUsermodeOption { get; private set; }
+        public Option<ulong?> UsageInUsermodeOption { get; private set; }
 
         /// <summary>
         /// Time (in nanoseconds) spent by tasks of the cgroup in user mode (Linux), or time spent (in 100&#39;s of nanoseconds) by all container processes in kernel mode (Windows).  Not populated for Windows containers using Hyper-V isolation. 
@@ -106,7 +106,7 @@ namespace DockerDotNet.Core.Models
         /// <value>Time (in nanoseconds) spent by tasks of the cgroup in user mode (Linux), or time spent (in 100&#39;s of nanoseconds) by all container processes in kernel mode (Windows).  Not populated for Windows containers using Hyper-V isolation. </value>
         /* <example>7918000</example> */
         [JsonPropertyName("usage_in_usermode")]
-        public int? UsageInUsermode { get { return this.UsageInUsermodeOption; } set { this.UsageInUsermodeOption = new(value); } }
+        public ulong? UsageInUsermode { get { return this.UsageInUsermodeOption; } set { this.UsageInUsermodeOption = new(value); } }
 
         /// <summary>
         /// Returns the string presentation of the object
@@ -157,10 +157,10 @@ namespace DockerDotNet.Core.Models
 
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
-            Option<int?> totalUsage = default;
-            Option<List<int>?> percpuUsage = default;
-            Option<int?> usageInKernelmode = default;
-            Option<int?> usageInUsermode = default;
+            Option<ulong?> totalUsage = default;
+            Option<List<ulong>?> percpuUsage = default;
+            Option<ulong?> usageInKernelmode = default;
+            Option<ulong?> usageInUsermode = default;
 
             while (utf8JsonReader.Read())
             {
@@ -179,19 +179,19 @@ namespace DockerDotNet.Core.Models
                     {
                         case "total_usage":
                             if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                totalUsage = new Option<int?>(utf8JsonReader.GetInt32());
+                                totalUsage = new Option<ulong?>(utf8JsonReader.GetUInt64());
                             break;
                         case "percpu_usage":
                             if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                percpuUsage = new Option<List<int>?>(JsonSerializer.Deserialize<List<int>>(ref utf8JsonReader, jsonSerializerOptions));
+                                percpuUsage = new Option<List<ulong>?>(JsonSerializer.Deserialize<List<ulong>>(ref utf8JsonReader, jsonSerializerOptions));
                             break;
                         case "usage_in_kernelmode":
                             if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                usageInKernelmode = new Option<int?>(utf8JsonReader.GetInt32());
+                                usageInKernelmode = new Option<ulong?>(utf8JsonReader.GetUInt64());
                             break;
                         case "usage_in_usermode":
                             if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                usageInUsermode = new Option<int?>(utf8JsonReader.GetInt32());
+                                usageInUsermode = new Option<ulong?>(utf8JsonReader.GetUInt64());
                             break;
                         default:
                             break;

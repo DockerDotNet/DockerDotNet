@@ -41,12 +41,12 @@ namespace DockerDotNet.API.Tests
             queryParameters.Name = "TestContainers";
             ContainerCreateRequest containerParameters = new ContainerCreateRequest();
             containerParameters.Image = "nginx:latest";
-            var (success, response, error) = await _containerService.CreateContainer(queryParameters, containerParameters, CancellationToken.None);
-            
-            success.ShouldBeTrue();
-            response.ShouldNotBeNull();
+            var response = await _containerService.CreateContainer(queryParameters, containerParameters, CancellationToken.None);
 
-            return response;
+            response.IsRight.ShouldBeTrue();
+            var result = response.Match(Left: left => null, Right: right => right);
+            result.ShouldNotBeNull();
+            return result;
         }
 
         [Fact]
@@ -54,51 +54,64 @@ namespace DockerDotNet.API.Tests
         {
             ContainerDeleteParameters parameters = new ContainerDeleteParameters();
 
-            var (success, _, _) = await _containerService.DeleteContainer(_containerID, parameters, CancellationToken.None);
-            success.ShouldBeTrue();
+            var response = await _containerService.DeleteContainer(_containerID, parameters, CancellationToken.None);
+            response.IsRight.ShouldBeTrue();
+            var result = response.Match(Left: left => null, Right: right => right);
+            result.ShouldNotBeNull();
         }
 
         [Fact]
         public async System.Threading.Tasks.Task StartContainer()
         {
-            var (success, _, _) = await _containerService.StartContainer(_containerID, CancellationToken.None);
-            success.ShouldBeTrue();
-
+            var response = await _containerService.StartContainer(_containerID, CancellationToken.None);
+            response.IsRight.ShouldBeTrue();
+            var result = response.Match(Left: left => null, Right: right => right);
+            result.ShouldNotBeNull();
         }
 
         [Fact]
         public async System.Threading.Tasks.Task StopContainer()
         {
-            var (success, _, _) = await _containerService.StopContainer(_containerID, CancellationToken.None);
-            success.ShouldBeTrue();
+            var response = await _containerService.StopContainer(_containerID, CancellationToken.None);
+            response.IsRight.ShouldBeTrue();
+            var result = response.Match(Left: null, Right: right => right);
+            result.ShouldNotBeNull();
         }
 
         [Fact]
         public async System.Threading.Tasks.Task RestartContainer()
         {
-            var (success, _, _) = await _containerService.RestartContainer(_containerID, CancellationToken.None);
-            success.ShouldBeTrue();
+            var response = await _containerService.RestartContainer(_containerID, CancellationToken.None);
+            response.IsRight.ShouldBeTrue();
+            var result = response.Match(Left: null, Right: right => right);
+            result.ShouldNotBeNull();
         }
 
         [Fact]
         public async System.Threading.Tasks.Task KillContainer()
         {
-            var (success, _, _) = await _containerService.KillContainer(_containerID, CancellationToken.None);
-            success.ShouldBeTrue();
+            var response = await _containerService.KillContainer(_containerID, CancellationToken.None);
+            response.IsRight.ShouldBeTrue();
+            var result = response.Match(Left: null, Right: right => right);
+            result.ShouldNotBeNull();
         }
 
         [Fact]
         public async System.Threading.Tasks.Task PauseContainer()
         {
-            var (success, _, _) = await _containerService.PauseContainer(_containerID, CancellationToken.None);
-            success.ShouldBeTrue();
+            var response = await _containerService.PauseContainer(_containerID, CancellationToken.None);
+            response.IsRight.ShouldBeTrue();
+            var result = response.Match(Left: null, Right: right => right);
+            result.ShouldNotBeNull();
         }
 
         [Fact]
         public async System.Threading.Tasks.Task UnpauseContainer()
         {
-            var (success, _, _) = await _containerService.UnpauseContainer(_containerID, CancellationToken.None);
-            success.ShouldBeTrue();
+            var response = await _containerService.UnpauseContainer(_containerID, CancellationToken.None);
+            response.IsRight.ShouldBeTrue();
+            var result = response.Match(Left: null, Right: right => right);
+            result.ShouldNotBeNull();
         }
 
         [Fact]
@@ -107,9 +120,10 @@ namespace DockerDotNet.API.Tests
             ContainersListParameters containersListParameters = new ContainersListParameters();
             containersListParameters.All = true;
 
-            var (success, response, error) = await _containerService.GetContainers(containersListParameters, new CancellationToken());
-            success.ShouldBeTrue();
-            response.ShouldNotBeNull();
+            var response = await _containerService.GetContainers(containersListParameters, new CancellationToken());
+            response.IsRight.ShouldBeTrue();
+            var result = response.Match(Left: null, Right: right => right);
+            result.ShouldNotBeNull();
 
             _output.WriteLine(JsonSerializer.Serialize(response));
         }
@@ -117,12 +131,12 @@ namespace DockerDotNet.API.Tests
         [Fact]
         public async System.Threading.Tasks.Task GetContainerInfo()
         {
-            var (success, response, error) = await _containerService.GetContainer(_containerID, new ContainerInspectParameters(), new CancellationToken());
-            //Controller.Response.StatusCode.ShouldBe((int)HttpStatusCode.OK);
-            success.ShouldBeTrue();
-            response.ShouldNotBeNull();
+            var response = await _containerService.GetContainer(_containerID, new ContainerInspectParameters(), new CancellationToken());
+            response.IsRight.ShouldBeTrue();
+            var result = response.Match(Left: null, Right: response => response);
+            result.ShouldNotBeNull();
 
-            _output.WriteLine(JsonSerializer.Serialize(response));
+            _output.WriteLine(JsonSerializer.Serialize(result));
         }
 
         [Fact]
@@ -135,12 +149,12 @@ namespace DockerDotNet.API.Tests
             containerExecCreateParameters.DetachKeys = "ctrl-p,ctrl-q";
             containerExecCreateParameters.Cmd = new List<string>() { "bin/sh" };
             containerExecCreateParameters.Tty = true;
-            var(success, response, error) = await _containerService.CreateExec(_containerID, containerExecCreateParameters, new CancellationToken());
+            var response = await _containerService.CreateExec(_containerID, containerExecCreateParameters, new CancellationToken());
+            response.IsRight.ShouldBeTrue();
+            var result = response.Match(Left: null, Right: response => response);
+            result.ShouldNotBeNull();
 
-            success.ShouldBeTrue();
-            response.ShouldNotBeNull();
-
-            _output.WriteLine(JsonSerializer.Serialize(response));
+            _output.WriteLine(JsonSerializer.Serialize(result));
         }
     }
 }

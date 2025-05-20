@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.IO.Pipes;
 using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Net.Sockets;
 using System.Reflection;
@@ -9,6 +10,11 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Web;
 using DockerDotNet.Core.Models;
+
+using LanguageExt;
+using LanguageExt.Pipes;
+
+using Task = System.Threading.Tasks.Task;
 
 namespace DockerDotNet.Core
 {
@@ -48,7 +54,7 @@ namespace DockerDotNet.Core
         {
             HttpClient httpClient;
 
-            if (BaseUri == null)
+            //if (BaseUri == null)
                 BaseUri = GetLocalUri();
 
             HttpMessageHandler handler = GetHttpHandler(BaseUri);
@@ -60,7 +66,7 @@ namespace DockerDotNet.Core
             }
 
             httpClient = new HttpClient(handler);
-            httpClient.BaseAddress =new UriBuilder("http", BaseUri.Segments.Last()).Uri; ;   
+            httpClient.BaseAddress =new UriBuilder("http", BaseUri.Segments.Last()).Uri;   
             BaseUri = httpClient.BaseAddress;
 
             return httpClient;
@@ -154,14 +160,7 @@ namespace DockerDotNet.Core
         {
             string resultString = string.Empty;
 
-            authConfig = new AuthConfig()
-            {
-                Serveraddress = "",
-                Username = "",
-                Password = ""
-            };
-
-            if (authConfig == null)
+            if (authConfig != null)
             {
                 JsonSerializerOptions serializerSettings = new JsonSerializerOptions();
                 serializerSettings.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
@@ -221,7 +220,7 @@ namespace DockerDotNet.Core
 
                 string propertyName = jsonPropertyNameAttribute?.Name ?? property.Name;
                 string encodedKey = HttpUtility.UrlEncode(propertyName);
-                string encodedValue = string.Empty;
+                string encodedValue;
 
                 //if (property.PropertyType.GetGenericTypeDefinition() == typeof(IDictionary<,>))
                 if (value is IDictionary)
@@ -234,7 +233,7 @@ namespace DockerDotNet.Core
                     //encodedValue = HttpUtility.UrlEncode(value.ToString());
                     encodedValue = value?.ToString();
                 }
-                keyValuePairs.Add($"{Uri.EscapeUriString(encodedKey)}={Uri.EscapeDataString(encodedValue)}");
+                keyValuePairs.Add($"{Uri.EscapeDataString(encodedKey)}={Uri.EscapeDataString(encodedValue)}");
             }
             return string.Join("&", keyValuePairs);
         }
@@ -244,7 +243,7 @@ namespace DockerDotNet.Core
             return System.Text.Json.JsonSerializer.Serialize(dictionary);
         }
 
-        public async Task<(bool, T?, DockerError?)> GetAsync<T>(
+        public async Task<Either<DockerError?, T?>> GetAsync<T>(
             string endpoint,
             string queryParameters,
             CancellationToken cancellationToken,
@@ -260,7 +259,7 @@ namespace DockerDotNet.Core
             return await ProcessResponse<T>(response, cancellationToken);
         }
 
-        public async Task<(bool, T?, DockerError?)> PostAsync<T>(
+        public async Task<Either<DockerError?, T?>> PostAsync<T>(
             string endpoint,
             string queryParameters,
             CancellationToken cancellationToken,
@@ -276,7 +275,7 @@ namespace DockerDotNet.Core
             return await ProcessResponse<T>(response, cancellationToken);
         }
 
-        public async Task<(bool, T?, DockerError?)> DeleteAsync<T>(
+        public async Task<Either<DockerError?, T?>> DeleteAsync<T>(
             string endpoint,
             string queryParameters,
             CancellationToken cancellationToken,
@@ -287,17 +286,89 @@ namespace DockerDotNet.Core
 
             HttpRequestMessage requestMessage = PrepareHttpRequest(HttpMethod.Delete, endpoint, queryParameters, headers, body);
 
-            HttpResponseMessage responseMessage = await client.SendAsync(requestMessage, cancellationToken);
+            HttpResponseMessage response = await client.SendAsync(requestMessage, cancellationToken);
 
-            return await ProcessResponse<T>(responseMessage, cancellationToken);
+            return await ProcessResponse<T>(response, cancellationToken);
         }
 
-        private async Task<(bool, T?, DockerError?)> ProcessResponse<T>(HttpResponseMessage response, CancellationToken cancellationToken)
+        public async Task<(bool, Stream?, string, DockerError?)> GetStreamAsync(
+            string endpoint,
+            string queryParameters,
+            CancellationToken cancellationToken,
+            Dictionary<string, string>? headers = null,
+            HttpContent? body = null)
+        {
+            var client = GetDockerHttpClient();
+            
+            HttpRequestMessage requestMessage = PrepareHttpRequest(HttpMethod.Get, endpoint, queryParameters, headers: headers, requestBody: body);
+
+            HttpResponseMessage response = await client.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+
+            return await ProcessStreamResponse<Stream?>(response, cancellationToken);
+        }
+
+        public async Task<(bool, Stream?, string, DockerError?)> PostHijackedStreamAsync(
+            string endpoint,
+            string queryParameters,
+            CancellationToken cancellationToken,
+            Dictionary<string, string>? headers = null,
+            HttpContent? body = null)
+        {
+            var client = GetDockerHttpClient();
+
+            HttpRequestMessage requestMessage = PrepareHttpRequest(HttpMethod.Post, endpoint, queryParameters, headers: headers, requestBody: body);
+
+            requestMessage.Headers.Connection.Add("Upgrade");
+            requestMessage.Headers.Upgrade.Add(new ProductHeaderValue("hijack"));
+
+            HttpResponseMessage response = await client.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+
+            return await ProcessStreamResponse<Stream?>(response, cancellationToken);
+        }
+
+        public async Task<(bool, Stream?, string, DockerError?)> PostStreamAsync(
+            string endpoint,
+            string queryParameters,
+            CancellationToken cancellationToken,
+            Dictionary<string, string>? headers = null,
+            HttpContent? body = null)
+        {
+            var client = GetDockerHttpClient();
+
+            HttpRequestMessage requestMessage = PrepareHttpRequest(HttpMethod.Post, endpoint, queryParameters, headers: headers, requestBody: body);
+
+            HttpResponseMessage response = await client.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+
+            return await ProcessStreamResponse<Stream?>(response, cancellationToken);
+        }
+
+
+        private async Task<(bool, Stream?, string, DockerError?)> ProcessStreamResponse<T>(HttpResponseMessage response, CancellationToken cancellationToken)
+        {
+            string? contentType = response.Content.Headers.ContentType?.ToString();
+
+            if(response.IsSuccessStatusCode || response.StatusCode == HttpStatusCode.SwitchingProtocols)
+            {
+                Stream stream = await response.Content.ReadAsStreamAsync(cancellationToken);
+                return (true, stream, contentType, null);
+            }
+
+            if (contentType == "application/json")
+            {
+                var errorContent = await response.Content.ReadFromJsonAsync<DockerErrorResponse>(cancellationToken);
+                return (false, null, contentType, new DockerError(response.StatusCode, errorContent.Message));
+            }
+
+            return (false, default, default, new DockerError(response.StatusCode, "Unable to handle string"));
+            
+        }
+
+        private async Task<Either<DockerError?, T?>> ProcessResponse<T>(HttpResponseMessage response, CancellationToken cancellationToken)
         {
             if (!response.IsSuccessStatusCode)
             {
                 var errorContent = await response.Content.ReadFromJsonAsync<DockerErrorResponse>(cancellationToken);
-                return (false, default, new DockerError(response.StatusCode, errorContent.Message));
+                return new DockerError(response.StatusCode, errorContent.Message);
             }
 
             object content;
@@ -310,7 +381,7 @@ namespace DockerDotNet.Core
                 JsonSerializerOptions options = new JsonSerializerOptions(_jsonSerializerOptions);
                 content = await response.Content.ReadFromJsonAsync<T>(options, cancellationToken);
             }
-            return (true, (T)content, null);
+            return (T)content;
         }
 
         private void AddHeadersToRequest(HttpRequestMessage requestMessage, Dictionary<string, string>? headers)

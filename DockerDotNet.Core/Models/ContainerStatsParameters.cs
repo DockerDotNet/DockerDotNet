@@ -7,13 +7,12 @@ using System.Threading.Tasks;
 
 namespace DockerDotNet.Core.Models
 {
-    public class ImageTagParameters
+    public class ContainerStatsParameters
     {
-        [JsonPropertyName("repo")]
-        public string? Repository { get; set; }
+        [JsonPropertyName("stream")]
+        public bool? Stream { get; set; }
 
-        [JsonPropertyName("tag")]
-        public string? Tag { get; set; }
-
+        [JsonPropertyName("one-shot")]
+        public bool? OneShot { get; set; }
     }
 }

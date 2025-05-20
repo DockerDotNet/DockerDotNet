@@ -7,13 +7,12 @@ using System.Threading.Tasks;
 
 namespace DockerDotNet.Core.Models
 {
-    public class ImageTagParameters
+    public class ImageDeleteParameters
     {
-        [JsonPropertyName("repo")]
-        public string? Repository { get; set; }
+        [JsonPropertyName("force")]
+        public bool? Force { get; set; }
 
-        [JsonPropertyName("tag")]
-        public string? Tag { get; set; }
-
+        [JsonPropertyName("noprune")]
+        public bool? NoPrune { get; set; }
     }
 }

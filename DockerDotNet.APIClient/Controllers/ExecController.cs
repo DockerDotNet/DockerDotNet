@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Text.Json.Serialization;
 
 using System.Text.Json;
+using DockerDotNet.Core.Services;
 
 namespace DockerDotNet.APIClient.Controllers
 {
@@ -14,35 +15,65 @@ namespace DockerDotNet.APIClient.Controllers
     [ApiController]
     public class ExecController : ControllerBase
     {
-        DockerClient DockerClient { get; set; }
+        private readonly ExecService execService;
 
-        public ExecController(DockerClient dockerClient)
+        private DockerClient DockerClient { get; set; }
+
+        public ExecController(DockerClient dockerClient, ExecService execService)
         {
             DockerClient = dockerClient;
+            this.execService = execService;
         }
 
         [HttpGet]
-        [Route("{id}")]
-        public async System.Threading.Tasks.Task<ContainerExecInspectResponse> InspectExecInstance(string id, CancellationToken cancellationToken)
+        [Route("{id}/inspect")]
+        public async Task<ActionResult> InspectExecInstance(string id, CancellationToken cancellationToken)
         {
-            using HttpClient httpClient = DockerClient.GetDockerHttpClient();
-            HttpRequestMessage requestMessage = DockerClient.PrepareHttpRequest(HttpMethod.Get, $"exec/{id}/json", string.Empty);
+            var response = await execService.InspectExec(id, cancellationToken);
+            return response.Match(
+                Left: error => StatusCode((int)error.StatusCode, error.Message),
+                Right: exec => Ok(exec)
+                );
+        }
 
-            HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(requestMessage, cancellationToken);
-            httpResponseMessage.EnsureSuccessStatusCode();
 
-            JsonSerializerOptions jsonSerializerOptions = new JsonSerializerOptions();
-            jsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-            ContainerExecInspectResponse? responseContent = await httpResponseMessage.Content.ReadFromJsonAsync<ContainerExecInspectResponse>(jsonSerializerOptions, cancellationToken);
+        [HttpPost]
+        [Route("{id}/create")]
+        //[ProducesDefaultResponseType(typeof(ContainerExecCreateResponse))]
+        public async Task<IActionResult> CreateExecInstance(string id, [FromBody]ExecConfig execConfig, CancellationToken cancellationToken)
+        {
+            var response = await execService.CreateExec(id, execConfig, cancellationToken);
+            return response.Match(
+                Left: error => StatusCode((int)error.StatusCode, error.Message),
+                Right: exec => Ok(exec)
+                );
+        }
 
-            return responseContent;
+        [HttpGet]
+        [Route("{id}/start")]
+        public async System.Threading.Tasks.Task StartExecInstance(string id, [FromQuery]ExecStartConfig parameters, CancellationToken cancellationToken)
+        {
+            if (!HttpContext.WebSockets.IsWebSocketRequest)
+            {
+                HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+                await HttpContext.Response.WriteAsync("Expected a WebSocket request.", cancellationToken: cancellationToken);
+                return;
+            }
+            using var webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
+
+            var (success, stream, error) = await execService.StartExecInstance(id, parameters, webSocket, cancellationToken);
+
         }
 
         [HttpPost]
-        [Route("{id}/start")]
-        public async System.Threading.Tasks.Task StartExecInstance(string id, CancellationToken cancellationToken)
+        [Route("{id}/resize")]
+        public async Task<IActionResult> ResizeExecInstance(string id, [FromQuery]int height, [FromQuery]int width, CancellationToken cancellationToken)
         {
-            // TODO: Merge the changes from Attach branch
+            var response = await execService.ReizeExec(id, height, width, cancellationToken);
+            return response.Match(
+                Left: error => StatusCode((int)error.StatusCode, error.Message),
+                Right: exec => Ok(exec)
+                );
         }
     }
 }

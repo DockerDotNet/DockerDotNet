@@ -1,5 +1,6 @@
 ﻿using DockerDotNet.Core;
 using DockerDotNet.Core.Extensions;
+using DockerDotNet.Core.Helpers;
 using DockerDotNet.Core.Services;
 
 using Microsoft.Extensions.DependencyInjection;
@@ -31,6 +32,7 @@ namespace DockerDotNet.API.Tests
                 services.AddScoped<SystemService>();
                 services.AddScoped<ExecService>();
                 services.AddScoped<VolumeService>();
+                services.AddScoped<StreamHelper>();
             });
     }
 }

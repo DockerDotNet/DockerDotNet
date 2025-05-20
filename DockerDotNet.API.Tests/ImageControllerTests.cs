@@ -39,7 +39,7 @@ namespace DockerDotNet.API.Tests
             var responseStream = new MemoryStream();
             ImageController.Response.Body = responseStream;
 
-            await ImageController.PullImage(new ImagesCreateParameters() { FromImage = "excellonb2bregsrv.azurecr.io/businessruleapp:latest" }, null, new CancellationToken());
+            //await ImageController.CreateImage(new ImagesCreateParameters() { FromImage = "excellonb2bregsrv.azurecr.io/businessruleapp:latest" }, null, new CancellationToken());
 
             Assert.Equal((int)HttpStatusCode.OK, ImageController.Response.StatusCode);
 
@@ -61,30 +61,36 @@ namespace DockerDotNet.API.Tests
         [Fact]
         public async System.Threading.Tasks.Task GetImageList()
         {
-            var (success, response, _) = await _imageService.GetImages(new ImagesListParameters(), new CancellationToken());
-            success.ShouldBeTrue();
-            response.ShouldNotBeNull();
-            _output.WriteLine(JsonSerializer.Serialize(response));
+            var response = await _imageService.GetImages(new ImagesListParameters(), new CancellationToken());
+            response.IsRight.ShouldBeTrue();
+            var result = response.Match(Left: null, Right: result => result);
+            result.ShouldNotBeNull();
+
+            _output.WriteLine(JsonSerializer.Serialize(result));
         }
 
         [Fact]
         public async System.Threading.Tasks.Task GetImage()
         {
             string imageName = "04bf2359fb0d7f18a2c98856d506051ab600624d686ba2114352fd85c28004cc";
-            var (success, response, _) = await _imageService.GetImage(imageName, new CancellationToken());
-            success.ShouldBeTrue();
-            response.ShouldNotBeNull();
-            _output.WriteLine(JsonSerializer.Serialize(response));
+            var response = await _imageService.GetImage(imageName, new CancellationToken());
+            response.IsRight.ShouldBeTrue();
+            var result = response.Match(Left: null, Right: right => right);
+            result.ShouldNotBeNull();
+            
+            _output.WriteLine(JsonSerializer.Serialize(result));
         }
 
         [Fact]
         public async System.Threading.Tasks.Task GetImageHistory()
         {
             string imageName = "04bf2359fb0d7f18a2c98856d506051ab600624d686ba2114352fd85c28004cc";
-            var (success, response, _) = await _imageService.GetImageHistory(imageName, new CancellationToken());
-            success.ShouldBeTrue();
-            response.ShouldNotBeNull();
-            _output.WriteLine(JsonSerializer.Serialize(response));
+            var response = await _imageService.GetImageHistory(imageName, new CancellationToken());
+            response.IsRight.ShouldBeTrue();
+            var result = response.Match(Left: null, Right: result => result);
+            result.ShouldNotBeNull();
+
+            _output.WriteLine(JsonSerializer.Serialize(result));
         }
 
         [Fact]
@@ -96,12 +102,12 @@ namespace DockerDotNet.API.Tests
             parameters.Repository = "";
             parameters.Tag = "";
 
-            var (success, response, _) = await _imageService.TagImage(imageName, parameters, new CancellationToken());
+            var response = await _imageService.TagImage(imageName, parameters, new CancellationToken());
+            response.IsRight.ShouldBeTrue();
+            var result = response.Match(Left: null, Right: right => right);
+            result.ShouldNotBeNull();
             
-            success.ShouldBeTrue();
-            response.ShouldNotBeNull();
-            
-            _output.WriteLine(JsonSerializer.Serialize(response));
+            _output.WriteLine(JsonSerializer.Serialize(result));
         }
     }
 }

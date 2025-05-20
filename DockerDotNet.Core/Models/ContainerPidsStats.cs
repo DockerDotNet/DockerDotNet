@@ -36,7 +36,7 @@ namespace DockerDotNet.Core.Models
         /// <param name="current">Current is the number of PIDs in the cgroup. </param>
         /// <param name="limit">Limit is the hard limit on the number of pids in the cgroup. A \&quot;Limit\&quot; of 0 means that there is no limit. </param>
         [JsonConstructor]
-        public ContainerPidsStats(Option<int?> current = default, Option<int?> limit = default)
+        public ContainerPidsStats(Option<ulong?> current = default, Option<ulong?> limit = default)
         {
             CurrentOption = current;
             LimitOption = limit;
@@ -50,7 +50,7 @@ namespace DockerDotNet.Core.Models
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> CurrentOption { get; private set; }
+        public Option<ulong?> CurrentOption { get; private set; }
 
         /// <summary>
         /// Current is the number of PIDs in the cgroup. 
@@ -58,21 +58,21 @@ namespace DockerDotNet.Core.Models
         /// <value>Current is the number of PIDs in the cgroup. </value>
         /* <example>5</example> */
         [JsonPropertyName("current")]
-        public int? Current { get { return this.CurrentOption; } set { this.CurrentOption = new(value); } }
+        public ulong? Current { get { return this.CurrentOption; } set { this.CurrentOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of Limit
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> LimitOption { get; private set; }
+        public Option<ulong?> LimitOption { get; private set; }
 
         /// <summary>
         /// Limit is the hard limit on the number of pids in the cgroup. A \&quot;Limit\&quot; of 0 means that there is no limit. 
         /// </summary>
         /// <value>Limit is the hard limit on the number of pids in the cgroup. A \&quot;Limit\&quot; of 0 means that there is no limit. </value>
         [JsonPropertyName("limit")]
-        public int? Limit { get { return this.LimitOption; } set { this.LimitOption = new(value); } }
+        public ulong? Limit { get { return this.LimitOption; } set { this.LimitOption = new(value); } }
 
         /// <summary>
         /// Returns the string presentation of the object
@@ -121,8 +121,8 @@ namespace DockerDotNet.Core.Models
 
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
-            Option<int?> current = default;
-            Option<int?> limit = default;
+            Option<ulong?> current = default;
+            Option<ulong?> limit = default;
 
             while (utf8JsonReader.Read())
             {
@@ -141,11 +141,11 @@ namespace DockerDotNet.Core.Models
                     {
                         case "current":
                             if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                current = new Option<int?>(utf8JsonReader.GetInt32());
+                                current = new Option<ulong?>(utf8JsonReader.GetUInt64());
                             break;
                         case "limit":
                             if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                limit = new Option<int?>(utf8JsonReader.GetInt32());
+                                limit = new Option<ulong?>(utf8JsonReader.GetUInt64());
                             break;
                         default:
                             break;

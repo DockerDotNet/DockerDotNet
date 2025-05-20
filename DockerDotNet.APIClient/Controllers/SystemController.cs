@@ -28,40 +28,43 @@ namespace DockerDotNet.APIClient.Controllers
         [Route("info")]
         public async Task<IActionResult> GetInfo(CancellationToken cancellationToken)
         {
-            var (status, response, error) = await _systemService.GetInfoAsync(cancellationToken);
-            return status ? Ok(response) : StatusCode((int)error.StatusCode, error.Message);
+            var response = await _systemService.GetInfoAsync(cancellationToken);
+            return response.Match(
+                Left: error => StatusCode((int)error.StatusCode, error.Message),
+                Right: result => Ok(result)
+                );
         }
 
         [HttpGet]
         [Route("version")]
         public async Task<IActionResult> GetVersion(CancellationToken cancellationToken)
         {
-            var (status, response, error) = await _systemService.GetVersionAsync(cancellationToken);
-            return status ? Ok(response) : StatusCode((int)error.StatusCode, error.Message);
+            var response = await _systemService.GetVersionAsync(cancellationToken);
+            return response.Match(Left: error => StatusCode((int)error.StatusCode, error.Message), Right: result => Ok(result));
         }
 
         [HttpPost]
         [Route("auth")]
         public async Task<IActionResult> AuthenticateRegistry([FromBody] AuthConfig authConfig, CancellationToken cancellationToken)
         {
-            var (status, response, error) = await _systemService.AuthenticateRegistry(authConfig, cancellationToken);
-            return status ? Ok(response) : StatusCode((int)error.StatusCode, error.Message);
+            var response = await _systemService.AuthenticateRegistry(authConfig, cancellationToken);
+            return response.Match(Left: error => StatusCode((int)error.StatusCode, error.Message), Right: result => Ok(result));
         }
 
         [HttpGet]
         [Route("ping")]
         public async Task<IActionResult> Ping_Get(CancellationToken cancellationToken)
         {
-            var (status, response, error) = await _systemService.Ping_Get(cancellationToken);
-            return status ? Ok(response) : StatusCode((int)error.StatusCode, error.Message);
+            var response = await _systemService.Ping_Get(cancellationToken);
+            return response.Match(Left: error => StatusCode((int)error.StatusCode, error.Message), Right: result => Ok(result));
         }
 
         [HttpGet]
         [Route("")]
         public async Task<IActionResult> GetSystemDataUsage(CancellationToken cancellationToken)
         {
-            var(status, response, error) = await _systemService.GetDataUsageInformation(cancellationToken);
-            return status ? Ok(response) : StatusCode((int)error.StatusCode, error.Message);
+            var response = await _systemService.GetDataUsageInformation(cancellationToken);
+            return response.Match(Left: error => StatusCode((int)error.StatusCode, error.Message), Right: result => Ok(result));
         }
     }
 }
