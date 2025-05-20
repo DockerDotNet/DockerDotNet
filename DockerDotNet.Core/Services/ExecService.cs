@@ -28,7 +28,7 @@ namespace DockerDotNet.Core.Services
 
         public async Task<Either<DockerError?, ExecInspectResponse?>> InspectExec(string id, CancellationToken cancellationToken)
         {
-            return await _dockerClient.PostAsync<ExecInspectResponse>($"exec/{id}/json", string.Empty, cancellationToken);
+            return await _dockerClient.GetAsync<ExecInspectResponse>($"exec/{id}/json", string.Empty, cancellationToken);
         }
 
         public async Task<Either<DockerError?, ContainerExecCreateResponse?>> CreateExec(string id, ExecConfig createExecParameters, CancellationToken cancellationToken)

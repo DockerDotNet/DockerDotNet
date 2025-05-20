@@ -54,7 +54,7 @@ namespace DockerDotNet.Core
         {
             HttpClient httpClient;
 
-            if (BaseUri == null)
+            //if (BaseUri == null)
                 BaseUri = GetLocalUri();
 
             HttpMessageHandler handler = GetHttpHandler(BaseUri);

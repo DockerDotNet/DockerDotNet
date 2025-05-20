@@ -1,8 +1,14 @@
 ﻿using DockerDotNet.APIClient.Controllers;
 using DockerDotNet.Core.Models;
+using DockerDotNet.Core.Services;
+
+using LanguageExt.Pipes;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
+
+using Shouldly;
 
 using System;
 using System.Collections.Generic;
@@ -14,32 +20,58 @@ using System.Threading.Tasks;
 
 using Xunit.Abstractions;
 
+using Task = System.Threading.Tasks.Task;
+
 namespace DockerDotNet.API.Tests
 {
-    public class ExecControllerTests
+    public class ExecControllerTests : DockerTestBase
     {
-        ExecController Controller { get; set; }
+        private readonly ExecService _execService;
 
         private readonly ITestOutputHelper _output;
 
-        public ExecControllerTests(ITestOutputHelper testOutputHelper)
+        string containerID = string.Empty;
+        string execID = string.Empty;
+        
+        public ExecControllerTests(ITestOutputHelper testOutputHelper) : base(Array.Empty<string>())
         {
             _output = testOutputHelper;
-            //Controller = new ExecController();
-            Controller.ControllerContext = new ControllerContext
-            {
-                HttpContext = new DefaultHttpContext()
-            };
+            _execService = _host.Services.GetRequiredService<ExecService>();
+            containerID = "67a9de123f68f8e7db1965813198aa2da7c0b36c96f9d94058e2295efe75bb47";
         }
 
         [Fact]
-        public async void InspectExecInstance()
+        public async Task CreateExecAsync()
         {
-            ContainerExecInspectResponse inspectResponse = await Controller.InspectExecInstance("940a8e3780e5dd53e2e086a9889b50b6c3a4622677a47fe7d19767bf344cc1cd", new CancellationToken());
-            Assert.Equal((int)HttpStatusCode.OK, Controller.Response.StatusCode);
-            Assert.NotNull(inspectResponse);
+            ExecConfig requestBody = new ExecConfig();
+            requestBody.AttachStdin = true;
+            requestBody.AttachStdout = true;
+            requestBody.AttachStderr = true;
+            requestBody.Cmd = ["sh"];
+            requestBody.Tty = false;
+            requestBody.DetachKeys = "ctrl-q";
 
-            _output.WriteLine(JsonSerializer.Serialize(inspectResponse));
+            var response = await _execService.CreateExec(containerID, requestBody, new CancellationToken());
+
+            response.IsRight.ShouldBeTrue();
+            var result = response.Match(Left: left => null, Right: right => right);
+            result.ShouldNotBeNull();
+            result.ShouldBeOfType<ContainerExecCreateResponse>();
+            execID = result.ID;
+        }
+
+        [Fact]
+        public async Task InspectExecInstance()
+        {
+            await CreateExecAsync();
+
+            var inspectResponse = await _execService.InspectExec(execID, new CancellationToken());
+
+            inspectResponse.IsRight.ShouldBeTrue();
+            var result = inspectResponse.Match(Left: left => null, Right: right => right);
+            result.ShouldNotBeNull();
+
+            _output.WriteLine(JsonSerializer.Serialize(result));
         }
 
 
