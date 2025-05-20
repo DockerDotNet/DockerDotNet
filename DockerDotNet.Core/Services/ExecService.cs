@@ -42,7 +42,7 @@ namespace DockerDotNet.Core.Services
             {
                 bool isTty = execStartConfig.Tty.GetValueOrDefault();
                 //string query = _dockerClient.GetQueryString(execStartConfig);
-                var (success, execStream, contentType, error) = await _dockerClient.PostStreamAsync($"exec/{id}/start", string.Empty, cancellationToken, body: JsonContent.Create(execStartConfig));
+                var (success, execStream, contentType, error) = await _dockerClient.PostHijackedStreamAsync($"exec/{id}/start", string.Empty, cancellationToken, body: JsonContent.Create(execStartConfig));
                 if (success)
                 {
                     // read docker output

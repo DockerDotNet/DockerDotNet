@@ -160,14 +160,7 @@ namespace DockerDotNet.Core
         {
             string resultString = string.Empty;
 
-            authConfig = new AuthConfig()
-            {
-                Serveraddress = "",
-                Username = "",
-                Password = ""
-            };
-
-            if (authConfig == null)
+            if (authConfig != null)
             {
                 JsonSerializerOptions serializerSettings = new JsonSerializerOptions();
                 serializerSettings.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
@@ -302,11 +295,31 @@ namespace DockerDotNet.Core
             string endpoint,
             string queryParameters,
             CancellationToken cancellationToken,
+            Dictionary<string, string>? headers = null,
             HttpContent? body = null)
         {
             var client = GetDockerHttpClient();
             
-            HttpRequestMessage requestMessage = PrepareHttpRequest(HttpMethod.Get, endpoint, queryParameters);
+            HttpRequestMessage requestMessage = PrepareHttpRequest(HttpMethod.Get, endpoint, queryParameters, headers: headers, requestBody: body);
+
+            HttpResponseMessage response = await client.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+
+            return await ProcessStreamResponse<Stream?>(response, cancellationToken);
+        }
+
+        public async Task<(bool, Stream?, string, DockerError?)> PostHijackedStreamAsync(
+            string endpoint,
+            string queryParameters,
+            CancellationToken cancellationToken,
+            Dictionary<string, string>? headers = null,
+            HttpContent? body = null)
+        {
+            var client = GetDockerHttpClient();
+
+            HttpRequestMessage requestMessage = PrepareHttpRequest(HttpMethod.Post, endpoint, queryParameters, headers: headers, requestBody: body);
+
+            requestMessage.Headers.Connection.Add("Upgrade");
+            requestMessage.Headers.Upgrade.Add(new ProductHeaderValue("hijack"));
 
             HttpResponseMessage response = await client.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
 
@@ -317,19 +330,18 @@ namespace DockerDotNet.Core
             string endpoint,
             string queryParameters,
             CancellationToken cancellationToken,
+            Dictionary<string, string>? headers = null,
             HttpContent? body = null)
         {
             var client = GetDockerHttpClient();
 
-            HttpRequestMessage requestMessage = PrepareHttpRequest(HttpMethod.Post, endpoint, queryParameters, requestBody: body);
-
-            requestMessage.Headers.Connection.Add("Upgrade");
-            requestMessage.Headers.Upgrade.Add(new ProductHeaderValue("hijack"));
+            HttpRequestMessage requestMessage = PrepareHttpRequest(HttpMethod.Post, endpoint, queryParameters, headers: headers, requestBody: body);
 
             HttpResponseMessage response = await client.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
 
             return await ProcessStreamResponse<Stream?>(response, cancellationToken);
         }
+
 
         private async Task<(bool, Stream?, string, DockerError?)> ProcessStreamResponse<T>(HttpResponseMessage response, CancellationToken cancellationToken)
         {

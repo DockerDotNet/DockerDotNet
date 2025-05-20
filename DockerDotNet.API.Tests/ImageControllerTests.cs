@@ -39,7 +39,7 @@ namespace DockerDotNet.API.Tests
             var responseStream = new MemoryStream();
             ImageController.Response.Body = responseStream;
 
-            await ImageController.PullImage(new ImagesCreateParameters() { FromImage = "excellonb2bregsrv.azurecr.io/businessruleapp:latest" }, null, new CancellationToken());
+            await ImageController.CreateImage(new ImagesCreateParameters() { FromImage = "excellonb2bregsrv.azurecr.io/businessruleapp:latest" }, null, new CancellationToken());
 
             Assert.Equal((int)HttpStatusCode.OK, ImageController.Response.StatusCode);
 

@@ -54,42 +54,27 @@ namespace DockerDotNet.APIClient.Controllers
             return response.Match(Left: error => StatusCode((int)error.StatusCode, error.Message), Right: result => Ok(result));
         }
 
-        [HttpPost]
-        [Route("pull")]
-        public async System.Threading.Tasks.Task PullImage([FromQuery] ImagesCreateParameters imagesCreateParameters, [FromBody] Stream image, CancellationToken cancellationToken)
+        [HttpGet]
+        [Route("create")]
+        public async System.Threading.Tasks.Task CreateImage([FromQuery] ImagesCreateParameters imagesCreateParameters, CancellationToken cancellationToken)
         {
-            try
+            if (!HttpContext.WebSockets.IsWebSocketRequest)
             {
-                // TODO: Need to handle conversion of stream to HttpContent
-                HttpClient httpClient = _dockerClient.GetDockerHttpClient();
-                string parameters = _dockerClient.GetQueryString(imagesCreateParameters);
-                //HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, new UriBuilder($"{httpClient.BaseAddress}images/create?fromImage={imageName}").Uri);
-                HttpRequestMessage requestMessage = _dockerClient.PrepareHttpRequest(HttpMethod.Post, "images/create", parameters);
-
-                requestMessage.Headers.Add("Accept", "application/json");
-                var headers = _dockerClient.GetRegistryAuthHeaders(null);
-                foreach (var header in headers)
-                {
-                    requestMessage.Headers.Add(header.Key, header.Value);
-                }
-                HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
-
-
-                Response.StatusCode = (int)httpResponseMessage.StatusCode;
-                Response.ContentType = httpResponseMessage.Content.Headers.ContentType?.ToString() ?? "application/octet-stream";
-
-                using var upstreamStream = await httpResponseMessage.Content.ReadAsStreamAsync(cancellationToken);
-                await upstreamStream.CopyToAsync(Response.Body, cancellationToken);
-                await Response.Body.FlushAsync(cancellationToken);
+                HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+                await HttpContext.Response.WriteAsync("Expected a WebSocket request.", cancellationToken: cancellationToken);
+                return;
             }
-            catch (OperationCanceledException ex)
-            {
-                Console.WriteLine(ex.ToString());
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-            }
+            using var webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
+
+            await _imageService.CreateImage(imagesCreateParameters, webSocket, cancellationToken);
+        }
+
+        [HttpPost]
+        [Route("build/prune")]
+        public async Task<IActionResult> DeleteBuilderCache([FromQuery]BuildPruneParameters buildPruneParameters, CancellationToken cancellationToken)
+        {
+            var response = await _imageService.BuildPrune(buildPruneParameters, cancellationToken);
+            return response.Match(Left: error => StatusCode((int)error.StatusCode, error.Message), Right: result => Ok(result));
         }
     }
 }
