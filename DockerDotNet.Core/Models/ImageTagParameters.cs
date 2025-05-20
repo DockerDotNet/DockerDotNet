@@ -10,10 +10,10 @@ namespace DockerDotNet.Core.Models
     public class ImageTagParameters
     {
         [JsonPropertyName("repo")]
-        public string Repository { get; set; }
+        public string? Repository { get; set; }
 
         [JsonPropertyName("tag")]
-        public string Tag { get; set; }
+        public string? Tag { get; set; }
 
     }
 }

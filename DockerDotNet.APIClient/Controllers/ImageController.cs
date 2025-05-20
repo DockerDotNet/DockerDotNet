@@ -84,5 +84,13 @@ namespace DockerDotNet.APIClient.Controllers
             var response = await _imageService.DeleteImage(name, parameters, cancellationToken);
             return response.Match(Left: error => StatusCode((int)error.StatusCode, error.Message), Right: result => Ok(result));
         }
+
+        [HttpGet]
+        [Route("search")]
+        public async Task<IActionResult> SearchImages([FromQuery]ImageSearchParameters parameters, CancellationToken cancellationToken)
+        {
+            var response = await _imageService.ImageSearch(parameters, cancellationToken);
+            return response.Match(Left: error => StatusCode((int)error.StatusCode, error.Message), Right: result => Ok(result));
+        }
     }
 }

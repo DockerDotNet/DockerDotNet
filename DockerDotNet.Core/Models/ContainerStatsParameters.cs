@@ -10,9 +10,9 @@ namespace DockerDotNet.Core.Models
     public class ContainerStatsParameters
     {
         [JsonPropertyName("stream")]
-        public bool Stream { get; set; }
+        public bool? Stream { get; set; }
 
         [JsonPropertyName("one-shot")]
-        public bool OneShot { get; set; }
+        public bool? OneShot { get; set; }
     }
 }

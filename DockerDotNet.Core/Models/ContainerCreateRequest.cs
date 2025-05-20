@@ -29,15 +29,14 @@ namespace DockerDotNet.Core.Models
     [DataContract]
     public class CreateContainerQueryParameters
     {
-        //TODO: Delete this class and replace query method
         [DataMember(Name = "name", EmitDefaultValue = false)]
         [JsonPropertyName("name")]
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         //[QueryStringParameter("platform", false)]
         [DataMember(Name = "platform", EmitDefaultValue = false)]
         [JsonPropertyName("platform")]
-        public string Platform { get; set; }
+        public string? Platform { get; set; }
 
     }
 

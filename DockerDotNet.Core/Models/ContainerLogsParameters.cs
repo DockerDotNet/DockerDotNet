@@ -10,22 +10,22 @@ namespace DockerDotNet.Core.Models
     public class ContainerLogsParameters
     {
         [JsonPropertyName("follow")]
-        public bool Follow { get; set; }
+        public bool? Follow { get; set; }
 
         [JsonPropertyName("stdout")]
-        public bool StdOut { get; set; }
+        public bool? StdOut { get; set; }
 
         [JsonPropertyName("stderr")]
-        public bool StdErr { get; set; }
+        public bool? StdErr { get; set; }
 
         [JsonPropertyName("since")]
-        public int Since { get; set; }
+        public int? Since { get; set; }
 
         [JsonPropertyName("until")]
-        public int Until { get; set; }
+        public int? Until { get; set; }
 
         [JsonPropertyName("timestamps")]
-        public bool TimeStamps { get; set; }
+        public bool? TimeStamps { get; set; }
 
         [JsonPropertyName("tail")]
         public string? Tail { get; set; }

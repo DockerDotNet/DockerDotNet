@@ -10,12 +10,12 @@ namespace DockerDotNet.Core.Models
     public class ContainerDeleteParameters
     {
         [JsonPropertyName("v")]
-        public bool IncludeVolumes { get; set; }
+        public bool? IncludeVolumes { get; set; }
 
         [JsonPropertyName("force")]
-        public bool Force { get; set; }
+        public bool? Force { get; set; }
 
         [JsonPropertyName("link")]
-        public bool Link { get; set; }
+        public bool? Link { get; set; }
     }
 }

@@ -114,5 +114,11 @@ namespace DockerDotNet.Core.Services
             string query = _dockerClient.GetQueryString(parameters);
             return await _dockerClient.DeleteAsync<ImageDeleteResponseItem>($"images/{name}", query, cancellationToken);
         }
+
+        public async Task<Either<DockerError?, List<ImageSearchResponseItem>?>> ImageSearch(ImageSearchParameters parameters, CancellationToken cancellationToken)
+        {
+            string query = _dockerClient.GetQueryString(parameters);
+            return await _dockerClient.GetAsync<List<ImageSearchResponseItem>>("images/search", query, cancellationToken).ConfigureAwait(false);
+        }    
     }
 }

@@ -220,7 +220,7 @@ namespace DockerDotNet.Core
 
                 string propertyName = jsonPropertyNameAttribute?.Name ?? property.Name;
                 string encodedKey = HttpUtility.UrlEncode(propertyName);
-                string encodedValue = string.Empty;
+                string encodedValue;
 
                 //if (property.PropertyType.GetGenericTypeDefinition() == typeof(IDictionary<,>))
                 if (value is IDictionary)
@@ -233,7 +233,7 @@ namespace DockerDotNet.Core
                     //encodedValue = HttpUtility.UrlEncode(value.ToString());
                     encodedValue = value?.ToString();
                 }
-                keyValuePairs.Add($"{Uri.EscapeUriString(encodedKey)}={Uri.EscapeDataString(encodedValue)}");
+                keyValuePairs.Add($"{Uri.EscapeDataString(encodedKey)}={Uri.EscapeDataString(encodedValue)}");
             }
             return string.Join("&", keyValuePairs);
         }
