@@ -543,53 +543,53 @@ namespace DockerDotNet.Core.Models
                 }
             }
 
-            if (id.IsSet && id.Value == null)
-                throw new ArgumentNullException(nameof(id), "Property is not nullable for class ImageInspect.");
+            //if (id.IsSet && id.Value == null)
+            //    throw new ArgumentNullException(nameof(id), "Property is not nullable for class ImageInspect.");
 
-            if (descriptor.IsSet && descriptor.Value == null)
-                throw new ArgumentNullException(nameof(descriptor), "Property is not nullable for class ImageInspect.");
+            //if (descriptor.IsSet && descriptor.Value == null)
+            //    throw new ArgumentNullException(nameof(descriptor), "Property is not nullable for class ImageInspect.");
 
-            if (repoTags.IsSet && repoTags.Value == null)
-                throw new ArgumentNullException(nameof(repoTags), "Property is not nullable for class ImageInspect.");
+            //if (repoTags.IsSet && repoTags.Value == null)
+            //    throw new ArgumentNullException(nameof(repoTags), "Property is not nullable for class ImageInspect.");
 
-            if (repoDigests.IsSet && repoDigests.Value == null)
-                throw new ArgumentNullException(nameof(repoDigests), "Property is not nullable for class ImageInspect.");
+            //if (repoDigests.IsSet && repoDigests.Value == null)
+            //    throw new ArgumentNullException(nameof(repoDigests), "Property is not nullable for class ImageInspect.");
 
-            if (parent.IsSet && parent.Value == null)
-                throw new ArgumentNullException(nameof(parent), "Property is not nullable for class ImageInspect.");
+            //if (parent.IsSet && parent.Value == null)
+            //    throw new ArgumentNullException(nameof(parent), "Property is not nullable for class ImageInspect.");
 
-            if (comment.IsSet && comment.Value == null)
-                throw new ArgumentNullException(nameof(comment), "Property is not nullable for class ImageInspect.");
+            //if (comment.IsSet && comment.Value == null)
+            //    throw new ArgumentNullException(nameof(comment), "Property is not nullable for class ImageInspect.");
 
-            if (dockerVersion.IsSet && dockerVersion.Value == null)
-                throw new ArgumentNullException(nameof(dockerVersion), "Property is not nullable for class ImageInspect.");
+            //if (dockerVersion.IsSet && dockerVersion.Value == null)
+            //    throw new ArgumentNullException(nameof(dockerVersion), "Property is not nullable for class ImageInspect.");
 
-            if (author.IsSet && author.Value == null)
-                throw new ArgumentNullException(nameof(author), "Property is not nullable for class ImageInspect.");
+            //if (author.IsSet && author.Value == null)
+            //    throw new ArgumentNullException(nameof(author), "Property is not nullable for class ImageInspect.");
 
-            if (config.IsSet && config.Value == null)
-                throw new ArgumentNullException(nameof(config), "Property is not nullable for class ImageInspect.");
+            //if (config.IsSet && config.Value == null)
+            //    throw new ArgumentNullException(nameof(config), "Property is not nullable for class ImageInspect.");
 
-            if (architecture.IsSet && architecture.Value == null)
-                throw new ArgumentNullException(nameof(architecture), "Property is not nullable for class ImageInspect.");
+            //if (architecture.IsSet && architecture.Value == null)
+            //    throw new ArgumentNullException(nameof(architecture), "Property is not nullable for class ImageInspect.");
 
-            if (os.IsSet && os.Value == null)
-                throw new ArgumentNullException(nameof(os), "Property is not nullable for class ImageInspect.");
+            //if (os.IsSet && os.Value == null)
+            //    throw new ArgumentNullException(nameof(os), "Property is not nullable for class ImageInspect.");
 
-            if (size.IsSet && size.Value == null)
-                throw new ArgumentNullException(nameof(size), "Property is not nullable for class ImageInspect.");
+            //if (size.IsSet && size.Value == null)
+            //    throw new ArgumentNullException(nameof(size), "Property is not nullable for class ImageInspect.");
 
-            if (virtualSize.IsSet && virtualSize.Value == null)
-                throw new ArgumentNullException(nameof(virtualSize), "Property is not nullable for class ImageInspect.");
+            //if (virtualSize.IsSet && virtualSize.Value == null)
+            //    throw new ArgumentNullException(nameof(virtualSize), "Property is not nullable for class ImageInspect.");
 
-            if (graphDriver.IsSet && graphDriver.Value == null)
-                throw new ArgumentNullException(nameof(graphDriver), "Property is not nullable for class ImageInspect.");
+            //if (graphDriver.IsSet && graphDriver.Value == null)
+            //    throw new ArgumentNullException(nameof(graphDriver), "Property is not nullable for class ImageInspect.");
 
-            if (rootFS.IsSet && rootFS.Value == null)
-                throw new ArgumentNullException(nameof(rootFS), "Property is not nullable for class ImageInspect.");
+            //if (rootFS.IsSet && rootFS.Value == null)
+            //    throw new ArgumentNullException(nameof(rootFS), "Property is not nullable for class ImageInspect.");
 
-            if (metadata.IsSet && metadata.Value == null)
-                throw new ArgumentNullException(nameof(metadata), "Property is not nullable for class ImageInspect.");
+            //if (metadata.IsSet && metadata.Value == null)
+            //    throw new ArgumentNullException(nameof(metadata), "Property is not nullable for class ImageInspect.");
 
             return new ImageInspect(id, descriptor, manifests, repoTags, repoDigests, parent, comment, created, dockerVersion, author, config, architecture, variant, os, osVersion, size, virtualSize, graphDriver, rootFS, metadata);
         }

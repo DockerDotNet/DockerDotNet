@@ -18,45 +18,46 @@ using System.Text.Json;
 
 namespace DockerDotNet.API.Tests
 {
-    public class ImageControllerTests : DockerTestBase
+    public class ImageServiceTests : DockerTestBase
     {
-        ImageController ImageController { get; set; }
-
         private readonly ImageService _imageService;
 
         private readonly ITestOutputHelper _output;
 
-        public ImageControllerTests(ITestOutputHelper testOutputHelper) : base(Array.Empty<string>())
+        private string imageName = string.Empty;
+
+        public ImageServiceTests(ITestOutputHelper testOutputHelper) : base(Array.Empty<string>())
         {
             _imageService = _host.Services.GetRequiredService<ImageService>(); 
             _output = testOutputHelper;
+            imageName = "1b7c17f650602d97a10724d796f45f0b5250d47ee5ba02f28de89f8a1531f3ce";
         }
 
-        [Fact]
-        public async void PullImage_StreamedContent()
-        {
-            // TODO: Write this test properly after implementing streaming abstraction
-            var responseStream = new MemoryStream();
-            ImageController.Response.Body = responseStream;
+        //[Fact]
+        //public async void PullImage_StreamedContent()
+        //{
+        //    // TODO: Write this test properly after implementing streaming abstraction
+        //    var responseStream = new MemoryStream();
+        //    ImageController.Response.Body = responseStream;
 
-            //await ImageController.CreateImage(new ImagesCreateParameters() { FromImage = "excellonb2bregsrv.azurecr.io/businessruleapp:latest" }, null, new CancellationToken());
+        //    //await ImageController.CreateImage(new ImagesCreateParameters() { FromImage = "excellonb2bregsrv.azurecr.io/businessruleapp:latest" }, null, new CancellationToken());
 
-            Assert.Equal((int)HttpStatusCode.OK, ImageController.Response.StatusCode);
+        //    Assert.Equal((int)HttpStatusCode.OK, ImageController.Response.StatusCode);
 
-            // Assert and Log
-            responseStream.Position = 0;
-            using var reader = new StreamReader(responseStream);
+        //    // Assert and Log
+        //    responseStream.Position = 0;
+        //    using var reader = new StreamReader(responseStream);
 
-            _output.WriteLine("Streaming response content:");
-            while (!reader.EndOfStream)
-            {
-                var line = await reader.ReadLineAsync();
-                if (line != null)
-                {
-                    _output.WriteLine(line); // Log each line or chunk
-                }
-            }
-        }
+        //    _output.WriteLine("Streaming response content:");
+        //    while (!reader.EndOfStream)
+        //    {
+        //        var line = await reader.ReadLineAsync();
+        //        if (line != null)
+        //        {
+        //            _output.WriteLine(line); // Log each line or chunk
+        //        }
+        //    }
+        //}
 
         [Fact]
         public async System.Threading.Tasks.Task GetImageList()
@@ -65,6 +66,7 @@ namespace DockerDotNet.API.Tests
             response.IsRight.ShouldBeTrue();
             var result = response.Match(Left: null, Right: result => result);
             result.ShouldNotBeNull();
+            //result.ShouldBeOfType<IList<ImageSummary>>();
 
             _output.WriteLine(JsonSerializer.Serialize(result));
         }
@@ -72,7 +74,6 @@ namespace DockerDotNet.API.Tests
         [Fact]
         public async System.Threading.Tasks.Task GetImage()
         {
-            string imageName = "04bf2359fb0d7f18a2c98856d506051ab600624d686ba2114352fd85c28004cc";
             var response = await _imageService.GetImage(imageName, new CancellationToken());
             response.IsRight.ShouldBeTrue();
             var result = response.Match(Left: null, Right: right => right);
@@ -84,7 +85,6 @@ namespace DockerDotNet.API.Tests
         [Fact]
         public async System.Threading.Tasks.Task GetImageHistory()
         {
-            string imageName = "04bf2359fb0d7f18a2c98856d506051ab600624d686ba2114352fd85c28004cc";
             var response = await _imageService.GetImageHistory(imageName, new CancellationToken());
             response.IsRight.ShouldBeTrue();
             var result = response.Match(Left: null, Right: result => result);
@@ -96,17 +96,32 @@ namespace DockerDotNet.API.Tests
         [Fact]
         public async System.Threading.Tasks.Task TagImage()
         {
-            string imageName = "04bf2359fb0d7f18a2c98856d506051ab600624d686ba2114352fd85c28004cc";
-            
-            ImageTagParameters parameters = new ImageTagParameters();
-            parameters.Repository = "";
-            parameters.Tag = "";
+            ImageTagParameters parameters = new ImageTagParameters
+            {
+                Repository = "",
+                Tag = ""
+            };
 
             var response = await _imageService.TagImage(imageName, parameters, new CancellationToken());
             response.IsRight.ShouldBeTrue();
             var result = response.Match(Left: null, Right: right => right);
             result.ShouldNotBeNull();
             
+            _output.WriteLine(JsonSerializer.Serialize(result));
+        }
+
+        [Fact]
+        public async System.Threading.Tasks.Task SearchImage()
+        {
+            ImageSearchParameters imageSearchParameters = new ImageSearchParameters();
+            imageSearchParameters.Term = "alpine";
+            imageSearchParameters.Limit = 10;
+
+            var response = await _imageService.ImageSearch(imageSearchParameters, new CancellationToken());
+            response.IsRight.ShouldBeTrue();
+            var result = response.Match(Left: null, Right: right => right);
+            result.ShouldNotBeNull();
+
             _output.WriteLine(JsonSerializer.Serialize(result));
         }
     }

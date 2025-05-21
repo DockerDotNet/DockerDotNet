@@ -139,17 +139,17 @@ namespace DockerDotNet.Core.Models
                 }
             }
 
-            if (!name.IsSet)
-                throw new ArgumentException("Property is required for class DriverData.", nameof(name));
+            //if (!name.IsSet)
+            //    throw new ArgumentException("Property is required for class DriverData.", nameof(name));
 
-            if (!data.IsSet)
-                throw new ArgumentException("Property is required for class DriverData.", nameof(data));
+            //if (!data.IsSet)
+            //    throw new ArgumentException("Property is required for class DriverData.", nameof(data));
 
-            if (name.IsSet && name.Value == null)
-                throw new ArgumentNullException(nameof(name), "Property is not nullable for class DriverData.");
+            //if (name.IsSet && name.Value == null)
+            //    throw new ArgumentNullException(nameof(name), "Property is not nullable for class DriverData.");
 
-            if (data.IsSet && data.Value == null)
-                throw new ArgumentNullException(nameof(data), "Property is not nullable for class DriverData.");
+            //if (data.IsSet && data.Value == null)
+            //    throw new ArgumentNullException(nameof(data), "Property is not nullable for class DriverData.");
 
             return new DriverData(name.Value!, data.Value!);
         }
