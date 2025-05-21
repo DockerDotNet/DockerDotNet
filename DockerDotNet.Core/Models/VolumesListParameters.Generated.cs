@@ -1,7 +1,5 @@
-using Newtonsoft.Json;
-
-using System.Collections.Generic;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace DockerDotNet.Core.Models
 {
@@ -9,7 +7,7 @@ namespace DockerDotNet.Core.Models
     public class VolumesListParameters // (main.VolumesListParameters)
     {
         //[QueryStringParameter("filters", false, typeof(MapQueryStringConverter))]
-        [JsonProperty("filters")]
+        [JsonPropertyName("filters")]
         public IDictionary<string, IDictionary<string, bool>> Filters { get; set; }
     }
 }
