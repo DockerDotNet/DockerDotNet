@@ -1,18 +1,14 @@
-﻿using DockerDotNet.Core.Models;
+﻿using DockerDotNet.Core.Helpers;
+using DockerDotNet.Core.Models;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http.Json;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Text.Json;
-using System.Threading.Tasks;
-using System.Net;
-using System.Net.WebSockets;
 using LanguageExt;
-using System.Runtime.CompilerServices;
-using DockerDotNet.Core.Helpers;
+
+using Microsoft.Extensions.Logging;
+
+using System.Net;
+using System.Net.Http.Json;
+using System.Net.WebSockets;
+using System.Text.Json;
 
 namespace DockerDotNet.Core.Services
 {
@@ -21,12 +17,14 @@ namespace DockerDotNet.Core.Services
         private readonly DockerClient _dockerClient;
         private readonly JsonSerializerOptions jsonSerializerOptions;
         private readonly StreamHelper streamHelper;
+        private readonly ILogger<ContainerService> logger;
 
-        public ContainerService(DockerClient dockerClient, JsonSerializerOptions jsonSerializerOptions, StreamHelper streamHelper)
+        public ContainerService(DockerClient dockerClient, JsonSerializerOptions jsonSerializerOptions, StreamHelper streamHelper, ILogger<ContainerService> logger)
         {
             _dockerClient = dockerClient;
             this.jsonSerializerOptions = jsonSerializerOptions;
             this.streamHelper = streamHelper;
+            this.logger = logger;
         }
 
         public async Task<Either<DockerError?, IList<ContainerSummary>?>> GetContainers(ContainersListParameters parameters, CancellationToken cancellationToken)
@@ -88,81 +86,41 @@ namespace DockerDotNet.Core.Services
             return await _dockerClient.PostAsync<ContainerExecCreateResponse>($"containers/{id}/exec", string.Empty,  cancellationToken, body: JsonContent.Create(createParameters));
         }
 
-        public async Task<(bool, Stream?, DockerError?)> GetContainerLogs(string id, ContainerLogsParameters parameters, WebSocket webSocket, CancellationToken cancellationToken)
+        public async Task<Either<DockerError?, Stream?>> GetContainerLogs(string id, ContainerLogsParameters parameters, WebSocket webSocket, CancellationToken cancellationToken)
         {
             try
             {
                 string query = _dockerClient.GetQueryString(parameters);
-                var (success, logStream, contentType, error) = await _dockerClient.GetStreamAsync($"containers/{id}/logs", query, cancellationToken);
 
-                if (success && contentType == "application/vnd.docker.multiplexed-stream")
-                {
-                    await streamHelper.ReadMultiplexedStreamAsync(logStream, webSocket, cancellationToken);
-                    
-                    return (true, logStream, null);
-                }
-                else
-                {
-                    return (false, null, new DockerError(HttpStatusCode.InternalServerError, "Need to implement"));
-                }
-
-                
+                return await  _dockerClient.GetStreamAsync($"containers/{id}/logs", query, cancellationToken);
             }
             catch (OperationCanceledException ex)
             {
-                Console.WriteLine(ex.ToString());
-                return (false, null, new DockerError(HttpStatusCode.RequestTimeout, ex.Message));
+                return new DockerError(HttpStatusCode.RequestTimeout, ex.Message);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
-                return (false, null, new DockerError(HttpStatusCode.InternalServerError, ex.Message));
+                logger.LogError(ex, ex.Message);
+                return new DockerError(HttpStatusCode.InternalServerError, ex.Message);
             }
         }
 
-        public async Task<(bool, Stream?, DockerError?)> GetContainerStats(string id, ContainerStatsParameters parameters, WebSocket webSocket, CancellationToken cancellationToken)
+        public async Task<Either<DockerError?, Stream?>> GetContainerStats(string id, ContainerStatsParameters parameters, WebSocket webSocket, CancellationToken cancellationToken)
         {
             try
             {
                 string query = _dockerClient.GetQueryString(parameters);
 
-                var (success, statStream, contentType, error) = await _dockerClient.GetStreamAsync($"containers/{id}/stats", query, cancellationToken);
-
-                if (success)
-                {
-                    var sendTask = System.Threading.Tasks.Task.Run(async () =>
-                    {
-                        await foreach (var stats in streamHelper.ReadNewlineDelimitedJson<ContainerStatsResponse>(statStream, cancellationToken))
-                        {
-                            string line = JsonSerializer.Serialize(stats) + "\n";
-
-                            if(string.IsNullOrWhiteSpace(line)) continue;
-                            var bytes = Encoding.ASCII.GetBytes(line);
-
-                            await webSocket.SendAsync(bytes, WebSocketMessageType.Text, true, cancellationToken);
-                        }
-                    }, cancellationToken);
-
-                    await sendTask;
-
-                    await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Session ended", CancellationToken.None);
-
-                    return (true, statStream, null);
-                }
-                else
-                {
-                    return (false, null, new DockerError(HttpStatusCode.InternalServerError, "Need to implement"));
-                }
+                return await _dockerClient.GetStreamAsync($"containers/{id}/stats", query, cancellationToken);
             }
             catch (OperationCanceledException ex)
             {
-                Console.WriteLine(ex.ToString());
-                return (false, null, new DockerError(HttpStatusCode.RequestTimeout, ex.Message));
+                return new DockerError(HttpStatusCode.RequestTimeout, ex.Message);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
-                return (false, null, new DockerError(HttpStatusCode.InternalServerError, ex.Message));
+                logger.LogError(ex, ex.Message);
+                return new DockerError(HttpStatusCode.InternalServerError, ex.Message);
             }
         }
     }

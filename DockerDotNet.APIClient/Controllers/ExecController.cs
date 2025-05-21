@@ -1,13 +1,9 @@
 ﻿using DockerDotNet.Core;
+using DockerDotNet.Core.Helpers;
 using DockerDotNet.Core.Models;
-
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-
-using System.Text.Json.Serialization;
-
-using System.Text.Json;
 using DockerDotNet.Core.Services;
+
+using Microsoft.AspNetCore.Mvc;
 
 namespace DockerDotNet.APIClient.Controllers
 {
@@ -16,13 +12,15 @@ namespace DockerDotNet.APIClient.Controllers
     public class ExecController : ControllerBase
     {
         private readonly ExecService execService;
+        private readonly StreamHelper streamHelper;
 
         private DockerClient DockerClient { get; set; }
 
-        public ExecController(DockerClient dockerClient, ExecService execService)
+        public ExecController(DockerClient dockerClient, ExecService execService, StreamHelper streamHelper)
         {
             DockerClient = dockerClient;
             this.execService = execService;
+            this.streamHelper = streamHelper;
         }
 
         [HttpGet]
@@ -51,17 +49,30 @@ namespace DockerDotNet.APIClient.Controllers
 
         [HttpGet]
         [Route("{id}/start")]
-        public async System.Threading.Tasks.Task StartExecInstance(string id, [FromQuery]ExecStartConfig parameters, CancellationToken cancellationToken)
+        public async Task<IActionResult> StartExecInstance(string id, [FromQuery]ExecStartConfig parameters, CancellationToken cancellationToken)
         {
             if (!HttpContext.WebSockets.IsWebSocketRequest)
             {
                 HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
                 await HttpContext.Response.WriteAsync("Expected a WebSocket request.", cancellationToken: cancellationToken);
-                return;
+                return StatusCode(500);
             }
             using var webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
 
-            var (success, stream, error) = await execService.StartExecInstance(id, parameters, webSocket, cancellationToken);
+            var response = await execService.StartExecInstance(id, parameters, webSocket, cancellationToken);
+
+            if (response.IsLeft)
+            {
+                var error = response.Match(Left: error => error, Right: _ => null);
+                
+                return StatusCode((int)error.StatusCode,error.Message);
+            }
+
+            var stream = response.Match(Left: _ => null, Right: str=> str);
+
+            await streamHelper.HandleMultiplexedStreamAsync(parameters.Tty.GetValueOrDefault(), stream,webSocket, cancellationToken);
+
+            return Ok();
 
         }
 

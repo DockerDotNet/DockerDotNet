@@ -1,8 +1,9 @@
 ﻿using DockerDotNet.Core;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+using DockerDotNet.Core.Helpers;
 using DockerDotNet.Core.Models;
 using DockerDotNet.Core.Services;
+
+using Microsoft.AspNetCore.Mvc;
 
 namespace DockerDotNet.APIClient.Controllers
 {
@@ -13,11 +14,13 @@ namespace DockerDotNet.APIClient.Controllers
         private readonly DockerClient _dockerClient;
 
         private readonly ImageService _imageService;
+        private readonly StreamHelper streamHelper;
 
-        public ImageController(DockerClient dockerClient, ImageService imageService)
+        public ImageController(DockerClient dockerClient, ImageService imageService, StreamHelper streamHelper)
         {
             _dockerClient = dockerClient;
             _imageService = imageService;
+            this.streamHelper = streamHelper;
         }
 
         [HttpGet]
@@ -56,17 +59,26 @@ namespace DockerDotNet.APIClient.Controllers
 
         [HttpGet]
         [Route("create")]
-        public async System.Threading.Tasks.Task CreateImage([FromQuery] ImagesCreateParameters imagesCreateParameters, CancellationToken cancellationToken)
+        public async Task<IActionResult> CreateImage([FromQuery] ImagesCreateParameters imagesCreateParameters, CancellationToken cancellationToken)
         {
             if (!HttpContext.WebSockets.IsWebSocketRequest)
             {
                 HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
                 await HttpContext.Response.WriteAsync("Expected a WebSocket request.", cancellationToken: cancellationToken);
-                return;
+                return StatusCode(500);
             }
             using var webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
 
-            await _imageService.CreateImage(imagesCreateParameters, webSocket, cancellationToken);
+            var response = await _imageService.CreateImage(imagesCreateParameters, webSocket, cancellationToken);
+            if (response.IsLeft)
+            {
+                return response.Match(Left: error => StatusCode((int)error!.StatusCode,error.Message), Right: _ => null );
+            }
+            var stream = response.Match(Left: error => null, Right: str => str);
+
+            await streamHelper.HandleNDJsonStreamAsync<CreateImageInfo>(stream, webSocket, cancellationToken);
+
+            return Ok();
         }
 
         [HttpPost]

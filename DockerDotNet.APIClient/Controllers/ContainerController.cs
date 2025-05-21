@@ -1,17 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-
-using Newtonsoft.Json;
-
-using System.Net.Mime;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using DockerDotNet.Core;
+﻿using DockerDotNet.Core;
+using DockerDotNet.Core.Helpers;
 using DockerDotNet.Core.Models;
 using DockerDotNet.Core.Services;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using System.Net.WebSockets;
-using System.Text;
-using LanguageExt.Pipes;
+
+using Microsoft.AspNetCore.Mvc;
 
 namespace DockerDotNet.APIClient.Controllers
 {
@@ -22,11 +14,13 @@ namespace DockerDotNet.APIClient.Controllers
         private readonly DockerClient _dockerClient;
 
         private readonly ContainerService _containerService;
+        private readonly StreamHelper streamHelper;
 
-        public ContainerController(DockerClient dockerClient, ContainerService containerService)
+        public ContainerController(DockerClient dockerClient, ContainerService containerService, StreamHelper streamHelper)
         {
             _dockerClient = dockerClient;
             _containerService = containerService;
+            this.streamHelper = streamHelper;
         }
 
         //public ContainerController()
@@ -146,32 +140,57 @@ namespace DockerDotNet.APIClient.Controllers
 
         [HttpGet]
         [Route("{id}/logs")]
-        public async System.Threading.Tasks.Task GetContainerLogs(string id, [FromQuery]ContainerLogsParameters parameters, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetContainerLogs(string id, [FromQuery]ContainerLogsParameters parameters, CancellationToken cancellationToken)
         {
             if (!HttpContext.WebSockets.IsWebSocketRequest)
             {
                 HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
                 await HttpContext.Response.WriteAsync("Expected a WebSocket request.", cancellationToken: cancellationToken);
-                return;
+                return StatusCode(500);
             }
             using var webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
 
-            var (success, stream, error) = await _containerService.GetContainerLogs(id, parameters, webSocket, cancellationToken);
+            var res = await _containerService.GetContainerLogs(id, parameters, webSocket, cancellationToken);
+
+            if (res.IsLeft)
+            {
+                var error = res.Match(Left: error => error, Right: _ => null);
+                return StatusCode((int)error!.StatusCode, error.Message);
+            }
+
+            var result = res.Match(Left: error => null, Right: res => res);
+
+            await streamHelper.ReadMultiplexedStreamAsync(result, webSocket, cancellationToken);
+
+            return Ok();
         }
 
         [HttpGet]
         [Route("{id}/stats")]
-        public async System.Threading.Tasks.Task GetContainerStats(string id, [FromQuery]ContainerStatsParameters parameters, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetContainerStats(string id, [FromQuery]ContainerStatsParameters parameters, CancellationToken cancellationToken)
         {
             if (!HttpContext.WebSockets.IsWebSocketRequest)
             {
                 HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
                 await HttpContext.Response.WriteAsync("Expected a WebSocket request.");
-                return;
+                return StatusCode(500);
             }
             using var webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
 
-            var (success, stream, error) = await _containerService.GetContainerStats(id, parameters, webSocket, cancellationToken);
+            var res =  await _containerService.GetContainerStats(id, parameters, webSocket, cancellationToken);
+
+            if (res.IsLeft)
+            {
+                var error = res.Match(Left: error => error, Right: _ => null);
+
+                return StatusCode((int)error!.StatusCode, error.Message);
+            }
+
+            var stream = res.Match(Left: error => null, Right: st => st);
+
+            await streamHelper.HandleNDJsonStreamAsync<ContainerStatsResponse>(stream, webSocket, cancellationToken);
+
+            return Ok();
         }
 
         [HttpPost]

@@ -3,15 +3,10 @@ using DockerDotNet.Core.Models;
 
 using LanguageExt;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using Microsoft.Extensions.Logging;
+
 using System.Net;
-using System.Net.Http.Json;
 using System.Net.WebSockets;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace DockerDotNet.Core.Services
 {
@@ -19,11 +14,13 @@ namespace DockerDotNet.Core.Services
     {
         private readonly DockerClient _dockerClient;
         private readonly StreamHelper streamHelper;
+        private readonly ILogger<ImageService> logger;
 
-        public ImageService(DockerClient dockerClient, StreamHelper streamHelper)
+        public ImageService(DockerClient dockerClient, StreamHelper streamHelper, ILogger<ImageService> logger)
         {
             _dockerClient = dockerClient;
             this.streamHelper = streamHelper;
+            this.logger = logger;
         }
 
         public async Task<Either<DockerError?, IList<ImageSummary>?>> GetImages(ImagesListParameters imagesListParameters, CancellationToken cancellationToken)
@@ -48,7 +45,7 @@ namespace DockerDotNet.Core.Services
             return await _dockerClient.PostAsync<string>($"images/{name}/tag", query,  cancellationToken);
         }
 
-        public async Task<(bool, Stream?, DockerError?)> CreateImage(ImagesCreateParameters parameters, WebSocket webSocket, CancellationToken cancellationToken)
+        public async Task<Either<DockerError?, Stream?>> CreateImage(ImagesCreateParameters parameters, WebSocket webSocket, CancellationToken cancellationToken)
         {
             try
             {
@@ -62,44 +59,17 @@ namespace DockerDotNet.Core.Services
                 };
                 Dictionary<string,string> authHeaders = _dockerClient.GetRegistryAuthHeaders(authConfig);
 
-                var (success, pullStream, contentType, error) = await _dockerClient.PostStreamAsync($"images/create", query, cancellationToken, headers: authHeaders);
-
-                if (success)
-                {
-                    var sendTask = System.Threading.Tasks.Task.Run(async () =>
-                    {
-                        await foreach (var stats in streamHelper.ReadNewlineDelimitedJson<CreateImageInfo>(pullStream, cancellationToken))
-                        {
-                            string line = JsonSerializer.Serialize(stats) + "\n";
-
-                            if (string.IsNullOrWhiteSpace(line)) continue;
-                            var bytes = Encoding.ASCII.GetBytes(line);
-
-                            await webSocket.SendAsync(bytes, WebSocketMessageType.Text, true, cancellationToken);
-                        }
-                    }, cancellationToken);
-
-                    await sendTask;
-
-                    await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Session ended", CancellationToken.None);
-
-
-                    return (true, pullStream, default);
-                }
-                else
-                {
-                    return (false, null, error);
-                }
+                return await _dockerClient.PostStreamAsync($"images/create", query, cancellationToken, headers: authHeaders);
             }
             catch (OperationCanceledException ex)
             {
-                Console.WriteLine(ex.ToString());
-                return (false, null, new DockerError(HttpStatusCode.RequestTimeout, ex.Message));
+                return new DockerError(HttpStatusCode.RequestTimeout, ex.Message);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
-                return (false, null, new DockerError(HttpStatusCode.InternalServerError, ex.Message));
+                this.logger.LogError(ex, ex.Message);
+
+                return new DockerError(HttpStatusCode.InternalServerError, ex.Message);
             }
         }
 

@@ -1,20 +1,17 @@
-﻿using System.Collections;
+﻿using DockerDotNet.Core.Models;
+
+using LanguageExt;
+
+using System.Collections;
 using System.IO.Pipes;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Net.Sockets;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Web;
-using DockerDotNet.Core.Models;
-
-using LanguageExt;
-using LanguageExt.Pipes;
-
-using Task = System.Threading.Tasks.Task;
 
 namespace DockerDotNet.Core
 {
@@ -291,7 +288,7 @@ namespace DockerDotNet.Core
             return await ProcessResponse<T>(response, cancellationToken);
         }
 
-        public async Task<(bool, Stream?, string, DockerError?)> GetStreamAsync(
+        public async Task<Either<DockerError?, Stream?>> GetStreamAsync(
             string endpoint,
             string queryParameters,
             CancellationToken cancellationToken,
@@ -307,7 +304,7 @@ namespace DockerDotNet.Core
             return await ProcessStreamResponse<Stream?>(response, cancellationToken);
         }
 
-        public async Task<(bool, Stream?, string, DockerError?)> PostHijackedStreamAsync(
+        public async Task<Either<DockerError?, Stream?>> PostHijackedStreamAsync(
             string endpoint,
             string queryParameters,
             CancellationToken cancellationToken,
@@ -326,7 +323,7 @@ namespace DockerDotNet.Core
             return await ProcessStreamResponse<Stream?>(response, cancellationToken);
         }
 
-        public async Task<(bool, Stream?, string, DockerError?)> PostStreamAsync(
+        public async Task<Either<DockerError?, Stream?>> PostStreamAsync(
             string endpoint,
             string queryParameters,
             CancellationToken cancellationToken,
@@ -343,23 +340,23 @@ namespace DockerDotNet.Core
         }
 
 
-        private async Task<(bool, Stream?, string, DockerError?)> ProcessStreamResponse<T>(HttpResponseMessage response, CancellationToken cancellationToken)
+        private async Task<Either<DockerError?, Stream?>> ProcessStreamResponse<T>(HttpResponseMessage response, CancellationToken cancellationToken)
         {
             string? contentType = response.Content.Headers.ContentType?.ToString();
 
             if(response.IsSuccessStatusCode || response.StatusCode == HttpStatusCode.SwitchingProtocols)
             {
                 Stream stream = await response.Content.ReadAsStreamAsync(cancellationToken);
-                return (true, stream, contentType, null);
+                return stream;
             }
 
             if (contentType == "application/json")
             {
                 var errorContent = await response.Content.ReadFromJsonAsync<DockerErrorResponse>(cancellationToken);
-                return (false, null, contentType, new DockerError(response.StatusCode, errorContent.Message));
+                return new DockerError(response.StatusCode, errorContent.Message);
             }
 
-            return (false, default, default, new DockerError(response.StatusCode, "Unable to handle string"));
+            return new DockerError(response.StatusCode, "Unable to handle string");
             
         }
 
