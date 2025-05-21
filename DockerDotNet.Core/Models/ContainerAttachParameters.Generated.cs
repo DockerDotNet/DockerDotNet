@@ -1,6 +1,5 @@
-using Newtonsoft.Json;
-
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace DockerDotNet.Core.Models
 {
@@ -8,26 +7,26 @@ namespace DockerDotNet.Core.Models
     public class ContainerAttachParameters // (main.ContainerAttachParameters)
     {
         //[QueryStringParameter("stream", false, typeof(BoolQueryStringConverter))]
-        [JsonProperty("stream")]
+        [JsonPropertyName("stream")]
         public bool? Stream { get; set; }
 
-        [JsonProperty("stdin")]
+        [JsonPropertyName("stdin")]
         //[QueryStringParameter("stdin", false, typeof(BoolQueryStringConverter))]
         public bool? Stdin { get; set; }
 
-        [JsonProperty("stdout")]
+        [JsonPropertyName("stdout")]
         //[QueryStringParameter("stdout", false, typeof(BoolQueryStringConverter))]
         public bool? Stdout { get; set; }
 
-        [JsonProperty("stderr")]
+        [JsonPropertyName("stderr")]
         //[QueryStringParameter("stderr", false, typeof(BoolQueryStringConverter))]
         public bool? Stderr { get; set; }
 
-        [JsonProperty("detachKeys")]
+        [JsonPropertyName("detachKeys")]
         //[QueryStringParameter("detachKeys", false)]
         public string DetachKeys { get; set; }
 
-        [JsonProperty("logs")]
+        [JsonPropertyName("logs")]
         //[QueryStringParameter("logs", false)]
         public string Logs { get; set; }
     }
