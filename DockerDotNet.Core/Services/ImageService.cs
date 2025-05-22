@@ -1,4 +1,5 @@
 ﻿using DockerDotNet.Core.Helpers;
+using DockerDotNet.Core.Interfaces;
 using DockerDotNet.Core.Models;
 
 using LanguageExt;
@@ -10,7 +11,7 @@ using System.Net.WebSockets;
 
 namespace DockerDotNet.Core.Services
 {
-    public class ImageService
+    public class ImageService : IImageService
     {
         private readonly DockerClient _dockerClient;
         private readonly StreamHelper streamHelper;
@@ -26,23 +27,23 @@ namespace DockerDotNet.Core.Services
         public async Task<Either<DockerError?, IList<ImageSummary>?>> GetImages(ImagesListParameters imagesListParameters, CancellationToken cancellationToken)
         {
             string query = _dockerClient.GetQueryString(imagesListParameters);
-            return await _dockerClient.GetAsync<IList<ImageSummary>>("images/json", query,  cancellationToken);
+            return await _dockerClient.GetAsync<IList<ImageSummary>>("images/json", query, cancellationToken);
         }
 
         public async Task<Either<DockerError?, ImageInspect?>> GetImage(string name, CancellationToken cancellationToken)
         {
-            return await _dockerClient.GetAsync<ImageInspect>($"images/{name}/json", string.Empty,  cancellationToken);
+            return await _dockerClient.GetAsync<ImageInspect>($"images/{name}/json", string.Empty, cancellationToken);
         }
 
         public async Task<Either<DockerError?, List<HistoryResponseItem>?>> GetImageHistory(string name, CancellationToken cancellationToken)
         {
-            return await _dockerClient.GetAsync<List<HistoryResponseItem>>($"images/{name}/history", string.Empty,  cancellationToken);
+            return await _dockerClient.GetAsync<List<HistoryResponseItem>>($"images/{name}/history", string.Empty, cancellationToken);
         }
 
         public async Task<Either<DockerError?, string?>> TagImage(string name, ImageTagParameters parameters, CancellationToken cancellationToken)
         {
             string query = _dockerClient.GetQueryString(parameters);
-            return await _dockerClient.PostAsync<string>($"images/{name}/tag", query,  cancellationToken);
+            return await _dockerClient.PostAsync<string>($"images/{name}/tag", query, cancellationToken);
         }
 
         public async Task<Either<DockerError?, Stream?>> CreateImage(ImagesCreateParameters parameters, WebSocket webSocket, CancellationToken cancellationToken)
@@ -57,7 +58,7 @@ namespace DockerDotNet.Core.Services
                     Username = "",
                     Password = ""
                 };
-                Dictionary<string,string> authHeaders = _dockerClient.GetRegistryAuthHeaders(authConfig);
+                Dictionary<string, string> authHeaders = _dockerClient.GetRegistryAuthHeaders(authConfig);
 
                 return await _dockerClient.PostStreamAsync($"images/create", query, cancellationToken, headers: authHeaders);
             }
@@ -77,7 +78,7 @@ namespace DockerDotNet.Core.Services
         {
             string query = _dockerClient.GetQueryString(buildPruneParameters);
             return await _dockerClient.PostAsync<BuildPruneResponse>("build/prune", query, cancellationToken);
-        } 
+        }
 
         public async Task<Either<DockerError?, ImageDeleteResponseItem?>> DeleteImage(string name, ImageDeleteParameters parameters, CancellationToken cancellationToken)
         {
@@ -89,6 +90,6 @@ namespace DockerDotNet.Core.Services
         {
             string query = _dockerClient.GetQueryString(parameters);
             return await _dockerClient.GetAsync<List<ImageSearchResponseItem>>("images/search", query, cancellationToken).ConfigureAwait(false);
-        }    
+        }
     }
 }

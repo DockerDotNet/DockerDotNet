@@ -1,4 +1,5 @@
-﻿using DockerDotNet.Core.Models;
+﻿using DockerDotNet.Core.Interfaces;
+using DockerDotNet.Core.Models;
 
 using LanguageExt;
 
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace DockerDotNet.Core.Services
 {
-    public class VolumeService
+    public class VolumeService : IVolumeService
     {
         private readonly DockerClient _client;
 
@@ -31,7 +32,7 @@ namespace DockerDotNet.Core.Services
             return await _client.PostAsync<Volume>("volumes/create", string.Empty, cancellationToken, body: JsonContent.Create(volumeCreateOptions));
         }
 
-        public async Task<Either<DockerError?,Volume?>> InspectVolume(string name, CancellationToken cancellationToken)
+        public async Task<Either<DockerError?, Volume?>> InspectVolume(string name, CancellationToken cancellationToken)
         {
             return await _client.GetAsync<Volume>($"volumes/{name}", string.Empty, cancellationToken);
         }

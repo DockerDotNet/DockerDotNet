@@ -1,4 +1,5 @@
 ﻿using DockerDotNet.Core.Helpers;
+using DockerDotNet.Core.Interfaces;
 using DockerDotNet.Core.Models;
 
 using LanguageExt;
@@ -9,7 +10,7 @@ using System.Net.WebSockets;
 
 namespace DockerDotNet.Core.Services
 {
-    public class ExecService
+    public class ExecService : IExecService
     {
         private readonly DockerClient _dockerClient;
         private readonly StreamHelper streamHelper;

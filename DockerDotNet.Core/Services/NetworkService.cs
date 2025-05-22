@@ -1,4 +1,5 @@
-﻿using DockerDotNet.Core.Models;
+﻿using DockerDotNet.Core.Interfaces;
+using DockerDotNet.Core.Models;
 
 using LanguageExt;
 
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace DockerDotNet.Core.Services
 {
-    public class NetworkService
+    public class NetworkService : INetworkService
     {
         private readonly DockerClient _client;
 
