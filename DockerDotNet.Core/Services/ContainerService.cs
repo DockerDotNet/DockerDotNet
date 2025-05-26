@@ -1,6 +1,5 @@
 ﻿using DockerDotNet.Core.Helpers;
 using DockerDotNet.Core.Interfaces;
-using DockerDotNet.Core.Models;
 using DockerDotNet.Shared.Models;
 
 using LanguageExt;
@@ -41,7 +40,7 @@ namespace DockerDotNet.Core.Services
             return await _dockerClient.GetAsync<ContainerInspectResponse>($"containers/{id}/json", parameters, cancellationToken);
         }
 
-        public async Task<Either<DockerError?, ContainerCreateResponse?>> CreateContainer(CreateContainerQueryParameters createContainerQueryParameters, ContainerCreateRequest createContainer, CancellationToken cancellationToken)
+        public async Task<Either<DockerError?, ContainerCreateResponse?>> CreateContainer(ContainerCreateParameters createContainerQueryParameters, ContainerCreateRequest createContainer, CancellationToken cancellationToken)
         {
             string queryString = _dockerClient.GetQueryString(createContainerQueryParameters);
             return await _dockerClient.PostAsync<ContainerCreateResponse>("containers/create", queryString, cancellationToken, body: JsonContent.Create(createContainer));

@@ -1,6 +1,5 @@
 ﻿using DockerDotNet.Core;
 using DockerDotNet.Core.Helpers;
-using DockerDotNet.Core.Models;
 using DockerDotNet.Core.Services;
 using DockerDotNet.Shared.Models;
 
@@ -42,7 +41,7 @@ namespace DockerDotNet.APIClient.Controllers
 
         [HttpPost]
         [Route("create")]
-        public async Task<IActionResult> CreateContainer([FromQuery] CreateContainerQueryParameters createContainerQueryParameters, [FromBody] ContainerCreateRequest createContainer, CancellationToken cancellationToken)
+        public async Task<IActionResult> CreateContainer([FromQuery] ContainerCreateParameters createContainerQueryParameters, [FromBody] ContainerCreateRequest createContainer, CancellationToken cancellationToken)
         {
             var response = await _containerService.CreateContainer(createContainerQueryParameters, createContainer, cancellationToken);    
             return response.Match(

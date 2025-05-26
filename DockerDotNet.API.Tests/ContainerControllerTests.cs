@@ -3,12 +3,12 @@ using Microsoft.AspNetCore.Mvc;
 
 using System.Net;
 using System.Text.Json;
-using DockerDotNet.Core.Models;
 using Xunit.Abstractions;
 using Xunit.Sdk;
 using DockerDotNet.APIClient.Controllers;
 using Shouldly;
 using DockerDotNet.Core.Services;
+using DockerDotNet.Shared.Models;
 using DockerDotNet.Core;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -37,7 +37,7 @@ namespace DockerDotNet.API.Tests
 
         public async Task<ContainerCreateResponse> CreateContainerAsync()
         {
-            CreateContainerQueryParameters queryParameters = new CreateContainerQueryParameters();
+            ContainerCreateParameters queryParameters = new ContainerCreateParameters();
             queryParameters.Name = "TestContainers";
             ContainerCreateRequest containerParameters = new ContainerCreateRequest();
             containerParameters.Image = "nginx:latest";
