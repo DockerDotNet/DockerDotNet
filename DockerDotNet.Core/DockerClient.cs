@@ -27,7 +27,7 @@ namespace DockerDotNet.Core
 
         private string _versionString = string.Empty;
 
-        private JsonSerializerOptions _jsonSerializerOptions;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
         #endregion
 

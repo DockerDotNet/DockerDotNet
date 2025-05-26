@@ -1,4 +1,4 @@
-﻿using DockerDotNet.Core.Models;
+﻿using DockerDotNet.Shared.Models;
 
 using LanguageExt;
 

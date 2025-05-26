@@ -43,7 +43,7 @@ namespace DockerDotNet.API.Tests
         [Fact]
         public async Task CreateExecAsync()
         {
-            ExecConfig requestBody = new ExecConfig();
+            Shared.Models.ExecConfig requestBody = new Shared.Models.ExecConfig();
             requestBody.AttachStdin = true;
             requestBody.AttachStdout = true;
             requestBody.AttachStderr = true;
@@ -56,7 +56,7 @@ namespace DockerDotNet.API.Tests
             response.IsRight.ShouldBeTrue();
             var result = response.Match(Left: left => null, Right: right => right);
             result.ShouldNotBeNull();
-            result.ShouldBeOfType<ContainerExecCreateResponse>();
+            result.ShouldBeOfType<Shared.Models.ContainerExecCreateResponse>();
             execID = result.ID;
         }
 

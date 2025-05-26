@@ -139,22 +139,22 @@ namespace DockerDotNet.API.Tests
             _output.WriteLine(JsonSerializer.Serialize(result));
         }
 
-        [Fact]
-        public async System.Threading.Tasks.Task CreateExec()
-        {
-            ContainerExecCreateParameters containerExecCreateParameters = new ContainerExecCreateParameters();
-            containerExecCreateParameters.AttachStdout = true;
-            containerExecCreateParameters.AttachStderr = true;
-            containerExecCreateParameters.AttachStdin = true;
-            containerExecCreateParameters.DetachKeys = "ctrl-p,ctrl-q";
-            containerExecCreateParameters.Cmd = new List<string>() { "bin/sh" };
-            containerExecCreateParameters.Tty = true;
-            var response = await _containerService.CreateExec(_containerID, containerExecCreateParameters, new CancellationToken());
-            response.IsRight.ShouldBeTrue();
-            var result = response.Match(Left: null, Right: response => response);
-            result.ShouldNotBeNull();
+        //[Fact]
+        //public async System.Threading.Tasks.Task CreateExec()
+        //{
+        //    ContainerExecCreateParameters containerExecCreateParameters = new ContainerExecCreateParameters();
+        //    containerExecCreateParameters.AttachStdout = true;
+        //    containerExecCreateParameters.AttachStderr = true;
+        //    containerExecCreateParameters.AttachStdin = true;
+        //    containerExecCreateParameters.DetachKeys = "ctrl-p,ctrl-q";
+        //    containerExecCreateParameters.Cmd = new List<string>() { "bin/sh" };
+        //    containerExecCreateParameters.Tty = true;
+        //    var response = await _containerService.CreateExec(_containerID, containerExecCreateParameters, new CancellationToken());
+        //    response.IsRight.ShouldBeTrue();
+        //    var result = response.Match(Left: null, Right: response => response);
+        //    result.ShouldNotBeNull();
 
-            _output.WriteLine(JsonSerializer.Serialize(result));
-        }
+        //    _output.WriteLine(JsonSerializer.Serialize(result));
+        //}
     }
 }

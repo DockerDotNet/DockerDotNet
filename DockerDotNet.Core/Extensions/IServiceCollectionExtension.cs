@@ -1,4 +1,5 @@
 ﻿using DockerDotNet.Core.Models;
+using DockerDotNet.Shared.Models;
 
 using Microsoft.Extensions.DependencyInjection;
 
@@ -90,8 +91,8 @@ namespace DockerDotNet.Core.Extensions
             _jsonOptions.Converters.Add(new ErrorResponseJsonConverter());
             _jsonOptions.Converters.Add(new EventActorJsonConverter());
             _jsonOptions.Converters.Add(new EventMessageJsonConverter());
-            _jsonOptions.Converters.Add(new ExecConfigJsonConverter());
-            _jsonOptions.Converters.Add(new ExecInspectResponseJsonConverter());
+            _jsonOptions.Converters.Add(new Shared.Models.ExecConfigJsonConverter());
+            _jsonOptions.Converters.Add(new Shared.Models.ExecInspectResponseJsonConverter());
             _jsonOptions.Converters.Add(new ExecStartConfigJsonConverter());
             _jsonOptions.Converters.Add(new FilesystemChangeJsonConverter());
             _jsonOptions.Converters.Add(new GenericResourcesInnerJsonConverter());
@@ -173,7 +174,7 @@ namespace DockerDotNet.Core.Extensions
             _jsonOptions.Converters.Add(new PortJsonConverter());
             _jsonOptions.Converters.Add(new PortBindingJsonConverter());
             _jsonOptions.Converters.Add(new PortStatusJsonConverter());
-            _jsonOptions.Converters.Add(new ProcessConfigJsonConverter());
+            _jsonOptions.Converters.Add(new Shared.Models.ProcessConfigJsonConverter());
             _jsonOptions.Converters.Add(new ProgressDetailJsonConverter());
             _jsonOptions.Converters.Add(new PushImageInfoJsonConverter());
             _jsonOptions.Converters.Add(new ReachabilityJsonConverter());

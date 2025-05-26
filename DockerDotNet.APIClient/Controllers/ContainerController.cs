@@ -213,15 +213,15 @@ namespace DockerDotNet.APIClient.Controllers
             return Stream.Null;
         }
 
-        [HttpPost]
-        [Route("{id}/exec")]
-        public async Task<IActionResult> CreateExec(string id, [FromBody] ContainerExecCreateParameters createParameters, CancellationToken cancellationToken)
-        {
-            var response = await _containerService.CreateExec(id, createParameters, cancellationToken);
-            return response.Match(
-                Left: error => StatusCode((int)error.StatusCode, error.Message),
-                Right: result => Ok(result)
-                );
-        }
+        //[HttpPost]
+        //[Route("{id}/exec")]
+        //public async Task<IActionResult> CreateExec(string id, [FromBody] ContainerExecCreateParameters createParameters, CancellationToken cancellationToken)
+        //{
+        //    var response = await _containerService.CreateExec(id, createParameters, cancellationToken);
+        //    return response.Match(
+        //        Left: error => StatusCode((int)error.StatusCode, error.Message),
+        //        Right: result => Ok(result)
+        //        );
+        //}
     }
 }

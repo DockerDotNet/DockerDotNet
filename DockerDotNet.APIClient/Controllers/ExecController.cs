@@ -38,7 +38,7 @@ namespace DockerDotNet.APIClient.Controllers
         [HttpPost]
         [Route("{id}/create")]
         //[ProducesDefaultResponseType(typeof(ContainerExecCreateResponse))]
-        public async Task<IActionResult> CreateExecInstance(string id, [FromBody]ExecConfig execConfig, CancellationToken cancellationToken)
+        public async Task<IActionResult> CreateExecInstance(string id, [FromBody]Shared.Models.ExecConfig execConfig, CancellationToken cancellationToken)
         {
             var response = await execService.CreateExec(id, execConfig, cancellationToken);
             return response.Match(

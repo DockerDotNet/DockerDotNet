@@ -1,6 +1,7 @@
 ﻿using DockerDotNet.Core.Helpers;
 using DockerDotNet.Core.Interfaces;
 using DockerDotNet.Core.Models;
+using DockerDotNet.Shared.Models;
 
 using LanguageExt;
 
@@ -82,10 +83,10 @@ namespace DockerDotNet.Core.Services
             return await _dockerClient.PostAsync<string>($"containers/{id}/unpause", string.Empty, cancellationToken);
         }
 
-        public async Task<Either<DockerError?, ContainerExecCreateResponse?>> CreateExec(string id, ContainerExecCreateParameters createParameters, CancellationToken cancellationToken)
-        {
-            return await _dockerClient.PostAsync<ContainerExecCreateResponse>($"containers/{id}/exec", string.Empty, cancellationToken, body: JsonContent.Create(createParameters));
-        }
+        //public async Task<Either<DockerError?, Shared.Models.ContainerExecCreateResponse?>> CreateExec(string id, ContainerExecCreateParameters createParameters, CancellationToken cancellationToken)
+        //{
+        //    return await _dockerClient.PostAsync<Shared.Models.ContainerExecCreateResponse>($"containers/{id}/exec", string.Empty, cancellationToken, body: JsonContent.Create(createParameters));
+        //}
 
         public async Task<Either<DockerError?, Stream?>> GetContainerLogs(string id, ContainerLogsParameters parameters, WebSocket webSocket, CancellationToken cancellationToken)
         {
