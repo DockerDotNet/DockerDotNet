@@ -397,20 +397,6 @@ namespace DockerDotNet.Core
     //    public string Message { get; set; } = string.Empty;
     //}
 
-    public class DockerError
-    {
-        public HttpStatusCode StatusCode { get; set; }
-        public string Message { get; set; }
-        public string? Details { get; set; }
-
-        public DockerError(HttpStatusCode statusCode, string message, string? details = null)
-        {
-            StatusCode = statusCode;
-            Message = message;
-            Details = details;
-        }
-    }
-
     public enum OSPlatform
     {
         Undefined = 0,

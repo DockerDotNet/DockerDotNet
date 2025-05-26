@@ -4,6 +4,7 @@ using DockerDotNet.Shared.Models;
 using DockerDotNet.Core.Services;
 
 using Microsoft.AspNetCore.Mvc;
+using DockerDotNet.Shared.Interfaces;
 
 namespace DockerDotNet.APIClient.Controllers
 {
@@ -11,14 +12,11 @@ namespace DockerDotNet.APIClient.Controllers
     [ApiController]
     public class ImageController : ControllerBase
     {
-        private readonly DockerClient _dockerClient;
-
-        private readonly ImageService _imageService;
+        private readonly IImageService _imageService;
         private readonly StreamHelper streamHelper;
 
-        public ImageController(DockerClient dockerClient, ImageService imageService, StreamHelper streamHelper)
+        public ImageController(IImageService imageService, StreamHelper streamHelper)
         {
-            _dockerClient = dockerClient;
             _imageService = imageService;
             this.streamHelper = streamHelper;
         }

@@ -16,17 +16,18 @@ using System.Threading.Tasks;
 
 using Xunit.Abstractions;
 using Xunit.Sdk;
+using DockerDotNet.Shared.Interfaces;
 
 namespace DockerDotNet.API.Tests
 {
     public class SystemServiceTests : DockerTestBase
     {
         private readonly ITestOutputHelper _output;
-        private readonly SystemService _systemService;
+        private readonly ISystemService _systemService;
 
         public SystemServiceTests(ITestOutputHelper testOutputHelper) : base(Array.Empty<string>())
         {
-            _systemService = _host.Services.GetRequiredService<SystemService>();
+            _systemService = _host.Services.GetRequiredService<ISystemService>();
             _output = testOutputHelper;
         }
 

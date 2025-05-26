@@ -2,7 +2,7 @@
 
 using LanguageExt;
 
-namespace DockerDotNet.Core.Interfaces
+namespace DockerDotNet.Shared.Interfaces
 {
     public interface ISystemService
     {

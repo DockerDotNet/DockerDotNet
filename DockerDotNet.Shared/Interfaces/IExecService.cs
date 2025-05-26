@@ -4,7 +4,7 @@ using LanguageExt;
 
 using System.Net.WebSockets;
 
-namespace DockerDotNet.Core.Interfaces
+namespace DockerDotNet.Shared.Interfaces
 {
     public interface IExecService
     {

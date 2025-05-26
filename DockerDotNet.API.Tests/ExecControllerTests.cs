@@ -1,6 +1,7 @@
 ﻿using DockerDotNet.APIClient.Controllers;
 using DockerDotNet.Core.Models;
 using DockerDotNet.Core.Services;
+using DockerDotNet.Shared.Interfaces;
 
 using LanguageExt.Pipes;
 
@@ -26,7 +27,7 @@ namespace DockerDotNet.API.Tests
 {
     public class ExecControllerTests : DockerTestBase
     {
-        private readonly ExecService _execService;
+        private readonly IExecService _execService;
 
         private readonly ITestOutputHelper _output;
 
@@ -36,7 +37,7 @@ namespace DockerDotNet.API.Tests
         public ExecControllerTests(ITestOutputHelper testOutputHelper) : base(Array.Empty<string>())
         {
             _output = testOutputHelper;
-            _execService = _host.Services.GetRequiredService<ExecService>();
+            _execService = _host.Services.GetRequiredService<IExecService>();
             containerID = "67a9de123f68f8e7db1965813198aa2da7c0b36c96f9d94058e2295efe75bb47";
         }
 
@@ -58,6 +59,8 @@ namespace DockerDotNet.API.Tests
             result.ShouldNotBeNull();
             result.ShouldBeOfType<Shared.Models.ContainerExecCreateResponse>();
             execID = result.ID;
+
+            _output.WriteLine(JsonSerializer.Serialize(execID));
         }
 
         [Fact]

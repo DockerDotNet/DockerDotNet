@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 using System.Text.Json;
 using System.Threading;
+using DockerDotNet.Shared.Interfaces;
 
 namespace DockerDotNet.APIClient.Controllers
 {
@@ -14,13 +15,10 @@ namespace DockerDotNet.APIClient.Controllers
     [ApiController]
     public class SystemController : ControllerBase
     {
-        DockerClient DockerClient { get; set; }
+        private readonly ISystemService _systemService;
 
-        private readonly SystemService _systemService;
-
-        public SystemController(DockerClient dockerClient, SystemService systemService)
+        public SystemController(ISystemService systemService)
         {
-            DockerClient = dockerClient;
             _systemService = systemService;
         }
 

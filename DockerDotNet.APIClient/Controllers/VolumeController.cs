@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 using System.Threading;
 using System.Xml.Linq;
+using DockerDotNet.Shared.Interfaces;
 
 namespace DockerDotNet.APIClient.Controllers
 {
@@ -14,12 +15,10 @@ namespace DockerDotNet.APIClient.Controllers
     [ApiController]
     public class VolumeController : ControllerBase
     {
-        private readonly DockerClient _client;
-        private VolumeService _volumeService;
+        private IVolumeService _volumeService;
 
-        public VolumeController(DockerClient dockerClient, VolumeService volumeService)
+        public VolumeController(IVolumeService volumeService)
         {
-            _client = dockerClient;
             _volumeService = volumeService;
         }
 

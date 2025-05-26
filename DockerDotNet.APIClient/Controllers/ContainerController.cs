@@ -1,6 +1,7 @@
 ﻿using DockerDotNet.Core;
 using DockerDotNet.Core.Helpers;
 using DockerDotNet.Core.Services;
+using DockerDotNet.Shared.Interfaces;
 using DockerDotNet.Shared.Models;
 
 using Microsoft.AspNetCore.Mvc;
@@ -11,14 +12,11 @@ namespace DockerDotNet.APIClient.Controllers
     [ApiController]
     public class ContainerController : ControllerBase
     {
-        private readonly DockerClient _dockerClient;
-
-        private readonly ContainerService _containerService;
+        private readonly IContainerService _containerService;
         private readonly StreamHelper streamHelper;
 
-        public ContainerController(DockerClient dockerClient, ContainerService containerService, StreamHelper streamHelper)
+        public ContainerController(IContainerService containerService, StreamHelper streamHelper)
         {
-            _dockerClient = dockerClient;
             _containerService = containerService;
             this.streamHelper = streamHelper;
         }
@@ -193,25 +191,25 @@ namespace DockerDotNet.APIClient.Controllers
             return Ok();
         }
 
-        [HttpPost]
-        [Route("{id}/attach")]
-        public async Task<Stream?> AttachToContainer(string id, ContainerAttachParameters containerAttachParameters, CancellationToken cancellationToken)
-        {
-            // TODO: Finish this properly and test it.
-            try
-            {
-                HttpClient httpClient = _dockerClient.GetDockerHttpClient();
-                string parameters = _dockerClient.GetQueryString(containerAttachParameters);
-                HttpRequestMessage requestMessage = _dockerClient.PrepareHttpRequest(HttpMethod.Post, "", parameters);
-                HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
-                var stream = await httpResponseMessage.Content.ReadAsStreamAsync();
-                return stream;
-            }
-            catch (Exception ex)
-            {
-            }
-            return Stream.Null;
-        }
+        //[HttpPost]
+        //[Route("{id}/attach")]
+        //public async Task<Stream?> AttachToContainer(string id, ContainerAttachParameters containerAttachParameters, CancellationToken cancellationToken)
+        //{
+        //    // TODO: Finish this properly and test it.
+        //    try
+        //    {
+        //        HttpClient httpClient = _dockerClient.GetDockerHttpClient();
+        //        string parameters = _dockerClient.GetQueryString(containerAttachParameters);
+        //        HttpRequestMessage requestMessage = _dockerClient.PrepareHttpRequest(HttpMethod.Post, "", parameters);
+        //        HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+        //        var stream = await httpResponseMessage.Content.ReadAsStreamAsync();
+        //        return stream;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //    }
+        //    return Stream.Null;
+        //}
 
         //[HttpPost]
         //[Route("{id}/exec")]

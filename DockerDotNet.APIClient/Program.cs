@@ -2,6 +2,7 @@ using DockerDotNet.Core;
 using DockerDotNet.Core.Services;
 using DockerDotNet.Core.Extensions;
 using DockerDotNet.Core.Helpers;
+using DockerDotNet.Shared.Interfaces;
 
 namespace DockerDotNet.APIClient
 {
@@ -25,12 +26,12 @@ namespace DockerDotNet.APIClient
 
             builder.Services.AddScoped<DockerClient>();
             builder.Services.AddScoped<StreamHelper>();
-            builder.Services.AddScoped<ContainerService>();
-            builder.Services.AddScoped<ImageService>();
-            builder.Services.AddScoped<ExecService>();
-            builder.Services.AddScoped<SystemService>();
-            builder.Services.AddScoped<VolumeService>();
-            builder.Services.AddScoped<NetworkService>();
+            builder.Services.AddScoped<IContainerService, ContainerService>();
+            builder.Services.AddScoped<IImageService, ImageService>();
+            builder.Services.AddScoped<IExecService, ExecService>();
+            builder.Services.AddScoped<ISystemService, SystemService>();
+            builder.Services.AddScoped<IVolumeService, VolumeService>();
+            builder.Services.AddScoped<INetworkService, NetworkService>();
             builder.Services.AddJsonSerializerOptions();
 
             var app = builder.Build();

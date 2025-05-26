@@ -11,19 +11,20 @@ using DockerDotNet.Core.Services;
 using DockerDotNet.Shared.Models;
 using DockerDotNet.Core;
 using Microsoft.Extensions.DependencyInjection;
+using DockerDotNet.Shared.Interfaces;
 
 namespace DockerDotNet.API.Tests
 {
     public class ContainerControllerTests : DockerTestBase
     {
         private readonly ITestOutputHelper _output;
-        private readonly ContainerService _containerService;
+        private readonly IContainerService _containerService;
 
         string _containerID = "7733bfa5017ae064b390b3e9428e8dae21c0ffeaf90820c6a9d444fbfc0b08eb";
 
         public ContainerControllerTests(ITestOutputHelper testOutputHelper) : base(Array.Empty<string>())
         {
-            _containerService = _host.Services.GetRequiredService<ContainerService>();
+            _containerService = _host.Services.GetRequiredService<IContainerService>();
             _output = testOutputHelper;
         }
 

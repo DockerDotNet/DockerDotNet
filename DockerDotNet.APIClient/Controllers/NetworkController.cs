@@ -1,4 +1,5 @@
 ﻿using DockerDotNet.Core.Services;
+using DockerDotNet.Shared.Interfaces;
 using DockerDotNet.Shared.Models;
 
 using Microsoft.AspNetCore.Http;
@@ -10,9 +11,9 @@ namespace DockerDotNet.APIClient.Controllers
     [ApiController]
     public class NetworkController : ControllerBase
     {
-        private readonly NetworkService _networkService;
+        private readonly INetworkService _networkService;
 
-        public NetworkController(NetworkService networkService)
+        public NetworkController(INetworkService networkService)
         {
             this._networkService = networkService;
         }

@@ -15,12 +15,13 @@ using DockerDotNet.Core.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using System.Text.Json;
+using DockerDotNet.Shared.Interfaces;
 
 namespace DockerDotNet.API.Tests
 {
     public class ImageServiceTests : DockerTestBase
     {
-        private readonly ImageService _imageService;
+        private readonly IImageService _imageService;
 
         private readonly ITestOutputHelper _output;
 
@@ -28,7 +29,7 @@ namespace DockerDotNet.API.Tests
 
         public ImageServiceTests(ITestOutputHelper testOutputHelper) : base(Array.Empty<string>())
         {
-            _imageService = _host.Services.GetRequiredService<ImageService>(); 
+            _imageService = _host.Services.GetRequiredService<IImageService>(); 
             _output = testOutputHelper;
             imageName = "1b7c17f650602d97a10724d796f45f0b5250d47ee5ba02f28de89f8a1531f3ce";
         }

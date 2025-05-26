@@ -4,6 +4,7 @@ using DockerDotNet.Shared.Models;
 using DockerDotNet.Core.Services;
 
 using Microsoft.AspNetCore.Mvc;
+using DockerDotNet.Shared.Interfaces;
 
 namespace DockerDotNet.APIClient.Controllers
 {
@@ -11,14 +12,11 @@ namespace DockerDotNet.APIClient.Controllers
     [ApiController]
     public class ExecController : ControllerBase
     {
-        private readonly ExecService execService;
+        private readonly IExecService execService;
         private readonly StreamHelper streamHelper;
 
-        private DockerClient DockerClient { get; set; }
-
-        public ExecController(DockerClient dockerClient, ExecService execService, StreamHelper streamHelper)
+        public ExecController(IExecService execService, StreamHelper streamHelper)
         {
-            DockerClient = dockerClient;
             this.execService = execService;
             this.streamHelper = streamHelper;
         }
