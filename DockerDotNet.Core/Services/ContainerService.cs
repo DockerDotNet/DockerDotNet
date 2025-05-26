@@ -29,10 +29,10 @@ namespace DockerDotNet.Core.Services
             this.logger = logger;
         }
 
-        public async Task<Either<DockerError?, IList<ContainerSummary>?>> GetContainers(ContainersListParameters parameters, CancellationToken cancellationToken)
+        public async Task<Either<DockerError?, IList<Shared.Models.ContainerSummary>?>> GetContainers(ContainersListParameters parameters, CancellationToken cancellationToken)
         {
             string queryString = _dockerClient.GetQueryString(parameters);
-            return await _dockerClient.GetAsync<IList<ContainerSummary>>("containers/json", queryString, cancellationToken);
+            return await _dockerClient.GetAsync<IList<Shared.Models.ContainerSummary>>("containers/json", queryString, cancellationToken);
         }
 
         public async Task<Either<DockerError?, ContainerInspectResponse?>> GetContainer(string id, ContainerInspectParameters queryParameters, CancellationToken cancellationToken)

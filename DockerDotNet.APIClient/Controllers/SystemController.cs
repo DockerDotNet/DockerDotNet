@@ -1,5 +1,5 @@
 ﻿using DockerDotNet.Core;
-using DockerDotNet.Core.Models;
+using DockerDotNet.Shared.Models;
 using DockerDotNet.Core.Services;
 
 using Microsoft.AspNetCore.Http;

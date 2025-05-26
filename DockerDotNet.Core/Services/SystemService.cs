@@ -1,5 +1,5 @@
 ﻿using DockerDotNet.Core.Interfaces;
-using DockerDotNet.Core.Models;
+using DockerDotNet.Shared.Models;
 
 using LanguageExt;
 
@@ -22,14 +22,14 @@ namespace DockerDotNet.Core.Services
             _dockerClient = dockerClient;
         }
 
-        public async Task<Either<DockerError?, Core.Models.SystemVersion?>> GetVersionAsync(CancellationToken cancellationToken)
+        public async Task<Either<DockerError?, SystemVersion?>> GetVersionAsync(CancellationToken cancellationToken)
         {
-            return await _dockerClient.GetAsync<Core.Models.SystemVersion>("version", string.Empty, cancellationToken);
+            return await _dockerClient.GetAsync<SystemVersion>("version", string.Empty, cancellationToken);
         }
 
-        public async Task<Either<DockerError?, Core.Models.SystemInfo?>> GetInfoAsync(CancellationToken cancellationToken)
+        public async Task<Either<DockerError?, SystemInfo?>> GetInfoAsync(CancellationToken cancellationToken)
         {
-            return await _dockerClient.GetAsync<Core.Models.SystemInfo>("info", string.Empty, cancellationToken);
+            return await _dockerClient.GetAsync<SystemInfo>("info", string.Empty, cancellationToken);
         }
 
         public async Task<Either<DockerError?, SystemAuthResponse?>> AuthenticateRegistry(AuthConfig authConfig, CancellationToken cancellationToken)

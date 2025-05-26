@@ -356,50 +356,50 @@ namespace DockerDotNet.Shared.Models
                 }
             }
 
-            if (!name.IsSet)
-                throw new ArgumentException("Property is required for class Volume.", nameof(name));
+            //if (!name.IsSet)
+            //    throw new ArgumentException("Property is required for class Volume.", nameof(name));
 
-            if (!driver.IsSet)
-                throw new ArgumentException("Property is required for class Volume.", nameof(driver));
+            //if (!driver.IsSet)
+            //    throw new ArgumentException("Property is required for class Volume.", nameof(driver));
 
-            if (!mountpoint.IsSet)
-                throw new ArgumentException("Property is required for class Volume.", nameof(mountpoint));
+            //if (!mountpoint.IsSet)
+            //    throw new ArgumentException("Property is required for class Volume.", nameof(mountpoint));
 
-            if (!labels.IsSet)
-                throw new ArgumentException("Property is required for class Volume.", nameof(labels));
+            //if (!labels.IsSet)
+            //    throw new ArgumentException("Property is required for class Volume.", nameof(labels));
 
-            if (!options.IsSet)
-                throw new ArgumentException("Property is required for class Volume.", nameof(options));
+            //if (!options.IsSet)
+            //    throw new ArgumentException("Property is required for class Volume.", nameof(options));
 
-            if (!scope.IsSet)
-                throw new ArgumentException("Property is required for class Volume.", nameof(scope));
+            //if (!scope.IsSet)
+            //    throw new ArgumentException("Property is required for class Volume.", nameof(scope));
 
-            if (name.IsSet && name.Value == null)
-                throw new ArgumentNullException(nameof(name), "Property is not nullable for class Volume.");
+            //if (name.IsSet && name.Value == null)
+            //    throw new ArgumentNullException(nameof(name), "Property is not nullable for class Volume.");
 
-            if (driver.IsSet && driver.Value == null)
-                throw new ArgumentNullException(nameof(driver), "Property is not nullable for class Volume.");
+            //if (driver.IsSet && driver.Value == null)
+            //    throw new ArgumentNullException(nameof(driver), "Property is not nullable for class Volume.");
 
-            if (mountpoint.IsSet && mountpoint.Value == null)
-                throw new ArgumentNullException(nameof(mountpoint), "Property is not nullable for class Volume.");
+            //if (mountpoint.IsSet && mountpoint.Value == null)
+            //    throw new ArgumentNullException(nameof(mountpoint), "Property is not nullable for class Volume.");
 
-            if (labels.IsSet && labels.Value == null)
-                throw new ArgumentNullException(nameof(labels), "Property is not nullable for class Volume.");
+            //if (labels.IsSet && labels.Value == null)
+            //    throw new ArgumentNullException(nameof(labels), "Property is not nullable for class Volume.");
 
-            if (options.IsSet && options.Value == null)
-                throw new ArgumentNullException(nameof(options), "Property is not nullable for class Volume.");
+            //if (options.IsSet && options.Value == null)
+            //    throw new ArgumentNullException(nameof(options), "Property is not nullable for class Volume.");
 
-            if (createdAt.IsSet && createdAt.Value == null)
-                throw new ArgumentNullException(nameof(createdAt), "Property is not nullable for class Volume.");
+            //if (createdAt.IsSet && createdAt.Value == null)
+            //    throw new ArgumentNullException(nameof(createdAt), "Property is not nullable for class Volume.");
 
-            if (status.IsSet && status.Value == null)
-                throw new ArgumentNullException(nameof(status), "Property is not nullable for class Volume.");
+            //if (status.IsSet && status.Value == null)
+            //    throw new ArgumentNullException(nameof(status), "Property is not nullable for class Volume.");
 
-            if (scope.IsSet && scope.Value == null)
-                throw new ArgumentNullException(nameof(scope), "Property is not nullable for class Volume.");
+            //if (scope.IsSet && scope.Value == null)
+            //    throw new ArgumentNullException(nameof(scope), "Property is not nullable for class Volume.");
 
-            if (clusterVolume.IsSet && clusterVolume.Value == null)
-                throw new ArgumentNullException(nameof(clusterVolume), "Property is not nullable for class Volume.");
+            //if (clusterVolume.IsSet && clusterVolume.Value == null)
+            //    throw new ArgumentNullException(nameof(clusterVolume), "Property is not nullable for class Volume.");
 
             return new Volume(name.Value!, driver.Value!, mountpoint.Value!, labels.Value!, options.Value!, createdAt, status, scope.Value!.Value!, clusterVolume, usageData);
         }
