@@ -1,11 +1,8 @@
-using DockerDotNet.Core.Models;
-
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
-using DockerDotNet.Shared.Models;
 
-namespace DockerDotNet.Core.Models
+namespace DockerDotNet.Shared.Models
 {
     [DataContract]
     public class ImagesCreateParameters // (main.ImagesCreateParameters)

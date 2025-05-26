@@ -21,57 +21,50 @@ using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.ComponentModel.DataAnnotations;
-using DockerDotNet.Shared.Models;
 
-namespace DockerDotNet.Core.Models
+
+namespace DockerDotNet.Shared.Models
 {
     /// <summary>
-    /// ImagePruneResponse
+    /// Information about the image&#39;s RootFS, including the layer IDs. 
     /// </summary>
-    public partial class ImagePruneResponse : IValidatableObject
+    public partial class ImageInspectRootFS : IValidatableObject
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ImagePruneResponse" /> class.
+        /// Initializes a new instance of the <see cref="ImageInspectRootFS" /> class.
         /// </summary>
-        /// <param name="imagesDeleted">Images that were deleted</param>
-        /// <param name="spaceReclaimed">Disk space reclaimed in bytes</param>
+        /// <param name="type">type</param>
+        /// <param name="layers">layers</param>
         [JsonConstructor]
-        public ImagePruneResponse(Option<List<ImageDeleteResponseItem>?> imagesDeleted = default, Option<long?> spaceReclaimed = default)
+        public ImageInspectRootFS(string type, Option<List<string>?> layers = default)
         {
-            ImagesDeletedOption = imagesDeleted;
-            SpaceReclaimedOption = spaceReclaimed;
+            Type = type;
+            LayersOption = layers;
             OnCreated();
         }
 
         partial void OnCreated();
 
         /// <summary>
-        /// Used to track the state of ImagesDeleted
+        /// Gets or Sets Type
+        /// </summary>
+        /* <example>layers</example> */
+        [JsonPropertyName("Type")]
+        public string Type { get; set; }
+
+        /// <summary>
+        /// Used to track the state of Layers
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<List<ImageDeleteResponseItem>?> ImagesDeletedOption { get; private set; }
+        public Option<List<string>?> LayersOption { get; private set; }
 
         /// <summary>
-        /// Images that were deleted
+        /// Gets or Sets Layers
         /// </summary>
-        /// <value>Images that were deleted</value>
-        [JsonPropertyName("ImagesDeleted")]
-        public List<ImageDeleteResponseItem>? ImagesDeleted { get { return this.ImagesDeletedOption; } set { this.ImagesDeletedOption = new(value); } }
-
-        /// <summary>
-        /// Used to track the state of SpaceReclaimed
-        /// </summary>
-        [JsonIgnore]
-        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<long?> SpaceReclaimedOption { get; private set; }
-
-        /// <summary>
-        /// Disk space reclaimed in bytes
-        /// </summary>
-        /// <value>Disk space reclaimed in bytes</value>
-        [JsonPropertyName("SpaceReclaimed")]
-        public long? SpaceReclaimed { get { return this.SpaceReclaimedOption; } set { this.SpaceReclaimedOption = new(value); } }
+        /* <example>[sha256:1834950e52ce4d5a88a1bbd131c537f4d0e56d10ff0dd69e66be3b7dfa9df7e6, sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef]</example> */
+        [JsonPropertyName("Layers")]
+        public List<string>? Layers { get { return this.LayersOption; } set { this.LayersOption = new(value); } }
 
         /// <summary>
         /// Returns the string presentation of the object
@@ -80,9 +73,9 @@ namespace DockerDotNet.Core.Models
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append("class ImagePruneResponse {\n");
-            sb.Append("  ImagesDeleted: ").Append(ImagesDeleted).Append("\n");
-            sb.Append("  SpaceReclaimed: ").Append(SpaceReclaimed).Append("\n");
+            sb.Append("class ImageInspectRootFS {\n");
+            sb.Append("  Type: ").Append(Type).Append("\n");
+            sb.Append("  Layers: ").Append(Layers).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -99,19 +92,19 @@ namespace DockerDotNet.Core.Models
     }
 
     /// <summary>
-    /// A Json converter for type <see cref="ImagePruneResponse" />
+    /// A Json converter for type <see cref="ImageInspectRootFS" />
     /// </summary>
-    public class ImagePruneResponseJsonConverter : JsonConverter<ImagePruneResponse>
+    public class ImageInspectRootFSJsonConverter : JsonConverter<ImageInspectRootFS>
     {
         /// <summary>
-        /// Deserializes json to <see cref="ImagePruneResponse" />
+        /// Deserializes json to <see cref="ImageInspectRootFS" />
         /// </summary>
         /// <param name="utf8JsonReader"></param>
         /// <param name="typeToConvert"></param>
         /// <param name="jsonSerializerOptions"></param>
         /// <returns></returns>
         /// <exception cref="JsonException"></exception>
-        public override ImagePruneResponse Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
+        public override ImageInspectRootFS Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
         {
             int currentDepth = utf8JsonReader.CurrentDepth;
 
@@ -120,8 +113,8 @@ namespace DockerDotNet.Core.Models
 
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
-            Option<List<ImageDeleteResponseItem>?> imagesDeleted = default;
-            Option<long?> spaceReclaimed = default;
+            Option<string?> type = default;
+            Option<List<string>?> layers = default;
 
             while (utf8JsonReader.Read())
             {
@@ -138,13 +131,12 @@ namespace DockerDotNet.Core.Models
 
                     switch (localVarJsonPropertyName)
                     {
-                        case "ImagesDeleted":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                imagesDeleted = new Option<List<ImageDeleteResponseItem>?>(JsonSerializer.Deserialize<List<ImageDeleteResponseItem>>(ref utf8JsonReader, jsonSerializerOptions)!);
+                        case "Type":
+                            type = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
-                        case "SpaceReclaimed":
+                        case "Layers":
                             if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                spaceReclaimed = new Option<long?>(utf8JsonReader.GetInt64());
+                                layers = new Option<List<string>?>(JsonSerializer.Deserialize<List<string>>(ref utf8JsonReader, jsonSerializerOptions)!);
                             break;
                         default:
                             break;
@@ -152,49 +144,55 @@ namespace DockerDotNet.Core.Models
                 }
             }
 
-            if (imagesDeleted.IsSet && imagesDeleted.Value == null)
-                throw new ArgumentNullException(nameof(imagesDeleted), "Property is not nullable for class ImagePruneResponse.");
+            if (!type.IsSet)
+                throw new ArgumentException("Property is required for class ImageInspectRootFS.", nameof(type));
 
-            if (spaceReclaimed.IsSet && spaceReclaimed.Value == null)
-                throw new ArgumentNullException(nameof(spaceReclaimed), "Property is not nullable for class ImagePruneResponse.");
+            if (type.IsSet && type.Value == null)
+                throw new ArgumentNullException(nameof(type), "Property is not nullable for class ImageInspectRootFS.");
 
-            return new ImagePruneResponse(imagesDeleted, spaceReclaimed);
+            if (layers.IsSet && layers.Value == null)
+                throw new ArgumentNullException(nameof(layers), "Property is not nullable for class ImageInspectRootFS.");
+
+            return new ImageInspectRootFS(type.Value!, layers);
         }
 
         /// <summary>
-        /// Serializes a <see cref="ImagePruneResponse" />
+        /// Serializes a <see cref="ImageInspectRootFS" />
         /// </summary>
         /// <param name="writer"></param>
-        /// <param name="imagePruneResponse"></param>
+        /// <param name="imageInspectRootFS"></param>
         /// <param name="jsonSerializerOptions"></param>
         /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, ImagePruneResponse imagePruneResponse, JsonSerializerOptions jsonSerializerOptions)
+        public override void Write(Utf8JsonWriter writer, ImageInspectRootFS imageInspectRootFS, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
 
-            WriteProperties(writer, imagePruneResponse, jsonSerializerOptions);
+            WriteProperties(writer, imageInspectRootFS, jsonSerializerOptions);
             writer.WriteEndObject();
         }
 
         /// <summary>
-        /// Serializes the properties of <see cref="ImagePruneResponse" />
+        /// Serializes the properties of <see cref="ImageInspectRootFS" />
         /// </summary>
         /// <param name="writer"></param>
-        /// <param name="imagePruneResponse"></param>
+        /// <param name="imageInspectRootFS"></param>
         /// <param name="jsonSerializerOptions"></param>
         /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, ImagePruneResponse imagePruneResponse, JsonSerializerOptions jsonSerializerOptions)
+        public void WriteProperties(Utf8JsonWriter writer, ImageInspectRootFS imageInspectRootFS, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (imagePruneResponse.ImagesDeletedOption.IsSet && imagePruneResponse.ImagesDeleted == null)
-                throw new ArgumentNullException(nameof(imagePruneResponse.ImagesDeleted), "Property is required for class ImagePruneResponse.");
+            if (imageInspectRootFS.Type == null)
+                throw new ArgumentNullException(nameof(imageInspectRootFS.Type), "Property is required for class ImageInspectRootFS.");
 
-            if (imagePruneResponse.ImagesDeletedOption.IsSet)
+            if (imageInspectRootFS.LayersOption.IsSet && imageInspectRootFS.Layers == null)
+                throw new ArgumentNullException(nameof(imageInspectRootFS.Layers), "Property is required for class ImageInspectRootFS.");
+
+            writer.WriteString("Type", imageInspectRootFS.Type);
+
+            if (imageInspectRootFS.LayersOption.IsSet)
             {
-                writer.WritePropertyName("ImagesDeleted");
-                JsonSerializer.Serialize(writer, imagePruneResponse.ImagesDeleted, jsonSerializerOptions);
+                writer.WritePropertyName("Layers");
+                JsonSerializer.Serialize(writer, imageInspectRootFS.Layers, jsonSerializerOptions);
             }
-            if (imagePruneResponse.SpaceReclaimedOption.IsSet)
-                writer.WriteNumber("SpaceReclaimed", imagePruneResponse.SpaceReclaimedOption.Value!.Value);
         }
     }
 }

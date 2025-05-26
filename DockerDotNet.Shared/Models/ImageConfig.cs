@@ -21,62 +21,45 @@ using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.ComponentModel.DataAnnotations;
-using System.Runtime.Serialization;
-using DockerDotNet.Shared.Models;
 
-namespace DockerDotNet.Core.Models
+
+namespace DockerDotNet.Shared.Models
 {
-    [DataContract]
-    public class CreateContainerQueryParameters
-    {
-        [DataMember(Name = "name", EmitDefaultValue = false)]
-        [JsonPropertyName("name")]
-        public string? Name { get; set; }
-
-        //[QueryStringParameter("platform", false)]
-        [DataMember(Name = "platform", EmitDefaultValue = false)]
-        [JsonPropertyName("platform")]
-        public string? Platform { get; set; }
-
-    }
-
     /// <summary>
-    /// ContainerCreateRequest
+    /// Configuration of the image. These fields are used as defaults when starting a container from the image. 
     /// </summary>
-    public partial class ContainerCreateRequest : IValidatableObject
+    public partial class ImageConfig : IValidatableObject
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ContainerCreateRequest" /> class.
+        /// Initializes a new instance of the <see cref="ImageConfig" /> class.
         /// </summary>
-        /// <param name="hostname">The hostname to use for the container, as a valid RFC 1123 hostname. </param>
-        /// <param name="domainname">The domain name to use for the container. </param>
-        /// <param name="user">Commands run as this user inside the container. If omitted, commands run as the user specified in the image the container was started from.  Can be either user-name or UID, and optional group-name or GID, separated by a colon (&#x60;&lt;user-name|UID&gt;[&lt;:group-name|GID&gt;]&#x60;).</param>
-        /// <param name="attachStdin">Whether to attach to &#x60;stdin&#x60;. (default to false)</param>
-        /// <param name="attachStdout">Whether to attach to &#x60;stdout&#x60;. (default to true)</param>
-        /// <param name="attachStderr">Whether to attach to &#x60;stderr&#x60;. (default to true)</param>
+        /// <param name="hostname">The hostname to use for the container, as a valid RFC 1123 hostname.  &lt;p&gt;&lt;br /&gt;&lt;/p&gt;  &gt; **Deprecated**: this field is not part of the image specification and is &gt; always empty. It must not be used, and will be removed in API v1.48. </param>
+        /// <param name="domainname">The domain name to use for the container.  &lt;p&gt;&lt;br /&gt;&lt;/p&gt;  &gt; **Deprecated**: this field is not part of the image specification and is &gt; always empty. It must not be used, and will be removed in API v1.48. </param>
+        /// <param name="user">The user that commands are run as inside the container.</param>
+        /// <param name="attachStdin">Whether to attach to &#x60;stdin&#x60;.  &lt;p&gt;&lt;br /&gt;&lt;/p&gt;  &gt; **Deprecated**: this field is not part of the image specification and is &gt; always false. It must not be used, and will be removed in API v1.48.  (default to false)</param>
+        /// <param name="attachStdout">Whether to attach to &#x60;stdout&#x60;.  &lt;p&gt;&lt;br /&gt;&lt;/p&gt;  &gt; **Deprecated**: this field is not part of the image specification and is &gt; always false. It must not be used, and will be removed in API v1.48.  (default to false)</param>
+        /// <param name="attachStderr">Whether to attach to &#x60;stderr&#x60;.  &lt;p&gt;&lt;br /&gt;&lt;/p&gt;  &gt; **Deprecated**: this field is not part of the image specification and is &gt; always false. It must not be used, and will be removed in API v1.48.  (default to false)</param>
         /// <param name="exposedPorts">An object mapping ports to an empty object in the form:  &#x60;{\&quot;&lt;port&gt;/&lt;tcp|udp|sctp&gt;\&quot;: {}}&#x60; </param>
-        /// <param name="tty">Attach standard streams to a TTY, including &#x60;stdin&#x60; if it is not closed.  (default to false)</param>
-        /// <param name="openStdin">Open &#x60;stdin&#x60; (default to false)</param>
-        /// <param name="stdinOnce">Close &#x60;stdin&#x60; after one attached client disconnects (default to false)</param>
+        /// <param name="tty">Attach standard streams to a TTY, including &#x60;stdin&#x60; if it is not closed.  &lt;p&gt;&lt;br /&gt;&lt;/p&gt;  &gt; **Deprecated**: this field is not part of the image specification and is &gt; always false. It must not be used, and will be removed in API v1.48.  (default to false)</param>
+        /// <param name="openStdin">Open &#x60;stdin&#x60;  &lt;p&gt;&lt;br /&gt;&lt;/p&gt;  &gt; **Deprecated**: this field is not part of the image specification and is &gt; always false. It must not be used, and will be removed in API v1.48.  (default to false)</param>
+        /// <param name="stdinOnce">Close &#x60;stdin&#x60; after one attached client disconnects.  &lt;p&gt;&lt;br /&gt;&lt;/p&gt;  &gt; **Deprecated**: this field is not part of the image specification and is &gt; always false. It must not be used, and will be removed in API v1.48.  (default to false)</param>
         /// <param name="env">A list of environment variables to set inside the container in the form &#x60;[\&quot;VAR&#x3D;value\&quot;, ...]&#x60;. A variable without &#x60;&#x3D;&#x60; is removed from the environment, rather than to have an empty value. </param>
         /// <param name="cmd">Command to run specified as a string or an array of strings. </param>
         /// <param name="healthcheck">healthcheck</param>
         /// <param name="argsEscaped">Command is already escaped (Windows only) (default to false)</param>
-        /// <param name="image">The name (or reference) of the image to use when creating the container, or which was used when the container was created. </param>
+        /// <param name="image">The name (or reference) of the image to use when creating the container, or which was used when the container was created.  &lt;p&gt;&lt;br /&gt;&lt;/p&gt;  &gt; **Deprecated**: this field is not part of the image specification and is &gt; always empty. It must not be used, and will be removed in API v1.48.  (default to &quot;&quot;)</param>
         /// <param name="volumes">An object mapping mount point paths inside the container to empty objects. </param>
         /// <param name="workingDir">The working directory for commands to run in.</param>
         /// <param name="entrypoint">The entry point for the container as a string or an array of strings.  If the array consists of exactly one empty string (&#x60;[\&quot;\&quot;]&#x60;) then the entry point is reset to system default (i.e., the entry point used by docker when there is no &#x60;ENTRYPOINT&#x60; instruction in the &#x60;Dockerfile&#x60;). </param>
-        /// <param name="networkDisabled">Disable networking for the container.</param>
-        /// <param name="macAddress">MAC address of the container.  Deprecated: this field is deprecated in API v1.44 and up. Use EndpointSettings.MacAddress instead. </param>
+        /// <param name="networkDisabled">Disable networking for the container.  &lt;p&gt;&lt;br /&gt;&lt;/p&gt;  &gt; **Deprecated**: this field is not part of the image specification and is &gt; always omitted. It must not be used, and will be removed in API v1.48.  (default to false)</param>
+        /// <param name="macAddress">MAC address of the container.  &lt;p&gt;&lt;br /&gt;&lt;/p&gt;  &gt; **Deprecated**: this field is not part of the image specification and is &gt; always omitted. It must not be used, and will be removed in API v1.48.  (default to &quot;&quot;)</param>
         /// <param name="onBuild">&#x60;ONBUILD&#x60; metadata that were defined in the image&#39;s &#x60;Dockerfile&#x60;. </param>
         /// <param name="labels">User-defined key/value metadata.</param>
         /// <param name="stopSignal">Signal to stop a container as a string or unsigned integer. </param>
-        /// <param name="stopTimeout">Timeout to stop a container in seconds.</param>
+        /// <param name="stopTimeout">Timeout to stop a container in seconds.  &lt;p&gt;&lt;br /&gt;&lt;/p&gt;  &gt; **Deprecated**: this field is not part of the image specification and is &gt; always omitted. It must not be used, and will be removed in API v1.48. </param>
         /// <param name="shell">Shell for when &#x60;RUN&#x60;, &#x60;CMD&#x60;, and &#x60;ENTRYPOINT&#x60; uses a shell. </param>
-        /// <param name="hostConfig">hostConfig</param>
-        /// <param name="networkingConfig">networkingConfig</param>
         [JsonConstructor]
-        public ContainerCreateRequest(Option<string?> hostname = default, Option<string?> domainname = default, Option<string?> user = default, Option<bool?> attachStdin = default, Option<bool?> attachStdout = default, Option<bool?> attachStderr = default, Option<Dictionary<string, Object>?> exposedPorts = default, Option<bool?> tty = default, Option<bool?> openStdin = default, Option<bool?> stdinOnce = default, Option<List<string>?> env = default, Option<List<string>?> cmd = default, Option<HealthConfig?> healthcheck = default, Option<bool?> argsEscaped = default, Option<string?> image = default, Option<Dictionary<string, Object>?> volumes = default, Option<string?> workingDir = default, Option<List<string>?> entrypoint = default, Option<bool?> networkDisabled = default, Option<string?> macAddress = default, Option<List<string>?> onBuild = default, Option<Dictionary<string, string>?> labels = default, Option<string?> stopSignal = default, Option<int?> stopTimeout = default, Option<List<string>?> shell = default, Option<HostConfig?> hostConfig = default, Option<NetworkingConfig?> networkingConfig = default)
+        public ImageConfig(Option<string?> hostname = default, Option<string?> domainname = default, Option<string?> user = default, Option<bool?> attachStdin = default, Option<bool?> attachStdout = default, Option<bool?> attachStderr = default, Option<Dictionary<string, Object>?> exposedPorts = default, Option<bool?> tty = default, Option<bool?> openStdin = default, Option<bool?> stdinOnce = default, Option<List<string>?> env = default, Option<List<string>?> cmd = default, Option<HealthConfig?> healthcheck = default, Option<bool?> argsEscaped = default, Option<string?> image = default, Option<Dictionary<string, Object>?> volumes = default, Option<string?> workingDir = default, Option<List<string>?> entrypoint = default, Option<bool?> networkDisabled = default, Option<string?> macAddress = default, Option<List<string>?> onBuild = default, Option<Dictionary<string, string>?> labels = default, Option<string?> stopSignal = default, Option<int?> stopTimeout = default, Option<List<string>?> shell = default)
         {
             HostnameOption = hostname;
             DomainnameOption = domainname;
@@ -103,8 +86,6 @@ namespace DockerDotNet.Core.Models
             StopSignalOption = stopSignal;
             StopTimeoutOption = stopTimeout;
             ShellOption = shell;
-            HostConfigOption = hostConfig;
-            NetworkingConfigOption = networkingConfig;
             OnCreated();
         }
 
@@ -118,10 +99,9 @@ namespace DockerDotNet.Core.Models
         public Option<string?> HostnameOption { get; private set; }
 
         /// <summary>
-        /// The hostname to use for the container, as a valid RFC 1123 hostname. 
+        /// The hostname to use for the container, as a valid RFC 1123 hostname.  &lt;p&gt;&lt;br /&gt;&lt;/p&gt;  &gt; **Deprecated**: this field is not part of the image specification and is &gt; always empty. It must not be used, and will be removed in API v1.48. 
         /// </summary>
-        /// <value>The hostname to use for the container, as a valid RFC 1123 hostname. </value>
-        /* <example>439f4e91bd1d</example> */
+        /// <value>The hostname to use for the container, as a valid RFC 1123 hostname.  &lt;p&gt;&lt;br /&gt;&lt;/p&gt;  &gt; **Deprecated**: this field is not part of the image specification and is &gt; always empty. It must not be used, and will be removed in API v1.48. </value>
         [JsonPropertyName("Hostname")]
         public string? Hostname { get { return this.HostnameOption; } set { this.HostnameOption = new(value); } }
 
@@ -133,9 +113,9 @@ namespace DockerDotNet.Core.Models
         public Option<string?> DomainnameOption { get; private set; }
 
         /// <summary>
-        /// The domain name to use for the container. 
+        /// The domain name to use for the container.  &lt;p&gt;&lt;br /&gt;&lt;/p&gt;  &gt; **Deprecated**: this field is not part of the image specification and is &gt; always empty. It must not be used, and will be removed in API v1.48. 
         /// </summary>
-        /// <value>The domain name to use for the container. </value>
+        /// <value>The domain name to use for the container.  &lt;p&gt;&lt;br /&gt;&lt;/p&gt;  &gt; **Deprecated**: this field is not part of the image specification and is &gt; always empty. It must not be used, and will be removed in API v1.48. </value>
         [JsonPropertyName("Domainname")]
         public string? Domainname { get { return this.DomainnameOption; } set { this.DomainnameOption = new(value); } }
 
@@ -147,10 +127,10 @@ namespace DockerDotNet.Core.Models
         public Option<string?> UserOption { get; private set; }
 
         /// <summary>
-        /// Commands run as this user inside the container. If omitted, commands run as the user specified in the image the container was started from.  Can be either user-name or UID, and optional group-name or GID, separated by a colon (&#x60;&lt;user-name|UID&gt;[&lt;:group-name|GID&gt;]&#x60;).
+        /// The user that commands are run as inside the container.
         /// </summary>
-        /// <value>Commands run as this user inside the container. If omitted, commands run as the user specified in the image the container was started from.  Can be either user-name or UID, and optional group-name or GID, separated by a colon (&#x60;&lt;user-name|UID&gt;[&lt;:group-name|GID&gt;]&#x60;).</value>
-        /* <example>123:456</example> */
+        /// <value>The user that commands are run as inside the container.</value>
+        /* <example>web:web</example> */
         [JsonPropertyName("User")]
         public string? User { get { return this.UserOption; } set { this.UserOption = new(value); } }
 
@@ -162,9 +142,10 @@ namespace DockerDotNet.Core.Models
         public Option<bool?> AttachStdinOption { get; private set; }
 
         /// <summary>
-        /// Whether to attach to &#x60;stdin&#x60;.
+        /// Whether to attach to &#x60;stdin&#x60;.  &lt;p&gt;&lt;br /&gt;&lt;/p&gt;  &gt; **Deprecated**: this field is not part of the image specification and is &gt; always false. It must not be used, and will be removed in API v1.48. 
         /// </summary>
-        /// <value>Whether to attach to &#x60;stdin&#x60;.</value>
+        /// <value>Whether to attach to &#x60;stdin&#x60;.  &lt;p&gt;&lt;br /&gt;&lt;/p&gt;  &gt; **Deprecated**: this field is not part of the image specification and is &gt; always false. It must not be used, and will be removed in API v1.48. </value>
+        /* <example>false</example> */
         [JsonPropertyName("AttachStdin")]
         public bool? AttachStdin { get { return this.AttachStdinOption; } set { this.AttachStdinOption = new(value); } }
 
@@ -176,9 +157,10 @@ namespace DockerDotNet.Core.Models
         public Option<bool?> AttachStdoutOption { get; private set; }
 
         /// <summary>
-        /// Whether to attach to &#x60;stdout&#x60;.
+        /// Whether to attach to &#x60;stdout&#x60;.  &lt;p&gt;&lt;br /&gt;&lt;/p&gt;  &gt; **Deprecated**: this field is not part of the image specification and is &gt; always false. It must not be used, and will be removed in API v1.48. 
         /// </summary>
-        /// <value>Whether to attach to &#x60;stdout&#x60;.</value>
+        /// <value>Whether to attach to &#x60;stdout&#x60;.  &lt;p&gt;&lt;br /&gt;&lt;/p&gt;  &gt; **Deprecated**: this field is not part of the image specification and is &gt; always false. It must not be used, and will be removed in API v1.48. </value>
+        /* <example>false</example> */
         [JsonPropertyName("AttachStdout")]
         public bool? AttachStdout { get { return this.AttachStdoutOption; } set { this.AttachStdoutOption = new(value); } }
 
@@ -190,9 +172,10 @@ namespace DockerDotNet.Core.Models
         public Option<bool?> AttachStderrOption { get; private set; }
 
         /// <summary>
-        /// Whether to attach to &#x60;stderr&#x60;.
+        /// Whether to attach to &#x60;stderr&#x60;.  &lt;p&gt;&lt;br /&gt;&lt;/p&gt;  &gt; **Deprecated**: this field is not part of the image specification and is &gt; always false. It must not be used, and will be removed in API v1.48. 
         /// </summary>
-        /// <value>Whether to attach to &#x60;stderr&#x60;.</value>
+        /// <value>Whether to attach to &#x60;stderr&#x60;.  &lt;p&gt;&lt;br /&gt;&lt;/p&gt;  &gt; **Deprecated**: this field is not part of the image specification and is &gt; always false. It must not be used, and will be removed in API v1.48. </value>
+        /* <example>false</example> */
         [JsonPropertyName("AttachStderr")]
         public bool? AttachStderr { get { return this.AttachStderrOption; } set { this.AttachStderrOption = new(value); } }
 
@@ -207,7 +190,7 @@ namespace DockerDotNet.Core.Models
         /// An object mapping ports to an empty object in the form:  &#x60;{\&quot;&lt;port&gt;/&lt;tcp|udp|sctp&gt;\&quot;: {}}&#x60; 
         /// </summary>
         /// <value>An object mapping ports to an empty object in the form:  &#x60;{\&quot;&lt;port&gt;/&lt;tcp|udp|sctp&gt;\&quot;: {}}&#x60; </value>
-        /* <example>{80/tcp&#x3D;{}, 443/tcp&#x3D;{}}</example> */
+        /* <example>{&quot;80/tcp&quot;:{},&quot;443/tcp&quot;:{}}</example> */
         [JsonPropertyName("ExposedPorts")]
         public Dictionary<string, Object>? ExposedPorts { get { return this.ExposedPortsOption; } set { this.ExposedPortsOption = new(value); } }
 
@@ -219,9 +202,10 @@ namespace DockerDotNet.Core.Models
         public Option<bool?> TtyOption { get; private set; }
 
         /// <summary>
-        /// Attach standard streams to a TTY, including &#x60;stdin&#x60; if it is not closed. 
+        /// Attach standard streams to a TTY, including &#x60;stdin&#x60; if it is not closed.  &lt;p&gt;&lt;br /&gt;&lt;/p&gt;  &gt; **Deprecated**: this field is not part of the image specification and is &gt; always false. It must not be used, and will be removed in API v1.48. 
         /// </summary>
-        /// <value>Attach standard streams to a TTY, including &#x60;stdin&#x60; if it is not closed. </value>
+        /// <value>Attach standard streams to a TTY, including &#x60;stdin&#x60; if it is not closed.  &lt;p&gt;&lt;br /&gt;&lt;/p&gt;  &gt; **Deprecated**: this field is not part of the image specification and is &gt; always false. It must not be used, and will be removed in API v1.48. </value>
+        /* <example>false</example> */
         [JsonPropertyName("Tty")]
         public bool? Tty { get { return this.TtyOption; } set { this.TtyOption = new(value); } }
 
@@ -233,9 +217,10 @@ namespace DockerDotNet.Core.Models
         public Option<bool?> OpenStdinOption { get; private set; }
 
         /// <summary>
-        /// Open &#x60;stdin&#x60;
+        /// Open &#x60;stdin&#x60;  &lt;p&gt;&lt;br /&gt;&lt;/p&gt;  &gt; **Deprecated**: this field is not part of the image specification and is &gt; always false. It must not be used, and will be removed in API v1.48. 
         /// </summary>
-        /// <value>Open &#x60;stdin&#x60;</value>
+        /// <value>Open &#x60;stdin&#x60;  &lt;p&gt;&lt;br /&gt;&lt;/p&gt;  &gt; **Deprecated**: this field is not part of the image specification and is &gt; always false. It must not be used, and will be removed in API v1.48. </value>
+        /* <example>false</example> */
         [JsonPropertyName("OpenStdin")]
         public bool? OpenStdin { get { return this.OpenStdinOption; } set { this.OpenStdinOption = new(value); } }
 
@@ -247,9 +232,10 @@ namespace DockerDotNet.Core.Models
         public Option<bool?> StdinOnceOption { get; private set; }
 
         /// <summary>
-        /// Close &#x60;stdin&#x60; after one attached client disconnects
+        /// Close &#x60;stdin&#x60; after one attached client disconnects.  &lt;p&gt;&lt;br /&gt;&lt;/p&gt;  &gt; **Deprecated**: this field is not part of the image specification and is &gt; always false. It must not be used, and will be removed in API v1.48. 
         /// </summary>
-        /// <value>Close &#x60;stdin&#x60; after one attached client disconnects</value>
+        /// <value>Close &#x60;stdin&#x60; after one attached client disconnects.  &lt;p&gt;&lt;br /&gt;&lt;/p&gt;  &gt; **Deprecated**: this field is not part of the image specification and is &gt; always false. It must not be used, and will be removed in API v1.48. </value>
+        /* <example>false</example> */
         [JsonPropertyName("StdinOnce")]
         public bool? StdinOnce { get { return this.StdinOnceOption; } set { this.StdinOnceOption = new(value); } }
 
@@ -319,10 +305,9 @@ namespace DockerDotNet.Core.Models
         public Option<string?> ImageOption { get; private set; }
 
         /// <summary>
-        /// The name (or reference) of the image to use when creating the container, or which was used when the container was created. 
+        /// The name (or reference) of the image to use when creating the container, or which was used when the container was created.  &lt;p&gt;&lt;br /&gt;&lt;/p&gt;  &gt; **Deprecated**: this field is not part of the image specification and is &gt; always empty. It must not be used, and will be removed in API v1.48. 
         /// </summary>
-        /// <value>The name (or reference) of the image to use when creating the container, or which was used when the container was created. </value>
-        /* <example>example-image:1.0</example> */
+        /// <value>The name (or reference) of the image to use when creating the container, or which was used when the container was created.  &lt;p&gt;&lt;br /&gt;&lt;/p&gt;  &gt; **Deprecated**: this field is not part of the image specification and is &gt; always empty. It must not be used, and will be removed in API v1.48. </value>
         [JsonPropertyName("Image")]
         public string? Image { get { return this.ImageOption; } set { this.ImageOption = new(value); } }
 
@@ -337,6 +322,7 @@ namespace DockerDotNet.Core.Models
         /// An object mapping mount point paths inside the container to empty objects. 
         /// </summary>
         /// <value>An object mapping mount point paths inside the container to empty objects. </value>
+        /* <example>{&quot;/app/data&quot;:{},&quot;/app/config&quot;:{}}</example> */
         [JsonPropertyName("Volumes")]
         public Dictionary<string, Object>? Volumes { get { return this.VolumesOption; } set { this.VolumesOption = new(value); } }
 
@@ -378,9 +364,10 @@ namespace DockerDotNet.Core.Models
         public Option<bool?> NetworkDisabledOption { get; private set; }
 
         /// <summary>
-        /// Disable networking for the container.
+        /// Disable networking for the container.  &lt;p&gt;&lt;br /&gt;&lt;/p&gt;  &gt; **Deprecated**: this field is not part of the image specification and is &gt; always omitted. It must not be used, and will be removed in API v1.48. 
         /// </summary>
-        /// <value>Disable networking for the container.</value>
+        /// <value>Disable networking for the container.  &lt;p&gt;&lt;br /&gt;&lt;/p&gt;  &gt; **Deprecated**: this field is not part of the image specification and is &gt; always omitted. It must not be used, and will be removed in API v1.48. </value>
+        /* <example>false</example> */
         [JsonPropertyName("NetworkDisabled")]
         public bool? NetworkDisabled { get { return this.NetworkDisabledOption; } set { this.NetworkDisabledOption = new(value); } }
 
@@ -392,9 +379,9 @@ namespace DockerDotNet.Core.Models
         public Option<string?> MacAddressOption { get; private set; }
 
         /// <summary>
-        /// MAC address of the container.  Deprecated: this field is deprecated in API v1.44 and up. Use EndpointSettings.MacAddress instead. 
+        /// MAC address of the container.  &lt;p&gt;&lt;br /&gt;&lt;/p&gt;  &gt; **Deprecated**: this field is not part of the image specification and is &gt; always omitted. It must not be used, and will be removed in API v1.48. 
         /// </summary>
-        /// <value>MAC address of the container.  Deprecated: this field is deprecated in API v1.44 and up. Use EndpointSettings.MacAddress instead. </value>
+        /// <value>MAC address of the container.  &lt;p&gt;&lt;br /&gt;&lt;/p&gt;  &gt; **Deprecated**: this field is not part of the image specification and is &gt; always omitted. It must not be used, and will be removed in API v1.48. </value>
         [JsonPropertyName("MacAddress")]
         public string? MacAddress { get { return this.MacAddressOption; } set { this.MacAddressOption = new(value); } }
 
@@ -424,7 +411,7 @@ namespace DockerDotNet.Core.Models
         /// User-defined key/value metadata.
         /// </summary>
         /// <value>User-defined key/value metadata.</value>
-        /* <example>{com.example.some-label&#x3D;some-value, com.example.some-other-label&#x3D;some-other-value}</example> */
+        /* <example>{&quot;com.example.some-label&quot;:&quot;some-value&quot;,&quot;com.example.some-other-label&quot;:&quot;some-other-value&quot;}</example> */
         [JsonPropertyName("Labels")]
         public Dictionary<string, string>? Labels { get { return this.LabelsOption; } set { this.LabelsOption = new(value); } }
 
@@ -451,9 +438,9 @@ namespace DockerDotNet.Core.Models
         public Option<int?> StopTimeoutOption { get; private set; }
 
         /// <summary>
-        /// Timeout to stop a container in seconds.
+        /// Timeout to stop a container in seconds.  &lt;p&gt;&lt;br /&gt;&lt;/p&gt;  &gt; **Deprecated**: this field is not part of the image specification and is &gt; always omitted. It must not be used, and will be removed in API v1.48. 
         /// </summary>
-        /// <value>Timeout to stop a container in seconds.</value>
+        /// <value>Timeout to stop a container in seconds.  &lt;p&gt;&lt;br /&gt;&lt;/p&gt;  &gt; **Deprecated**: this field is not part of the image specification and is &gt; always omitted. It must not be used, and will be removed in API v1.48. </value>
         [JsonPropertyName("StopTimeout")]
         public int? StopTimeout { get { return this.StopTimeoutOption; } set { this.StopTimeoutOption = new(value); } }
 
@@ -473,39 +460,13 @@ namespace DockerDotNet.Core.Models
         public List<string>? Shell { get { return this.ShellOption; } set { this.ShellOption = new(value); } }
 
         /// <summary>
-        /// Used to track the state of HostConfig
-        /// </summary>
-        [JsonIgnore]
-        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<HostConfig?> HostConfigOption { get; private set; }
-
-        /// <summary>
-        /// Gets or Sets HostConfig
-        /// </summary>
-        [JsonPropertyName("HostConfig")]
-        public HostConfig? HostConfig { get { return this.HostConfigOption; } set { this.HostConfigOption = new(value); } }
-
-        /// <summary>
-        /// Used to track the state of NetworkingConfig
-        /// </summary>
-        [JsonIgnore]
-        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<NetworkingConfig?> NetworkingConfigOption { get; private set; }
-
-        /// <summary>
-        /// Gets or Sets NetworkingConfig
-        /// </summary>
-        [JsonPropertyName("NetworkingConfig")]
-        public NetworkingConfig? NetworkingConfig { get { return this.NetworkingConfigOption; } set { this.NetworkingConfigOption = new(value); } }
-
-        /// <summary>
         /// Returns the string presentation of the object
         /// </summary>
         /// <returns>String presentation of the object</returns>
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append("class ContainerCreateRequest {\n");
+            sb.Append("class ImageConfig {\n");
             sb.Append("  Hostname: ").Append(Hostname).Append("\n");
             sb.Append("  Domainname: ").Append(Domainname).Append("\n");
             sb.Append("  User: ").Append(User).Append("\n");
@@ -531,8 +492,6 @@ namespace DockerDotNet.Core.Models
             sb.Append("  StopSignal: ").Append(StopSignal).Append("\n");
             sb.Append("  StopTimeout: ").Append(StopTimeout).Append("\n");
             sb.Append("  Shell: ").Append(Shell).Append("\n");
-            sb.Append("  HostConfig: ").Append(HostConfig).Append("\n");
-            sb.Append("  NetworkingConfig: ").Append(NetworkingConfig).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -549,19 +508,19 @@ namespace DockerDotNet.Core.Models
     }
 
     /// <summary>
-    /// A Json converter for type <see cref="ContainerCreateRequest" />
+    /// A Json converter for type <see cref="ImageConfig" />
     /// </summary>
-    public class ContainerCreateRequestJsonConverter : JsonConverter<ContainerCreateRequest>
+    public class ImageConfigJsonConverter : JsonConverter<ImageConfig>
     {
         /// <summary>
-        /// Deserializes json to <see cref="ContainerCreateRequest" />
+        /// Deserializes json to <see cref="ImageConfig" />
         /// </summary>
         /// <param name="utf8JsonReader"></param>
         /// <param name="typeToConvert"></param>
         /// <param name="jsonSerializerOptions"></param>
         /// <returns></returns>
         /// <exception cref="JsonException"></exception>
-        public override ContainerCreateRequest Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
+        public override ImageConfig Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
         {
             int currentDepth = utf8JsonReader.CurrentDepth;
 
@@ -595,8 +554,6 @@ namespace DockerDotNet.Core.Models
             Option<string?> stopSignal = default;
             Option<int?> stopTimeout = default;
             Option<List<string>?> shell = default;
-            Option<HostConfig?> hostConfig = default;
-            Option<NetworkingConfig?> networkingConfig = default;
 
             while (utf8JsonReader.Read())
             {
@@ -706,14 +663,6 @@ namespace DockerDotNet.Core.Models
                             if (utf8JsonReader.TokenType != JsonTokenType.Null)
                                 shell = new Option<List<string>?>(JsonSerializer.Deserialize<List<string>>(ref utf8JsonReader, jsonSerializerOptions));
                             break;
-                        case "HostConfig":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                hostConfig = new Option<HostConfig?>(JsonSerializer.Deserialize<HostConfig>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "NetworkingConfig":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                networkingConfig = new Option<NetworkingConfig?>(JsonSerializer.Deserialize<NetworkingConfig>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
                         default:
                             break;
                     }
@@ -721,255 +670,233 @@ namespace DockerDotNet.Core.Models
             }
 
             if (hostname.IsSet && hostname.Value == null)
-                throw new ArgumentNullException(nameof(hostname), "Property is not nullable for class ContainerCreateRequest.");
+                throw new ArgumentNullException(nameof(hostname), "Property is not nullable for class ImageConfig.");
 
             if (domainname.IsSet && domainname.Value == null)
-                throw new ArgumentNullException(nameof(domainname), "Property is not nullable for class ContainerCreateRequest.");
+                throw new ArgumentNullException(nameof(domainname), "Property is not nullable for class ImageConfig.");
 
             if (user.IsSet && user.Value == null)
-                throw new ArgumentNullException(nameof(user), "Property is not nullable for class ContainerCreateRequest.");
+                throw new ArgumentNullException(nameof(user), "Property is not nullable for class ImageConfig.");
 
             if (attachStdin.IsSet && attachStdin.Value == null)
-                throw new ArgumentNullException(nameof(attachStdin), "Property is not nullable for class ContainerCreateRequest.");
+                throw new ArgumentNullException(nameof(attachStdin), "Property is not nullable for class ImageConfig.");
 
             if (attachStdout.IsSet && attachStdout.Value == null)
-                throw new ArgumentNullException(nameof(attachStdout), "Property is not nullable for class ContainerCreateRequest.");
+                throw new ArgumentNullException(nameof(attachStdout), "Property is not nullable for class ImageConfig.");
 
             if (attachStderr.IsSet && attachStderr.Value == null)
-                throw new ArgumentNullException(nameof(attachStderr), "Property is not nullable for class ContainerCreateRequest.");
+                throw new ArgumentNullException(nameof(attachStderr), "Property is not nullable for class ImageConfig.");
 
             if (tty.IsSet && tty.Value == null)
-                throw new ArgumentNullException(nameof(tty), "Property is not nullable for class ContainerCreateRequest.");
+                throw new ArgumentNullException(nameof(tty), "Property is not nullable for class ImageConfig.");
 
             if (openStdin.IsSet && openStdin.Value == null)
-                throw new ArgumentNullException(nameof(openStdin), "Property is not nullable for class ContainerCreateRequest.");
+                throw new ArgumentNullException(nameof(openStdin), "Property is not nullable for class ImageConfig.");
 
             if (stdinOnce.IsSet && stdinOnce.Value == null)
-                throw new ArgumentNullException(nameof(stdinOnce), "Property is not nullable for class ContainerCreateRequest.");
+                throw new ArgumentNullException(nameof(stdinOnce), "Property is not nullable for class ImageConfig.");
 
             if (env.IsSet && env.Value == null)
-                throw new ArgumentNullException(nameof(env), "Property is not nullable for class ContainerCreateRequest.");
+                throw new ArgumentNullException(nameof(env), "Property is not nullable for class ImageConfig.");
 
             if (cmd.IsSet && cmd.Value == null)
-                throw new ArgumentNullException(nameof(cmd), "Property is not nullable for class ContainerCreateRequest.");
+                throw new ArgumentNullException(nameof(cmd), "Property is not nullable for class ImageConfig.");
 
             if (healthcheck.IsSet && healthcheck.Value == null)
-                throw new ArgumentNullException(nameof(healthcheck), "Property is not nullable for class ContainerCreateRequest.");
+                throw new ArgumentNullException(nameof(healthcheck), "Property is not nullable for class ImageConfig.");
 
             if (image.IsSet && image.Value == null)
-                throw new ArgumentNullException(nameof(image), "Property is not nullable for class ContainerCreateRequest.");
+                throw new ArgumentNullException(nameof(image), "Property is not nullable for class ImageConfig.");
 
             if (volumes.IsSet && volumes.Value == null)
-                throw new ArgumentNullException(nameof(volumes), "Property is not nullable for class ContainerCreateRequest.");
+                throw new ArgumentNullException(nameof(volumes), "Property is not nullable for class ImageConfig.");
 
             if (workingDir.IsSet && workingDir.Value == null)
-                throw new ArgumentNullException(nameof(workingDir), "Property is not nullable for class ContainerCreateRequest.");
+                throw new ArgumentNullException(nameof(workingDir), "Property is not nullable for class ImageConfig.");
 
             if (entrypoint.IsSet && entrypoint.Value == null)
-                throw new ArgumentNullException(nameof(entrypoint), "Property is not nullable for class ContainerCreateRequest.");
+                throw new ArgumentNullException(nameof(entrypoint), "Property is not nullable for class ImageConfig.");
 
             if (labels.IsSet && labels.Value == null)
-                throw new ArgumentNullException(nameof(labels), "Property is not nullable for class ContainerCreateRequest.");
+                throw new ArgumentNullException(nameof(labels), "Property is not nullable for class ImageConfig.");
 
-            if (hostConfig.IsSet && hostConfig.Value == null)
-                throw new ArgumentNullException(nameof(hostConfig), "Property is not nullable for class ContainerCreateRequest.");
-
-            if (networkingConfig.IsSet && networkingConfig.Value == null)
-                throw new ArgumentNullException(nameof(networkingConfig), "Property is not nullable for class ContainerCreateRequest.");
-
-            return new ContainerCreateRequest(hostname, domainname, user, attachStdin, attachStdout, attachStderr, exposedPorts, tty, openStdin, stdinOnce, env, cmd, healthcheck, argsEscaped, image, volumes, workingDir, entrypoint, networkDisabled, macAddress, onBuild, labels, stopSignal, stopTimeout, shell, hostConfig, networkingConfig);
+            return new ImageConfig(hostname, domainname, user, attachStdin, attachStdout, attachStderr, exposedPorts, tty, openStdin, stdinOnce, env, cmd, healthcheck, argsEscaped, image, volumes, workingDir, entrypoint, networkDisabled, macAddress, onBuild, labels, stopSignal, stopTimeout, shell);
         }
 
         /// <summary>
-        /// Serializes a <see cref="ContainerCreateRequest" />
+        /// Serializes a <see cref="ImageConfig" />
         /// </summary>
         /// <param name="writer"></param>
-        /// <param name="containerCreateRequest"></param>
+        /// <param name="imageConfig"></param>
         /// <param name="jsonSerializerOptions"></param>
         /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, ContainerCreateRequest containerCreateRequest, JsonSerializerOptions jsonSerializerOptions)
+        public override void Write(Utf8JsonWriter writer, ImageConfig imageConfig, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
 
-            WriteProperties(writer, containerCreateRequest, jsonSerializerOptions);
+            WriteProperties(writer, imageConfig, jsonSerializerOptions);
             writer.WriteEndObject();
         }
 
         /// <summary>
-        /// Serializes the properties of <see cref="ContainerCreateRequest" />
+        /// Serializes the properties of <see cref="ImageConfig" />
         /// </summary>
         /// <param name="writer"></param>
-        /// <param name="containerCreateRequest"></param>
+        /// <param name="imageConfig"></param>
         /// <param name="jsonSerializerOptions"></param>
         /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, ContainerCreateRequest containerCreateRequest, JsonSerializerOptions jsonSerializerOptions)
+        public void WriteProperties(Utf8JsonWriter writer, ImageConfig imageConfig, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (containerCreateRequest.HostnameOption.IsSet && containerCreateRequest.Hostname == null)
-                throw new ArgumentNullException(nameof(containerCreateRequest.Hostname), "Property is required for class ContainerCreateRequest.");
+            if (imageConfig.HostnameOption.IsSet && imageConfig.Hostname == null)
+                throw new ArgumentNullException(nameof(imageConfig.Hostname), "Property is required for class ImageConfig.");
 
-            if (containerCreateRequest.DomainnameOption.IsSet && containerCreateRequest.Domainname == null)
-                throw new ArgumentNullException(nameof(containerCreateRequest.Domainname), "Property is required for class ContainerCreateRequest.");
+            if (imageConfig.DomainnameOption.IsSet && imageConfig.Domainname == null)
+                throw new ArgumentNullException(nameof(imageConfig.Domainname), "Property is required for class ImageConfig.");
 
-            if (containerCreateRequest.UserOption.IsSet && containerCreateRequest.User == null)
-                throw new ArgumentNullException(nameof(containerCreateRequest.User), "Property is required for class ContainerCreateRequest.");
+            if (imageConfig.UserOption.IsSet && imageConfig.User == null)
+                throw new ArgumentNullException(nameof(imageConfig.User), "Property is required for class ImageConfig.");
 
-            if (containerCreateRequest.EnvOption.IsSet && containerCreateRequest.Env == null)
-                throw new ArgumentNullException(nameof(containerCreateRequest.Env), "Property is required for class ContainerCreateRequest.");
+            if (imageConfig.EnvOption.IsSet && imageConfig.Env == null)
+                throw new ArgumentNullException(nameof(imageConfig.Env), "Property is required for class ImageConfig.");
 
-            if (containerCreateRequest.CmdOption.IsSet && containerCreateRequest.Cmd == null)
-                throw new ArgumentNullException(nameof(containerCreateRequest.Cmd), "Property is required for class ContainerCreateRequest.");
+            if (imageConfig.CmdOption.IsSet && imageConfig.Cmd == null)
+                throw new ArgumentNullException(nameof(imageConfig.Cmd), "Property is required for class ImageConfig.");
 
-            if (containerCreateRequest.HealthcheckOption.IsSet && containerCreateRequest.Healthcheck == null)
-                throw new ArgumentNullException(nameof(containerCreateRequest.Healthcheck), "Property is required for class ContainerCreateRequest.");
+            if (imageConfig.HealthcheckOption.IsSet && imageConfig.Healthcheck == null)
+                throw new ArgumentNullException(nameof(imageConfig.Healthcheck), "Property is required for class ImageConfig.");
 
-            if (containerCreateRequest.ImageOption.IsSet && containerCreateRequest.Image == null)
-                throw new ArgumentNullException(nameof(containerCreateRequest.Image), "Property is required for class ContainerCreateRequest.");
+            if (imageConfig.ImageOption.IsSet && imageConfig.Image == null)
+                throw new ArgumentNullException(nameof(imageConfig.Image), "Property is required for class ImageConfig.");
 
-            if (containerCreateRequest.VolumesOption.IsSet && containerCreateRequest.Volumes == null)
-                throw new ArgumentNullException(nameof(containerCreateRequest.Volumes), "Property is required for class ContainerCreateRequest.");
+            if (imageConfig.VolumesOption.IsSet && imageConfig.Volumes == null)
+                throw new ArgumentNullException(nameof(imageConfig.Volumes), "Property is required for class ImageConfig.");
 
-            if (containerCreateRequest.WorkingDirOption.IsSet && containerCreateRequest.WorkingDir == null)
-                throw new ArgumentNullException(nameof(containerCreateRequest.WorkingDir), "Property is required for class ContainerCreateRequest.");
+            if (imageConfig.WorkingDirOption.IsSet && imageConfig.WorkingDir == null)
+                throw new ArgumentNullException(nameof(imageConfig.WorkingDir), "Property is required for class ImageConfig.");
 
-            if (containerCreateRequest.EntrypointOption.IsSet && containerCreateRequest.Entrypoint == null)
-                throw new ArgumentNullException(nameof(containerCreateRequest.Entrypoint), "Property is required for class ContainerCreateRequest.");
+            if (imageConfig.EntrypointOption.IsSet && imageConfig.Entrypoint == null)
+                throw new ArgumentNullException(nameof(imageConfig.Entrypoint), "Property is required for class ImageConfig.");
 
-            if (containerCreateRequest.LabelsOption.IsSet && containerCreateRequest.Labels == null)
-                throw new ArgumentNullException(nameof(containerCreateRequest.Labels), "Property is required for class ContainerCreateRequest.");
+            if (imageConfig.LabelsOption.IsSet && imageConfig.Labels == null)
+                throw new ArgumentNullException(nameof(imageConfig.Labels), "Property is required for class ImageConfig.");
 
-            if (containerCreateRequest.HostConfigOption.IsSet && containerCreateRequest.HostConfig == null)
-                throw new ArgumentNullException(nameof(containerCreateRequest.HostConfig), "Property is required for class ContainerCreateRequest.");
+            if (imageConfig.HostnameOption.IsSet)
+                writer.WriteString("Hostname", imageConfig.Hostname);
 
-            if (containerCreateRequest.NetworkingConfigOption.IsSet && containerCreateRequest.NetworkingConfig == null)
-                throw new ArgumentNullException(nameof(containerCreateRequest.NetworkingConfig), "Property is required for class ContainerCreateRequest.");
+            if (imageConfig.DomainnameOption.IsSet)
+                writer.WriteString("Domainname", imageConfig.Domainname);
 
-            if (containerCreateRequest.HostnameOption.IsSet)
-                writer.WriteString("Hostname", containerCreateRequest.Hostname);
+            if (imageConfig.UserOption.IsSet)
+                writer.WriteString("User", imageConfig.User);
 
-            if (containerCreateRequest.DomainnameOption.IsSet)
-                writer.WriteString("Domainname", containerCreateRequest.Domainname);
+            if (imageConfig.AttachStdinOption.IsSet)
+                writer.WriteBoolean("AttachStdin", imageConfig.AttachStdinOption.Value!.Value);
 
-            if (containerCreateRequest.UserOption.IsSet)
-                writer.WriteString("User", containerCreateRequest.User);
+            if (imageConfig.AttachStdoutOption.IsSet)
+                writer.WriteBoolean("AttachStdout", imageConfig.AttachStdoutOption.Value!.Value);
 
-            if (containerCreateRequest.AttachStdinOption.IsSet)
-                writer.WriteBoolean("AttachStdin", containerCreateRequest.AttachStdinOption.Value!.Value);
+            if (imageConfig.AttachStderrOption.IsSet)
+                writer.WriteBoolean("AttachStderr", imageConfig.AttachStderrOption.Value!.Value);
 
-            if (containerCreateRequest.AttachStdoutOption.IsSet)
-                writer.WriteBoolean("AttachStdout", containerCreateRequest.AttachStdoutOption.Value!.Value);
-
-            if (containerCreateRequest.AttachStderrOption.IsSet)
-                writer.WriteBoolean("AttachStderr", containerCreateRequest.AttachStderrOption.Value!.Value);
-
-            if (containerCreateRequest.ExposedPortsOption.IsSet)
-                if (containerCreateRequest.ExposedPortsOption.Value != null)
+            if (imageConfig.ExposedPortsOption.IsSet)
+                if (imageConfig.ExposedPortsOption.Value != null)
                 {
                     writer.WritePropertyName("ExposedPorts");
-                    JsonSerializer.Serialize(writer, containerCreateRequest.ExposedPorts, jsonSerializerOptions);
+                    JsonSerializer.Serialize(writer, imageConfig.ExposedPorts, jsonSerializerOptions);
                 }
                 else
                     writer.WriteNull("ExposedPorts");
-            if (containerCreateRequest.TtyOption.IsSet)
-                writer.WriteBoolean("Tty", containerCreateRequest.TtyOption.Value!.Value);
+            if (imageConfig.TtyOption.IsSet)
+                writer.WriteBoolean("Tty", imageConfig.TtyOption.Value!.Value);
 
-            if (containerCreateRequest.OpenStdinOption.IsSet)
-                writer.WriteBoolean("OpenStdin", containerCreateRequest.OpenStdinOption.Value!.Value);
+            if (imageConfig.OpenStdinOption.IsSet)
+                writer.WriteBoolean("OpenStdin", imageConfig.OpenStdinOption.Value!.Value);
 
-            if (containerCreateRequest.StdinOnceOption.IsSet)
-                writer.WriteBoolean("StdinOnce", containerCreateRequest.StdinOnceOption.Value!.Value);
+            if (imageConfig.StdinOnceOption.IsSet)
+                writer.WriteBoolean("StdinOnce", imageConfig.StdinOnceOption.Value!.Value);
 
-            if (containerCreateRequest.EnvOption.IsSet)
+            if (imageConfig.EnvOption.IsSet)
             {
                 writer.WritePropertyName("Env");
-                JsonSerializer.Serialize(writer, containerCreateRequest.Env, jsonSerializerOptions);
+                JsonSerializer.Serialize(writer, imageConfig.Env, jsonSerializerOptions);
             }
-            if (containerCreateRequest.CmdOption.IsSet)
+            if (imageConfig.CmdOption.IsSet)
             {
                 writer.WritePropertyName("Cmd");
-                JsonSerializer.Serialize(writer, containerCreateRequest.Cmd, jsonSerializerOptions);
+                JsonSerializer.Serialize(writer, imageConfig.Cmd, jsonSerializerOptions);
             }
-            if (containerCreateRequest.HealthcheckOption.IsSet)
+            if (imageConfig.HealthcheckOption.IsSet)
             {
                 writer.WritePropertyName("Healthcheck");
-                JsonSerializer.Serialize(writer, containerCreateRequest.Healthcheck, jsonSerializerOptions);
+                JsonSerializer.Serialize(writer, imageConfig.Healthcheck, jsonSerializerOptions);
             }
-            if (containerCreateRequest.ArgsEscapedOption.IsSet)
-                if (containerCreateRequest.ArgsEscapedOption.Value != null)
-                    writer.WriteBoolean("ArgsEscaped", containerCreateRequest.ArgsEscapedOption.Value!.Value);
+            if (imageConfig.ArgsEscapedOption.IsSet)
+                if (imageConfig.ArgsEscapedOption.Value != null)
+                    writer.WriteBoolean("ArgsEscaped", imageConfig.ArgsEscapedOption.Value!.Value);
                 else
                     writer.WriteNull("ArgsEscaped");
 
-            if (containerCreateRequest.ImageOption.IsSet)
-                writer.WriteString("Image", containerCreateRequest.Image);
+            if (imageConfig.ImageOption.IsSet)
+                writer.WriteString("Image", imageConfig.Image);
 
-            if (containerCreateRequest.VolumesOption.IsSet)
+            if (imageConfig.VolumesOption.IsSet)
             {
                 writer.WritePropertyName("Volumes");
-                JsonSerializer.Serialize(writer, containerCreateRequest.Volumes, jsonSerializerOptions);
+                JsonSerializer.Serialize(writer, imageConfig.Volumes, jsonSerializerOptions);
             }
-            if (containerCreateRequest.WorkingDirOption.IsSet)
-                writer.WriteString("WorkingDir", containerCreateRequest.WorkingDir);
+            if (imageConfig.WorkingDirOption.IsSet)
+                writer.WriteString("WorkingDir", imageConfig.WorkingDir);
 
-            if (containerCreateRequest.EntrypointOption.IsSet)
+            if (imageConfig.EntrypointOption.IsSet)
             {
                 writer.WritePropertyName("Entrypoint");
-                JsonSerializer.Serialize(writer, containerCreateRequest.Entrypoint, jsonSerializerOptions);
+                JsonSerializer.Serialize(writer, imageConfig.Entrypoint, jsonSerializerOptions);
             }
-            if (containerCreateRequest.NetworkDisabledOption.IsSet)
-                if (containerCreateRequest.NetworkDisabledOption.Value != null)
-                    writer.WriteBoolean("NetworkDisabled", containerCreateRequest.NetworkDisabledOption.Value!.Value);
+            if (imageConfig.NetworkDisabledOption.IsSet)
+                if (imageConfig.NetworkDisabledOption.Value != null)
+                    writer.WriteBoolean("NetworkDisabled", imageConfig.NetworkDisabledOption.Value!.Value);
                 else
                     writer.WriteNull("NetworkDisabled");
 
-            if (containerCreateRequest.MacAddressOption.IsSet)
-                if (containerCreateRequest.MacAddressOption.Value != null)
-                    writer.WriteString("MacAddress", containerCreateRequest.MacAddress);
+            if (imageConfig.MacAddressOption.IsSet)
+                if (imageConfig.MacAddressOption.Value != null)
+                    writer.WriteString("MacAddress", imageConfig.MacAddress);
                 else
                     writer.WriteNull("MacAddress");
 
-            if (containerCreateRequest.OnBuildOption.IsSet)
-                if (containerCreateRequest.OnBuildOption.Value != null)
+            if (imageConfig.OnBuildOption.IsSet)
+                if (imageConfig.OnBuildOption.Value != null)
                 {
                     writer.WritePropertyName("OnBuild");
-                    JsonSerializer.Serialize(writer, containerCreateRequest.OnBuild, jsonSerializerOptions);
+                    JsonSerializer.Serialize(writer, imageConfig.OnBuild, jsonSerializerOptions);
                 }
                 else
                     writer.WriteNull("OnBuild");
-            if (containerCreateRequest.LabelsOption.IsSet)
+            if (imageConfig.LabelsOption.IsSet)
             {
                 writer.WritePropertyName("Labels");
-                JsonSerializer.Serialize(writer, containerCreateRequest.Labels, jsonSerializerOptions);
+                JsonSerializer.Serialize(writer, imageConfig.Labels, jsonSerializerOptions);
             }
-            if (containerCreateRequest.StopSignalOption.IsSet)
-                if (containerCreateRequest.StopSignalOption.Value != null)
-                    writer.WriteString("StopSignal", containerCreateRequest.StopSignal);
+            if (imageConfig.StopSignalOption.IsSet)
+                if (imageConfig.StopSignalOption.Value != null)
+                    writer.WriteString("StopSignal", imageConfig.StopSignal);
                 else
                     writer.WriteNull("StopSignal");
 
-            if (containerCreateRequest.StopTimeoutOption.IsSet)
-                if (containerCreateRequest.StopTimeoutOption.Value != null)
-                    writer.WriteNumber("StopTimeout", containerCreateRequest.StopTimeoutOption.Value!.Value);
+            if (imageConfig.StopTimeoutOption.IsSet)
+                if (imageConfig.StopTimeoutOption.Value != null)
+                    writer.WriteNumber("StopTimeout", imageConfig.StopTimeoutOption.Value!.Value);
                 else
                     writer.WriteNull("StopTimeout");
 
-            if (containerCreateRequest.ShellOption.IsSet)
-                if (containerCreateRequest.ShellOption.Value != null)
+            if (imageConfig.ShellOption.IsSet)
+                if (imageConfig.ShellOption.Value != null)
                 {
                     writer.WritePropertyName("Shell");
-                    JsonSerializer.Serialize(writer, containerCreateRequest.Shell, jsonSerializerOptions);
+                    JsonSerializer.Serialize(writer, imageConfig.Shell, jsonSerializerOptions);
                 }
                 else
                     writer.WriteNull("Shell");
-            if (containerCreateRequest.HostConfigOption.IsSet)
-            {
-                writer.WritePropertyName("HostConfig");
-                JsonSerializer.Serialize(writer, containerCreateRequest.HostConfig, jsonSerializerOptions);
-            }
-            if (containerCreateRequest.NetworkingConfigOption.IsSet)
-            {
-                writer.WritePropertyName("NetworkingConfig");
-                JsonSerializer.Serialize(writer, containerCreateRequest.NetworkingConfig, jsonSerializerOptions);
-            }
         }
     }
 }

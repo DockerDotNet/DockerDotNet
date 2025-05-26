@@ -2,6 +2,7 @@
 using DockerDotNet.Core.Helpers;
 using DockerDotNet.Core.Models;
 using DockerDotNet.Core.Services;
+using DockerDotNet.Shared.Models;
 
 using Microsoft.AspNetCore.Mvc;
 

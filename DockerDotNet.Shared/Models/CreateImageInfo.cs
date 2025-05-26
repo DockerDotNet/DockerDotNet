@@ -21,37 +21,33 @@ using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.ComponentModel.DataAnnotations;
-using DockerDotNet.Shared.Models;
 
-namespace DockerDotNet.Core.Models
+
+namespace DockerDotNet.Shared.Models
 {
     /// <summary>
-    /// BuildInfo
+    /// CreateImageInfo
     /// </summary>
-    public partial class BuildInfo : IValidatableObject
+    public partial class CreateImageInfo : IValidatableObject
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="BuildInfo" /> class.
+        /// Initializes a new instance of the <see cref="CreateImageInfo" /> class.
         /// </summary>
         /// <param name="id">id</param>
-        /// <param name="stream">stream</param>
         /// <param name="error">errors encountered during the operation.   &gt; **Deprecated**: This field is deprecated since API v1.4, and will be omitted in a future API version. Use the information in errorDetail instead.</param>
         /// <param name="errorDetail">errorDetail</param>
         /// <param name="status">status</param>
         /// <param name="progress">Progress is a pre-formatted presentation of progressDetail.   &gt; **Deprecated**: This field is deprecated since API v1.8, and will be omitted in a future API version. Use the information in progressDetail instead.</param>
         /// <param name="progressDetail">progressDetail</param>
-        /// <param name="aux">aux</param>
         [JsonConstructor]
-        public BuildInfo(Option<string?> id = default, Option<string?> stream = default, Option<string?> error = default, Option<ErrorDetail?> errorDetail = default, Option<string?> status = default, Option<string?> progress = default, Option<ProgressDetail?> progressDetail = default, Option<ImageID?> aux = default)
+        public CreateImageInfo(Option<string?> id = default, Option<string?> error = default, Option<ErrorDetail?> errorDetail = default, Option<string?> status = default, Option<string?> progress = default, Option<ProgressDetail?> progressDetail = default)
         {
             IdOption = id;
-            StreamOption = stream;
             ErrorOption = error;
             ErrorDetailOption = errorDetail;
             StatusOption = status;
             ProgressOption = progress;
             ProgressDetailOption = progressDetail;
-            AuxOption = aux;
             OnCreated();
         }
 
@@ -69,19 +65,6 @@ namespace DockerDotNet.Core.Models
         /// </summary>
         [JsonPropertyName("id")]
         public string? Id { get { return this.IdOption; } set { this.IdOption = new(value); } }
-
-        /// <summary>
-        /// Used to track the state of Stream
-        /// </summary>
-        [JsonIgnore]
-        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<string?> StreamOption { get; private set; }
-
-        /// <summary>
-        /// Gets or Sets Stream
-        /// </summary>
-        [JsonPropertyName("stream")]
-        public string? Stream { get { return this.StreamOption; } set { this.StreamOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of Error
@@ -151,34 +134,19 @@ namespace DockerDotNet.Core.Models
         public ProgressDetail? ProgressDetail { get { return this.ProgressDetailOption; } set { this.ProgressDetailOption = new(value); } }
 
         /// <summary>
-        /// Used to track the state of Aux
-        /// </summary>
-        [JsonIgnore]
-        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<ImageID?> AuxOption { get; private set; }
-
-        /// <summary>
-        /// Gets or Sets Aux
-        /// </summary>
-        [JsonPropertyName("aux")]
-        public ImageID? Aux { get { return this.AuxOption; } set { this.AuxOption = new(value); } }
-
-        /// <summary>
         /// Returns the string presentation of the object
         /// </summary>
         /// <returns>String presentation of the object</returns>
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append("class BuildInfo {\n");
+            sb.Append("class CreateImageInfo {\n");
             sb.Append("  Id: ").Append(Id).Append("\n");
-            sb.Append("  Stream: ").Append(Stream).Append("\n");
             sb.Append("  Error: ").Append(Error).Append("\n");
             sb.Append("  ErrorDetail: ").Append(ErrorDetail).Append("\n");
             sb.Append("  Status: ").Append(Status).Append("\n");
             sb.Append("  Progress: ").Append(Progress).Append("\n");
             sb.Append("  ProgressDetail: ").Append(ProgressDetail).Append("\n");
-            sb.Append("  Aux: ").Append(Aux).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -195,19 +163,19 @@ namespace DockerDotNet.Core.Models
     }
 
     /// <summary>
-    /// A Json converter for type <see cref="BuildInfo" />
+    /// A Json converter for type <see cref="CreateImageInfo" />
     /// </summary>
-    public class BuildInfoJsonConverter : JsonConverter<BuildInfo>
+    public class CreateImageInfoJsonConverter : JsonConverter<CreateImageInfo>
     {
         /// <summary>
-        /// Deserializes json to <see cref="BuildInfo" />
+        /// Deserializes json to <see cref="CreateImageInfo" />
         /// </summary>
         /// <param name="utf8JsonReader"></param>
         /// <param name="typeToConvert"></param>
         /// <param name="jsonSerializerOptions"></param>
         /// <returns></returns>
         /// <exception cref="JsonException"></exception>
-        public override BuildInfo Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
+        public override CreateImageInfo Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
         {
             int currentDepth = utf8JsonReader.CurrentDepth;
 
@@ -217,13 +185,11 @@ namespace DockerDotNet.Core.Models
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
             Option<string?> id = default;
-            Option<string?> stream = default;
             Option<string?> error = default;
             Option<ErrorDetail?> errorDetail = default;
             Option<string?> status = default;
             Option<string?> progress = default;
             Option<ProgressDetail?> progressDetail = default;
-            Option<ImageID?> aux = default;
 
             while (utf8JsonReader.Read())
             {
@@ -243,9 +209,6 @@ namespace DockerDotNet.Core.Models
                         case "id":
                             id = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
-                        case "stream":
-                            stream = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
                         case "error":
                             error = new Option<string?>(utf8JsonReader.GetString());
                             break;
@@ -263,10 +226,6 @@ namespace DockerDotNet.Core.Models
                             if (utf8JsonReader.TokenType != JsonTokenType.Null)
                                 progressDetail = new Option<ProgressDetail?>(JsonSerializer.Deserialize<ProgressDetail>(ref utf8JsonReader, jsonSerializerOptions)!);
                             break;
-                        case "aux":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                aux = new Option<ImageID?>(JsonSerializer.Deserialize<ImageID>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
                         default:
                             break;
                     }
@@ -274,103 +233,83 @@ namespace DockerDotNet.Core.Models
             }
 
             if (id.IsSet && id.Value == null)
-                throw new ArgumentNullException(nameof(id), "Property is not nullable for class BuildInfo.");
-
-            if (stream.IsSet && stream.Value == null)
-                throw new ArgumentNullException(nameof(stream), "Property is not nullable for class BuildInfo.");
+                throw new ArgumentNullException(nameof(id), "Property is not nullable for class CreateImageInfo.");
 
             if (errorDetail.IsSet && errorDetail.Value == null)
-                throw new ArgumentNullException(nameof(errorDetail), "Property is not nullable for class BuildInfo.");
+                throw new ArgumentNullException(nameof(errorDetail), "Property is not nullable for class CreateImageInfo.");
 
             if (status.IsSet && status.Value == null)
-                throw new ArgumentNullException(nameof(status), "Property is not nullable for class BuildInfo.");
+                throw new ArgumentNullException(nameof(status), "Property is not nullable for class CreateImageInfo.");
 
             if (progressDetail.IsSet && progressDetail.Value == null)
-                throw new ArgumentNullException(nameof(progressDetail), "Property is not nullable for class BuildInfo.");
+                throw new ArgumentNullException(nameof(progressDetail), "Property is not nullable for class CreateImageInfo.");
 
-            if (aux.IsSet && aux.Value == null)
-                throw new ArgumentNullException(nameof(aux), "Property is not nullable for class BuildInfo.");
-
-            return new BuildInfo(id, stream, error, errorDetail, status, progress, progressDetail, aux);
+            return new CreateImageInfo(id, error, errorDetail, status, progress, progressDetail);
         }
 
         /// <summary>
-        /// Serializes a <see cref="BuildInfo" />
+        /// Serializes a <see cref="CreateImageInfo" />
         /// </summary>
         /// <param name="writer"></param>
-        /// <param name="buildInfo"></param>
+        /// <param name="createImageInfo"></param>
         /// <param name="jsonSerializerOptions"></param>
         /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, BuildInfo buildInfo, JsonSerializerOptions jsonSerializerOptions)
+        public override void Write(Utf8JsonWriter writer, CreateImageInfo createImageInfo, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
 
-            WriteProperties(writer, buildInfo, jsonSerializerOptions);
+            WriteProperties(writer, createImageInfo, jsonSerializerOptions);
             writer.WriteEndObject();
         }
 
         /// <summary>
-        /// Serializes the properties of <see cref="BuildInfo" />
+        /// Serializes the properties of <see cref="CreateImageInfo" />
         /// </summary>
         /// <param name="writer"></param>
-        /// <param name="buildInfo"></param>
+        /// <param name="createImageInfo"></param>
         /// <param name="jsonSerializerOptions"></param>
         /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, BuildInfo buildInfo, JsonSerializerOptions jsonSerializerOptions)
+        public void WriteProperties(Utf8JsonWriter writer, CreateImageInfo createImageInfo, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (buildInfo.IdOption.IsSet && buildInfo.Id == null)
-                throw new ArgumentNullException(nameof(buildInfo.Id), "Property is required for class BuildInfo.");
+            if (createImageInfo.IdOption.IsSet && createImageInfo.Id == null)
+                throw new ArgumentNullException(nameof(createImageInfo.Id), "Property is required for class CreateImageInfo.");
 
-            if (buildInfo.StreamOption.IsSet && buildInfo.Stream == null)
-                throw new ArgumentNullException(nameof(buildInfo.Stream), "Property is required for class BuildInfo.");
+            if (createImageInfo.ErrorDetailOption.IsSet && createImageInfo.ErrorDetail == null)
+                throw new ArgumentNullException(nameof(createImageInfo.ErrorDetail), "Property is required for class CreateImageInfo.");
 
-            if (buildInfo.ErrorDetailOption.IsSet && buildInfo.ErrorDetail == null)
-                throw new ArgumentNullException(nameof(buildInfo.ErrorDetail), "Property is required for class BuildInfo.");
+            if (createImageInfo.StatusOption.IsSet && createImageInfo.Status == null)
+                throw new ArgumentNullException(nameof(createImageInfo.Status), "Property is required for class CreateImageInfo.");
 
-            if (buildInfo.StatusOption.IsSet && buildInfo.Status == null)
-                throw new ArgumentNullException(nameof(buildInfo.Status), "Property is required for class BuildInfo.");
+            if (createImageInfo.ProgressDetailOption.IsSet && createImageInfo.ProgressDetail == null)
+                throw new ArgumentNullException(nameof(createImageInfo.ProgressDetail), "Property is required for class CreateImageInfo.");
 
-            if (buildInfo.ProgressDetailOption.IsSet && buildInfo.ProgressDetail == null)
-                throw new ArgumentNullException(nameof(buildInfo.ProgressDetail), "Property is required for class BuildInfo.");
+            if (createImageInfo.IdOption.IsSet)
+                writer.WriteString("id", createImageInfo.Id);
 
-            if (buildInfo.AuxOption.IsSet && buildInfo.Aux == null)
-                throw new ArgumentNullException(nameof(buildInfo.Aux), "Property is required for class BuildInfo.");
-
-            if (buildInfo.IdOption.IsSet)
-                writer.WriteString("id", buildInfo.Id);
-
-            if (buildInfo.StreamOption.IsSet)
-                writer.WriteString("stream", buildInfo.Stream);
-
-            if (buildInfo.ErrorOption.IsSet)
-                if (buildInfo.ErrorOption.Value != null)
-                    writer.WriteString("error", buildInfo.Error);
+            if (createImageInfo.ErrorOption.IsSet)
+                if (createImageInfo.ErrorOption.Value != null)
+                    writer.WriteString("error", createImageInfo.Error);
                 else
                     writer.WriteNull("error");
 
-            if (buildInfo.ErrorDetailOption.IsSet)
+            if (createImageInfo.ErrorDetailOption.IsSet)
             {
                 writer.WritePropertyName("errorDetail");
-                JsonSerializer.Serialize(writer, buildInfo.ErrorDetail, jsonSerializerOptions);
+                JsonSerializer.Serialize(writer, createImageInfo.ErrorDetail, jsonSerializerOptions);
             }
-            if (buildInfo.StatusOption.IsSet)
-                writer.WriteString("status", buildInfo.Status);
+            if (createImageInfo.StatusOption.IsSet)
+                writer.WriteString("status", createImageInfo.Status);
 
-            if (buildInfo.ProgressOption.IsSet)
-                if (buildInfo.ProgressOption.Value != null)
-                    writer.WriteString("progress", buildInfo.Progress);
+            if (createImageInfo.ProgressOption.IsSet)
+                if (createImageInfo.ProgressOption.Value != null)
+                    writer.WriteString("progress", createImageInfo.Progress);
                 else
                     writer.WriteNull("progress");
 
-            if (buildInfo.ProgressDetailOption.IsSet)
+            if (createImageInfo.ProgressDetailOption.IsSet)
             {
                 writer.WritePropertyName("progressDetail");
-                JsonSerializer.Serialize(writer, buildInfo.ProgressDetail, jsonSerializerOptions);
-            }
-            if (buildInfo.AuxOption.IsSet)
-            {
-                writer.WritePropertyName("aux");
-                JsonSerializer.Serialize(writer, buildInfo.Aux, jsonSerializerOptions);
+                JsonSerializer.Serialize(writer, createImageInfo.ProgressDetail, jsonSerializerOptions);
             }
         }
     }

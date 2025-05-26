@@ -21,57 +21,57 @@ using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.ComponentModel.DataAnnotations;
-using DockerDotNet.Shared.Models;
 
-namespace DockerDotNet.Core.Models
+
+namespace DockerDotNet.Shared.Models
 {
     /// <summary>
-    /// ImagePruneResponse
+    /// ImageDeleteResponseItem
     /// </summary>
-    public partial class ImagePruneResponse : IValidatableObject
+    public partial class ImageDeleteResponseItem : IValidatableObject
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ImagePruneResponse" /> class.
+        /// Initializes a new instance of the <see cref="ImageDeleteResponseItem" /> class.
         /// </summary>
-        /// <param name="imagesDeleted">Images that were deleted</param>
-        /// <param name="spaceReclaimed">Disk space reclaimed in bytes</param>
+        /// <param name="untagged">The image ID of an image that was untagged</param>
+        /// <param name="deleted">The image ID of an image that was deleted</param>
         [JsonConstructor]
-        public ImagePruneResponse(Option<List<ImageDeleteResponseItem>?> imagesDeleted = default, Option<long?> spaceReclaimed = default)
+        public ImageDeleteResponseItem(Option<string?> untagged = default, Option<string?> deleted = default)
         {
-            ImagesDeletedOption = imagesDeleted;
-            SpaceReclaimedOption = spaceReclaimed;
+            UntaggedOption = untagged;
+            DeletedOption = deleted;
             OnCreated();
         }
 
         partial void OnCreated();
 
         /// <summary>
-        /// Used to track the state of ImagesDeleted
+        /// Used to track the state of Untagged
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<List<ImageDeleteResponseItem>?> ImagesDeletedOption { get; private set; }
+        public Option<string?> UntaggedOption { get; private set; }
 
         /// <summary>
-        /// Images that were deleted
+        /// The image ID of an image that was untagged
         /// </summary>
-        /// <value>Images that were deleted</value>
-        [JsonPropertyName("ImagesDeleted")]
-        public List<ImageDeleteResponseItem>? ImagesDeleted { get { return this.ImagesDeletedOption; } set { this.ImagesDeletedOption = new(value); } }
+        /// <value>The image ID of an image that was untagged</value>
+        [JsonPropertyName("Untagged")]
+        public string? Untagged { get { return this.UntaggedOption; } set { this.UntaggedOption = new(value); } }
 
         /// <summary>
-        /// Used to track the state of SpaceReclaimed
+        /// Used to track the state of Deleted
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<long?> SpaceReclaimedOption { get; private set; }
+        public Option<string?> DeletedOption { get; private set; }
 
         /// <summary>
-        /// Disk space reclaimed in bytes
+        /// The image ID of an image that was deleted
         /// </summary>
-        /// <value>Disk space reclaimed in bytes</value>
-        [JsonPropertyName("SpaceReclaimed")]
-        public long? SpaceReclaimed { get { return this.SpaceReclaimedOption; } set { this.SpaceReclaimedOption = new(value); } }
+        /// <value>The image ID of an image that was deleted</value>
+        [JsonPropertyName("Deleted")]
+        public string? Deleted { get { return this.DeletedOption; } set { this.DeletedOption = new(value); } }
 
         /// <summary>
         /// Returns the string presentation of the object
@@ -80,9 +80,9 @@ namespace DockerDotNet.Core.Models
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append("class ImagePruneResponse {\n");
-            sb.Append("  ImagesDeleted: ").Append(ImagesDeleted).Append("\n");
-            sb.Append("  SpaceReclaimed: ").Append(SpaceReclaimed).Append("\n");
+            sb.Append("class ImageDeleteResponseItem {\n");
+            sb.Append("  Untagged: ").Append(Untagged).Append("\n");
+            sb.Append("  Deleted: ").Append(Deleted).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -99,19 +99,19 @@ namespace DockerDotNet.Core.Models
     }
 
     /// <summary>
-    /// A Json converter for type <see cref="ImagePruneResponse" />
+    /// A Json converter for type <see cref="ImageDeleteResponseItem" />
     /// </summary>
-    public class ImagePruneResponseJsonConverter : JsonConverter<ImagePruneResponse>
+    public class ImageDeleteResponseItemJsonConverter : JsonConverter<ImageDeleteResponseItem>
     {
         /// <summary>
-        /// Deserializes json to <see cref="ImagePruneResponse" />
+        /// Deserializes json to <see cref="ImageDeleteResponseItem" />
         /// </summary>
         /// <param name="utf8JsonReader"></param>
         /// <param name="typeToConvert"></param>
         /// <param name="jsonSerializerOptions"></param>
         /// <returns></returns>
         /// <exception cref="JsonException"></exception>
-        public override ImagePruneResponse Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
+        public override ImageDeleteResponseItem Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
         {
             int currentDepth = utf8JsonReader.CurrentDepth;
 
@@ -120,8 +120,8 @@ namespace DockerDotNet.Core.Models
 
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
-            Option<List<ImageDeleteResponseItem>?> imagesDeleted = default;
-            Option<long?> spaceReclaimed = default;
+            Option<string?> untagged = default;
+            Option<string?> deleted = default;
 
             while (utf8JsonReader.Read())
             {
@@ -138,13 +138,11 @@ namespace DockerDotNet.Core.Models
 
                     switch (localVarJsonPropertyName)
                     {
-                        case "ImagesDeleted":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                imagesDeleted = new Option<List<ImageDeleteResponseItem>?>(JsonSerializer.Deserialize<List<ImageDeleteResponseItem>>(ref utf8JsonReader, jsonSerializerOptions)!);
+                        case "Untagged":
+                            untagged = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
-                        case "SpaceReclaimed":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                spaceReclaimed = new Option<long?>(utf8JsonReader.GetInt64());
+                        case "Deleted":
+                            deleted = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
                         default:
                             break;
@@ -152,49 +150,50 @@ namespace DockerDotNet.Core.Models
                 }
             }
 
-            if (imagesDeleted.IsSet && imagesDeleted.Value == null)
-                throw new ArgumentNullException(nameof(imagesDeleted), "Property is not nullable for class ImagePruneResponse.");
+            if (untagged.IsSet && untagged.Value == null)
+                throw new ArgumentNullException(nameof(untagged), "Property is not nullable for class ImageDeleteResponseItem.");
 
-            if (spaceReclaimed.IsSet && spaceReclaimed.Value == null)
-                throw new ArgumentNullException(nameof(spaceReclaimed), "Property is not nullable for class ImagePruneResponse.");
+            if (deleted.IsSet && deleted.Value == null)
+                throw new ArgumentNullException(nameof(deleted), "Property is not nullable for class ImageDeleteResponseItem.");
 
-            return new ImagePruneResponse(imagesDeleted, spaceReclaimed);
+            return new ImageDeleteResponseItem(untagged, deleted);
         }
 
         /// <summary>
-        /// Serializes a <see cref="ImagePruneResponse" />
+        /// Serializes a <see cref="ImageDeleteResponseItem" />
         /// </summary>
         /// <param name="writer"></param>
-        /// <param name="imagePruneResponse"></param>
+        /// <param name="imageDeleteResponseItem"></param>
         /// <param name="jsonSerializerOptions"></param>
         /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, ImagePruneResponse imagePruneResponse, JsonSerializerOptions jsonSerializerOptions)
+        public override void Write(Utf8JsonWriter writer, ImageDeleteResponseItem imageDeleteResponseItem, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
 
-            WriteProperties(writer, imagePruneResponse, jsonSerializerOptions);
+            WriteProperties(writer, imageDeleteResponseItem, jsonSerializerOptions);
             writer.WriteEndObject();
         }
 
         /// <summary>
-        /// Serializes the properties of <see cref="ImagePruneResponse" />
+        /// Serializes the properties of <see cref="ImageDeleteResponseItem" />
         /// </summary>
         /// <param name="writer"></param>
-        /// <param name="imagePruneResponse"></param>
+        /// <param name="imageDeleteResponseItem"></param>
         /// <param name="jsonSerializerOptions"></param>
         /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, ImagePruneResponse imagePruneResponse, JsonSerializerOptions jsonSerializerOptions)
+        public void WriteProperties(Utf8JsonWriter writer, ImageDeleteResponseItem imageDeleteResponseItem, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (imagePruneResponse.ImagesDeletedOption.IsSet && imagePruneResponse.ImagesDeleted == null)
-                throw new ArgumentNullException(nameof(imagePruneResponse.ImagesDeleted), "Property is required for class ImagePruneResponse.");
+            if (imageDeleteResponseItem.UntaggedOption.IsSet && imageDeleteResponseItem.Untagged == null)
+                throw new ArgumentNullException(nameof(imageDeleteResponseItem.Untagged), "Property is required for class ImageDeleteResponseItem.");
 
-            if (imagePruneResponse.ImagesDeletedOption.IsSet)
-            {
-                writer.WritePropertyName("ImagesDeleted");
-                JsonSerializer.Serialize(writer, imagePruneResponse.ImagesDeleted, jsonSerializerOptions);
-            }
-            if (imagePruneResponse.SpaceReclaimedOption.IsSet)
-                writer.WriteNumber("SpaceReclaimed", imagePruneResponse.SpaceReclaimedOption.Value!.Value);
+            if (imageDeleteResponseItem.DeletedOption.IsSet && imageDeleteResponseItem.Deleted == null)
+                throw new ArgumentNullException(nameof(imageDeleteResponseItem.Deleted), "Property is required for class ImageDeleteResponseItem.");
+
+            if (imageDeleteResponseItem.UntaggedOption.IsSet)
+                writer.WriteString("Untagged", imageDeleteResponseItem.Untagged);
+
+            if (imageDeleteResponseItem.DeletedOption.IsSet)
+                writer.WriteString("Deleted", imageDeleteResponseItem.Deleted);
         }
     }
 }

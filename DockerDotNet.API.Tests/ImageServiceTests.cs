@@ -8,7 +8,7 @@ using System.Net;
 using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
-using DockerDotNet.Core.Models;
+using DockerDotNet.Shared.Models;
 using Xunit.Abstractions;
 using DockerDotNet.APIClient.Controllers;
 using DockerDotNet.Core.Services;

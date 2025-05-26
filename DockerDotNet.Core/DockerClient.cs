@@ -1,4 +1,4 @@
-﻿using DockerDotNet.Core.Models;
+﻿using DockerDotNet.Shared.Models;
 
 using LanguageExt;
 
@@ -352,7 +352,7 @@ namespace DockerDotNet.Core
 
             if (contentType == "application/json")
             {
-                var errorContent = await response.Content.ReadFromJsonAsync<DockerErrorResponse>(cancellationToken);
+                var errorContent = await response.Content.ReadFromJsonAsync<ErrorResponse>(cancellationToken);
                 return new DockerError(response.StatusCode, errorContent.Message);
             }
 
@@ -364,7 +364,7 @@ namespace DockerDotNet.Core
         {
             if (!response.IsSuccessStatusCode)
             {
-                var errorContent = await response.Content.ReadFromJsonAsync<DockerErrorResponse>(cancellationToken);
+                var errorContent = await response.Content.ReadFromJsonAsync<ErrorResponse>(cancellationToken);
                 return new DockerError(response.StatusCode, errorContent.Message);
             }
 
@@ -392,10 +392,10 @@ namespace DockerDotNet.Core
         }
     }
 
-    public record DockerErrorResponse
-    {
-        public string Message { get; set; } = string.Empty;
-    }
+    //public record DockerErrorResponse
+    //{
+    //    public string Message { get; set; } = string.Empty;
+    //}
 
     public class DockerError
     {

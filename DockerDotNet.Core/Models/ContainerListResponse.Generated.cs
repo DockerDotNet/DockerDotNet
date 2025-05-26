@@ -3,6 +3,7 @@ using DockerDotNet.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using DockerDotNet.Shared.Models;
 
 namespace DockerDotNet.Core.Models
 {
