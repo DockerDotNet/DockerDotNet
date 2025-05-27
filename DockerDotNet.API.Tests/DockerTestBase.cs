@@ -2,6 +2,7 @@
 using DockerDotNet.Core.Extensions;
 using DockerDotNet.Core.Helpers;
 using DockerDotNet.Core.Services;
+using DockerDotNet.Shared.Helpers;
 using DockerDotNet.Shared.Interfaces;
 
 using Microsoft.Extensions.DependencyInjection;
@@ -28,6 +29,7 @@ namespace DockerDotNet.API.Tests
             .ConfigureApi((context, services) =>
             {
                 services.AddSingleton<DockerClient>();
+                services.AddSingleton<HttpClientHelper>();
                 services.AddScoped<IImageService, ImageService>();
                 services.AddScoped<IContainerService, ContainerService>();
                 services.AddScoped<ISystemService, SystemService>();
