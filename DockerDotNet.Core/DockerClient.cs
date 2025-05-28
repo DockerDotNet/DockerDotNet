@@ -229,10 +229,8 @@ namespace DockerDotNet.Core
             var client = GetDockerHttpClient();
 
             HttpRequestMessage requestMessage = clientHelper.PrepareHttpRequestMessage(BaseUri, HttpMethod.Get, endpoint, queryParameters, headers, requestBody);
-                        
-            HttpResponseMessage response = await client.SendAsync(requestMessage, cancellationToken);
 
-            return await clientHelper.ProcessResponse<T>(response, cancellationToken);
+            return await clientHelper.SendRequestAsync<T>(requestMessage, cancellationToken, client);
         }
 
         public async Task<Either<DockerError?, T?>> PostAsync<T>(
@@ -246,9 +244,10 @@ namespace DockerDotNet.Core
 
             HttpRequestMessage requestMessage = clientHelper.PrepareHttpRequestMessage(BaseUri, HttpMethod.Post, endpoint, queryParameters, headers, body);
 
-            HttpResponseMessage response = await client.SendAsync(requestMessage, cancellationToken);
+            return await clientHelper.SendRequestAsync<T>(requestMessage, cancellationToken, client);
+            //HttpResponseMessage response = await client.SendAsync(requestMessage, cancellationToken);
 
-            return await clientHelper.ProcessResponse<T>(response, cancellationToken);
+            //return await clientHelper.ProcessResponse<T>(response, cancellationToken);
         }
 
         public async Task<Either<DockerError?, T?>> DeleteAsync<T>(
@@ -262,9 +261,10 @@ namespace DockerDotNet.Core
 
             HttpRequestMessage requestMessage = clientHelper.PrepareHttpRequestMessage(BaseUri, HttpMethod.Delete, endpoint, queryParameters, headers, body);
 
-            HttpResponseMessage response = await client.SendAsync(requestMessage, cancellationToken);
+            return await clientHelper.SendRequestAsync<T>(requestMessage, cancellationToken, client);
+            //HttpResponseMessage response = await client.SendAsync(requestMessage, cancellationToken);
 
-            return await clientHelper.ProcessResponse<T>(response, cancellationToken);
+            //return await clientHelper.ProcessResponse<T>(response, cancellationToken);
         }
 
         public async Task<Either<DockerError?, Stream?>> GetStreamAsync(

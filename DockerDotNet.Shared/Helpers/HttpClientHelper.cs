@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
@@ -14,12 +15,38 @@ namespace DockerDotNet.Shared.Helpers
 {
     public class HttpClientHelper
     {
+        private readonly IHttpClientFactory _clientFactory;
+        #region Declarations
+
         private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-        public HttpClientHelper(JsonSerializerOptions jsonSerializerOptions)
+        #endregion
+
+        #region Constructor
+
+        public HttpClientHelper(IHttpClientFactory clientFactory, JsonSerializerOptions jsonSerializerOptions)
         {
+            _clientFactory = clientFactory;
             _jsonSerializerOptions = jsonSerializerOptions;
         }
+
+        #endregion
+
+        #region HTTP Methods
+
+        public async Task<Either<DockerError?, T?>> SendRequestAsync<T>(HttpRequestMessage request, CancellationToken cancellationToken, HttpClient? client = null)
+        {
+            client ??= _clientFactory.CreateClient();
+
+            HttpResponseMessage responseMessage = await client.SendAsync(request, cancellationToken);
+
+            return await ProcessResponse<T>(responseMessage, cancellationToken);
+        }
+
+        #endregion
+
+        #region Helper Methods
+
 
         public HttpRequestMessage PrepareHttpRequestMessage(Uri baseAddress, HttpMethod httpMethod, string endpoint, string queryParameters, Dictionary<string, string>? headers = null, HttpContent? requestBody = null)
         {
@@ -98,5 +125,6 @@ namespace DockerDotNet.Shared.Helpers
 
         }
 
+        #endregion
     }
 }

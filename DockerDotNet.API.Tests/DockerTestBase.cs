@@ -27,6 +27,7 @@ namespace DockerDotNet.API.Tests
         public static IHostBuilder CreateHostBuilder(string[] args) => Host.CreateDefaultBuilder(args)
             .ConfigureApi((context, services) =>
             {
+                services.AddHttpClient();
                 services.AddSingleton<DockerClient>();
                 services.AddSingleton<HttpClientHelper>();
                 services.AddScoped<IImageService, ImageService>();
