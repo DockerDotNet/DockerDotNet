@@ -1,4 +1,4 @@
-﻿using DockerDotNet.Core.Helpers;
+﻿using DockerDotNet.Shared.Helpers;
 using DockerDotNet.Shared.Interfaces;
 using DockerDotNet.Shared.Models;
 

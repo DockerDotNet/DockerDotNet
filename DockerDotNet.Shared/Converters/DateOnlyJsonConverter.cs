@@ -12,69 +12,51 @@ using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace DockerDotNet.Core.Converters
+namespace DockerDotNet.Shared.Converters
 {
     /// <summary>
-    /// Formatter for 'date-time' openapi formats ss defined by full-date - RFC3339
+    /// Formatter for 'date' openapi formats ss defined by full-date - RFC3339
     /// see https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md#data-types
     /// </summary>
-    public class DateTimeNullableJsonConverter : JsonConverter<DateTime?>
+    public class DateOnlyJsonConverter : JsonConverter<DateOnly>
     {
         /// <summary>
         /// The formats used to deserialize the date
         /// </summary>
         public static string[] Formats { get; } = {
-            "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffffK",
-            "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'ffffffK",
-            "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffK",
-            "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'ffffK",
-            "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffK",
-            "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'ffK",
-            "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fK",
-            "yyyy'-'MM'-'dd'T'HH':'mm':'ssK",
-            "yyyyMMddTHHmmss.fffffffK",
-            "yyyyMMddTHHmmss.ffffffK",
-            "yyyyMMddTHHmmss.fffffK",
-            "yyyyMMddTHHmmss.ffffK",
-            "yyyyMMddTHHmmss.fffK",
-            "yyyyMMddTHHmmss.ffK",
-            "yyyyMMddTHHmmss.fK",
-            "yyyyMMddTHHmmssK",
+            "yyyy'-'MM'-'dd",
+            "yyyyMMdd"
 
-         };
+        };
 
         /// <summary>
-        /// Returns a DateTime from the Json object
+        /// Returns a DateOnly from the Json object
         /// </summary>
         /// <param name="reader"></param>
         /// <param name="typeToConvert"></param>
         /// <param name="options"></param>
         /// <returns></returns>
-        public override DateTime? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
+        public override DateOnly Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
             if (reader.TokenType == JsonTokenType.Null)
-                return null;
+                throw new NotSupportedException();
 
             string value = reader.GetString()!;
 
-            foreach(string format in Formats)
-                if (DateTime.TryParseExact(value, format, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal | DateTimeStyles.AssumeUniversal, out DateTime result))
+            foreach (string format in Formats)
+                if (DateOnly.TryParseExact(value, format, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal | DateTimeStyles.AssumeUniversal, out DateOnly result))
                     return result;
 
-            return null;
+            throw new NotSupportedException();
         }
 
         /// <summary>
-        /// Writes the DateTime to the json writer
+        /// Writes the DateOnly to the json writer
         /// </summary>
         /// <param name="writer"></param>
-        /// <param name="dateTimeValue"></param>
+        /// <param name="dateOnlyValue"></param>
         /// <param name="options"></param>
-        public override void Write(Utf8JsonWriter writer, DateTime? dateTimeValue, JsonSerializerOptions options)
-        {
-            if (dateTimeValue == null)
-                writer.WriteNullValue();
-            else
-                writer.WriteStringValue(dateTimeValue.Value.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffffK", CultureInfo.InvariantCulture));
-        }
+        public override void Write(Utf8JsonWriter writer, DateOnly dateOnlyValue, JsonSerializerOptions options) =>
+            writer.WriteStringValue(dateOnlyValue.ToString("yyyy'-'MM'-'dd", CultureInfo.InvariantCulture));
     }
 }

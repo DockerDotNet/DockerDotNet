@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DockerDotNet.Core.Extensions
+namespace DockerDotNet.Shared.Extensions
 {
     public static class IHostBuilderExtension
     {
@@ -24,7 +24,7 @@ namespace DockerDotNet.Core.Extensions
 
                 options(context, services);
 
-                IServiceCollectionExtension.AddJsonSerializerOptions(services);
+                services.AddJsonSerializerOptions();
             });
 
             return builder;

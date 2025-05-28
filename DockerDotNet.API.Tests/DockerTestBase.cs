@@ -1,7 +1,6 @@
 ﻿using DockerDotNet.Core;
-using DockerDotNet.Core.Extensions;
-using DockerDotNet.Core.Helpers;
 using DockerDotNet.Core.Services;
+using DockerDotNet.Shared.Extensions;
 using DockerDotNet.Shared.Helpers;
 using DockerDotNet.Shared.Interfaces;
 

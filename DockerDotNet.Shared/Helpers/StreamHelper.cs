@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
 
-namespace DockerDotNet.Core.Helpers
+namespace DockerDotNet.Shared.Helpers
 {
     public class StreamHelper
     {
@@ -131,7 +131,7 @@ namespace DockerDotNet.Core.Helpers
 
         public async Task HandleNDJsonStreamAsync<T>(Stream stream, WebSocket webSocket, CancellationToken cancellationToken)
         {
-            var sendTask = System.Threading.Tasks.Task.Run(async () =>
+            var sendTask = Task.Run(async () =>
             {
                 await foreach (var stats in ReadNewlineDelimitedJson<T>(stream, cancellationToken))
                 {
@@ -149,10 +149,10 @@ namespace DockerDotNet.Core.Helpers
             await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Session ended", CancellationToken.None);
         }
 
-        public async Task HandleMultiplexedStreamAsync(bool isTty,Stream stream, WebSocket WebSocket, CancellationToken cancellationToken)
+        public async Task HandleMultiplexedStreamAsync(bool isTty, Stream stream, WebSocket WebSocket, CancellationToken cancellationToken)
         {
             // read docker output
-            var dockerToWebSocket = System.Threading.Tasks.Task.Run(async () =>
+            var dockerToWebSocket = Task.Run(async () =>
             {
                 if (isTty)
                     await ReadRawStreamAsync(stream, WebSocket, cancellationToken);
@@ -161,7 +161,7 @@ namespace DockerDotNet.Core.Helpers
             }, cancellationToken);
 
             // give docker input
-            var webSocketToDocker = System.Threading.Tasks.Task.Run(async () =>
+            var webSocketToDocker = Task.Run(async () =>
             {
                 if (isTty)
                     await WriteToRawStreamAsync(stream, WebSocket, cancellationToken);
@@ -169,7 +169,7 @@ namespace DockerDotNet.Core.Helpers
                     await WriteToMultiplexedStreamAsync(stream, WebSocket, cancellationToken);
             }, cancellationToken);
 
-            await System.Threading.Tasks.Task.WhenAny(dockerToWebSocket, webSocketToDocker);
+            await Task.WhenAny(dockerToWebSocket, webSocketToDocker);
         }
     }
 }

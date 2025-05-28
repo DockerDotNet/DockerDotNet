@@ -11,9 +11,9 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using DockerDotNet.Core.Converters;
+using DockerDotNet.Shared.Converters;
 
-namespace DockerDotNet.Core.Extensions
+namespace DockerDotNet.Shared.Extensions
 {
     public static class IServiceCollectionExtension
     {

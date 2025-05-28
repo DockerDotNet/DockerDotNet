@@ -1,6 +1,4 @@
-﻿using DockerDotNet.Core;
-using DockerDotNet.Core.Helpers;
-using DockerDotNet.Core.Services;
+﻿using DockerDotNet.Shared.Helpers;
 using DockerDotNet.Shared.Interfaces;
 using DockerDotNet.Shared.Models;
 

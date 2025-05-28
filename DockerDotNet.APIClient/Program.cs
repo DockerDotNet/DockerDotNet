@@ -1,9 +1,8 @@
 using DockerDotNet.Core;
 using DockerDotNet.Core.Services;
-using DockerDotNet.Core.Extensions;
-using DockerDotNet.Core.Helpers;
 using DockerDotNet.Shared.Interfaces;
 using DockerDotNet.Shared.Helpers;
+using DockerDotNet.Shared.Extensions;
 
 namespace DockerDotNet.APIClient
 {

@@ -1,13 +1,7 @@
-﻿using DockerDotNet.Core;
+﻿using DockerDotNet.Shared.Interfaces;
 using DockerDotNet.Shared.Models;
-using DockerDotNet.Core.Services;
 
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-
-using System.Text.Json;
-using System.Threading;
-using DockerDotNet.Shared.Interfaces;
 
 namespace DockerDotNet.APIClient.Controllers
 {
