@@ -15,10 +15,10 @@ namespace DockerDotNet.Shared.Helpers
 {
     public class HttpClientHelper
     {
-        private readonly IHttpClientFactory _clientFactory;
         #region Declarations
 
         private readonly JsonSerializerOptions _jsonSerializerOptions;
+        private readonly IHttpClientFactory _clientFactory;
 
         #endregion
 
@@ -41,6 +41,15 @@ namespace DockerDotNet.Shared.Helpers
             HttpResponseMessage responseMessage = await client.SendAsync(request, cancellationToken);
 
             return await ProcessResponse<T>(responseMessage, cancellationToken);
+        }
+
+        public async Task<Either<DockerError?, Stream?>> SendStreamRequestAsync(HttpRequestMessage request, CancellationToken cancellationToken, HttpClient? client = null)
+        {
+            client ??= _clientFactory.CreateClient();
+
+            HttpResponseMessage responseMessage = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+
+            return await ProcessStreamResponse<Stream?>(responseMessage, cancellationToken);
         }
 
         #endregion

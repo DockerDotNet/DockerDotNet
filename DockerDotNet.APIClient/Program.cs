@@ -25,6 +25,7 @@ namespace DockerDotNet.APIClient
             });
 
             builder.Services.AddScoped<DockerClient>();
+            builder.Services.AddHttpClient();
             builder.Services.AddScoped<StreamHelper>();
             builder.Services.AddScoped<HttpClientHelper>();
             builder.Services.AddScoped<IContainerService, ContainerService>();
