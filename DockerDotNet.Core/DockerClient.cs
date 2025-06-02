@@ -178,45 +178,7 @@ namespace DockerDotNet.Core
 
         public string GetQueryString<T>(T dto)
         {
-            if (dto == null)
-                throw new ArgumentNullException(nameof(dto));
-
-            var properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
-
-            var keyValuePairs = new List<string>();
-            foreach (var property in properties)
-            {
-                var value = property.GetValue(dto);
-                if (value == null)
-                    continue;
-
-                // Check if the property has a JsonPropertyName attribute
-                var jsonPropertyNameAttribute = property
-                    .GetCustomAttribute<JsonPropertyNameAttribute>();
-
-                string propertyName = jsonPropertyNameAttribute?.Name ?? property.Name;
-                string encodedKey = HttpUtility.UrlEncode(propertyName);
-                string encodedValue;
-
-                //if (property.PropertyType.GetGenericTypeDefinition() == typeof(IDictionary<,>))
-                if (value is IDictionary)
-                {
-                    encodedValue = GetMapQuery(value as IDictionary);
-                }
-                else
-                {
-                    // commenting this because it gives error for image name string
-                    //encodedValue = HttpUtility.UrlEncode(value.ToString());
-                    encodedValue = value?.ToString();
-                }
-                keyValuePairs.Add($"{Uri.EscapeDataString(encodedKey)}={Uri.EscapeDataString(encodedValue)}");
-            }
-            return string.Join("&", keyValuePairs);
-        }
-
-        private string GetMapQuery(IDictionary dictionary)
-        {
-            return System.Text.Json.JsonSerializer.Serialize(dictionary);
+            return clientHelper.GetQueryString<T>(dto);
         }
 
         public async Task<Either<DockerError?, T?>> GetAsync<T>(

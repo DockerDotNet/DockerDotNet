@@ -2,14 +2,18 @@
 using LanguageExt;
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Reflection;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace DockerDotNet.Shared.Helpers
 {
@@ -132,6 +136,48 @@ namespace DockerDotNet.Shared.Helpers
 
             return new DockerError(response.StatusCode, "Unable to handle string");
 
+        }
+
+        public string GetQueryString<T>(T dto)
+        {
+            if (dto == null)
+                throw new ArgumentNullException(nameof(dto));
+
+            var properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+            var keyValuePairs = new List<string>();
+            foreach (var property in properties)
+            {
+                var value = property.GetValue(dto);
+                if (value == null)
+                    continue;
+
+                // Check if the property has a JsonPropertyName attribute
+                var jsonPropertyNameAttribute = property
+                    .GetCustomAttribute<JsonPropertyNameAttribute>();
+
+                string propertyName = jsonPropertyNameAttribute?.Name ?? property.Name;
+                string encodedKey = HttpUtility.UrlEncode(propertyName);
+                string encodedValue;
+
+                if (value is IDictionary)
+                {
+                    encodedValue = GetMapQuery(value as IDictionary);
+                }
+                else
+                {
+                    // commenting this because it gives error for image name string
+                    //encodedValue = HttpUtility.UrlEncode(value.ToString());
+                    encodedValue = value?.ToString();
+                }
+                keyValuePairs.Add($"{Uri.EscapeDataString(encodedKey)}={Uri.EscapeDataString(encodedValue)}");
+            }
+            return string.Join("&", keyValuePairs);
+        }
+
+        private string GetMapQuery(IDictionary dictionary)
+        {
+            return System.Text.Json.JsonSerializer.Serialize(dictionary);
         }
 
         #endregion
