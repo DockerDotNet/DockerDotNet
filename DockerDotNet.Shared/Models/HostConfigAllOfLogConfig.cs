@@ -20,36 +20,21 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// The logging configuration for this container
     /// </summary>
-    public partial class HostConfigAllOfLogConfig : IValidatableObject
+    public partial class HostConfigAllOfLogConfig
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="HostConfigAllOfLogConfig" /> class.
-        /// </summary>
-        /// <param name="type">Name of the logging driver used for the container or \&quot;none\&quot; if logging is disabled.</param>
-        /// <param name="config">Driver-specific configuration options for the logging driver.</param>
-        [JsonConstructor]
-        public HostConfigAllOfLogConfig(Option<HostConfigAllOfLogConfigTypeEnum?> type = default, Option<Dictionary<string, string>?> config = default)
-        {
-            TypeOption = type;
-            ConfigOption = config;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Name of the logging driver used for the container or \&quot;none\&quot; if logging is disabled.
         /// </summary>
         /// <value>Name of the logging driver used for the container or \&quot;none\&quot; if logging is disabled.</value>
-        public enum HostConfigAllOfLogConfigTypeEnum
+        public enum TypeEnum
         {
             /// <summary>
             /// Enum Local for value: local
@@ -102,141 +87,118 @@ namespace DockerDotNet.Shared.Models
             None = 10
         }
 
-        /// <summary>
-        /// Returns a <see cref="HostConfigAllOfLogConfigTypeEnum"/>
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public static HostConfigAllOfLogConfigTypeEnum TypeEnumFromString(string value)
+/// <summary>
+/// A Json converter for type <see cref="TypeEnum"/>
+/// </summary>
+public class TypeEnumJsonConverter : JsonConverter<TypeEnum>
+{
+    public override TypeEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        string? enumString = reader.GetString();
+        return enumString switch
         {
-            if (value.Equals("local"))
-                return HostConfigAllOfLogConfigTypeEnum.Local;
+            "local" => TypeEnum.Local,
+            "json-file" => TypeEnum.JsonFile,
+            "syslog" => TypeEnum.Syslog,
+            "journald" => TypeEnum.Journald,
+            "gelf" => TypeEnum.Gelf,
+            "fluentd" => TypeEnum.Fluentd,
+            "awslogs" => TypeEnum.Awslogs,
+            "splunk" => TypeEnum.Splunk,
+            "etwlogs" => TypeEnum.Etwlogs,
+            "none" => TypeEnum.None,
+            _ => throw new JsonException($"Unknown value: {enumString}")
+        };
+    }
 
-            if (value.Equals("json-file"))
-                return HostConfigAllOfLogConfigTypeEnum.JsonFile;
-
-            if (value.Equals("syslog"))
-                return HostConfigAllOfLogConfigTypeEnum.Syslog;
-
-            if (value.Equals("journald"))
-                return HostConfigAllOfLogConfigTypeEnum.Journald;
-
-            if (value.Equals("gelf"))
-                return HostConfigAllOfLogConfigTypeEnum.Gelf;
-
-            if (value.Equals("fluentd"))
-                return HostConfigAllOfLogConfigTypeEnum.Fluentd;
-
-            if (value.Equals("awslogs"))
-                return HostConfigAllOfLogConfigTypeEnum.Awslogs;
-
-            if (value.Equals("splunk"))
-                return HostConfigAllOfLogConfigTypeEnum.Splunk;
-
-            if (value.Equals("etwlogs"))
-                return HostConfigAllOfLogConfigTypeEnum.Etwlogs;
-
-            if (value.Equals("none"))
-                return HostConfigAllOfLogConfigTypeEnum.None;
-
-            throw new NotImplementedException($"Could not convert value to type TypeEnum: '{value}'");
-        }
-
-        /// <summary>
-        /// Returns a <see cref="HostConfigAllOfLogConfigTypeEnum"/>
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public static HostConfigAllOfLogConfigTypeEnum? TypeEnumFromStringOrDefault(string value)
+    public override void Write(Utf8JsonWriter writer, TypeEnum value, JsonSerializerOptions options)
+    {
+        string enumString = value switch
         {
-            if (value.Equals("local"))
-                return HostConfigAllOfLogConfigTypeEnum.Local;
+            TypeEnum.Local => "local",
+            TypeEnum.JsonFile => "json-file",
+            TypeEnum.Syslog => "syslog",
+            TypeEnum.Journald => "journald",
+            TypeEnum.Gelf => "gelf",
+            TypeEnum.Fluentd => "fluentd",
+            TypeEnum.Awslogs => "awslogs",
+            TypeEnum.Splunk => "splunk",
+            TypeEnum.Etwlogs => "etwlogs",
+            TypeEnum.None => "none",
+            _ => throw new JsonException($"Unknown value: {value}")
+        };
+        writer.WriteStringValue(enumString);
+    }
+}
 
-            if (value.Equals("json-file"))
-                return HostConfigAllOfLogConfigTypeEnum.JsonFile;
-
-            if (value.Equals("syslog"))
-                return HostConfigAllOfLogConfigTypeEnum.Syslog;
-
-            if (value.Equals("journald"))
-                return HostConfigAllOfLogConfigTypeEnum.Journald;
-
-            if (value.Equals("gelf"))
-                return HostConfigAllOfLogConfigTypeEnum.Gelf;
-
-            if (value.Equals("fluentd"))
-                return HostConfigAllOfLogConfigTypeEnum.Fluentd;
-
-            if (value.Equals("awslogs"))
-                return HostConfigAllOfLogConfigTypeEnum.Awslogs;
-
-            if (value.Equals("splunk"))
-                return HostConfigAllOfLogConfigTypeEnum.Splunk;
-
-            if (value.Equals("etwlogs"))
-                return HostConfigAllOfLogConfigTypeEnum.Etwlogs;
-
-            if (value.Equals("none"))
-                return HostConfigAllOfLogConfigTypeEnum.None;
-
+/// <summary>
+/// A Json converter for nullable <see cref="TypeEnum"/>
+/// </summary>
+public class TypeEnumNullableJsonConverter : JsonConverter<TypeEnum?>
+{
+    public override TypeEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        if (reader.TokenType == JsonTokenType.Null)
             return null;
-        }
 
-        /// <summary>
-        /// Converts the <see cref="HostConfigAllOfLogConfigTypeEnum"/> to the json value
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public static string TypeEnumToJsonValue(HostConfigAllOfLogConfigTypeEnum? value)
+        string? enumString = reader.GetString();
+
+        return enumString switch
         {
-            if (value == HostConfigAllOfLogConfigTypeEnum.Local)
-                return "local";
+            "local" => TypeEnum.Local,
+            "json-file" => TypeEnum.JsonFile,
+            "syslog" => TypeEnum.Syslog,
+            "journald" => TypeEnum.Journald,
+            "gelf" => TypeEnum.Gelf,
+            "fluentd" => TypeEnum.Fluentd,
+            "awslogs" => TypeEnum.Awslogs,
+            "splunk" => TypeEnum.Splunk,
+            "etwlogs" => TypeEnum.Etwlogs,
+            "none" => TypeEnum.None,
+            _ => throw new JsonException($"Unknown value: {enumString}")
+        };
+    }
 
-            if (value == HostConfigAllOfLogConfigTypeEnum.JsonFile)
-                return "json-file";
-
-            if (value == HostConfigAllOfLogConfigTypeEnum.Syslog)
-                return "syslog";
-
-            if (value == HostConfigAllOfLogConfigTypeEnum.Journald)
-                return "journald";
-
-            if (value == HostConfigAllOfLogConfigTypeEnum.Gelf)
-                return "gelf";
-
-            if (value == HostConfigAllOfLogConfigTypeEnum.Fluentd)
-                return "fluentd";
-
-            if (value == HostConfigAllOfLogConfigTypeEnum.Awslogs)
-                return "awslogs";
-
-            if (value == HostConfigAllOfLogConfigTypeEnum.Splunk)
-                return "splunk";
-
-            if (value == HostConfigAllOfLogConfigTypeEnum.Etwlogs)
-                return "etwlogs";
-
-            if (value == HostConfigAllOfLogConfigTypeEnum.None)
-                return "none";
-
-            throw new NotImplementedException($"Value could not be handled: '{value}'");
+    public override void Write(Utf8JsonWriter writer, TypeEnum? value, JsonSerializerOptions options)
+    {
+        if (value == null)
+        {
+            writer.WriteNullValue();
+            return;
         }
+
+        string enumString = value.Value switch
+        {
+            TypeEnum.Local => "local",
+            TypeEnum.JsonFile => "json-file",
+            TypeEnum.Syslog => "syslog",
+            TypeEnum.Journald => "journald",
+            TypeEnum.Gelf => "gelf",
+            TypeEnum.Fluentd => "fluentd",
+            TypeEnum.Awslogs => "awslogs",
+            TypeEnum.Splunk => "splunk",
+            TypeEnum.Etwlogs => "etwlogs",
+            TypeEnum.None => "none",
+            _ => throw new JsonException($"Unknown value: {value}")
+        };
+
+        writer.WriteStringValue(enumString);
+    }
+}
 
         /// <summary>
         /// Used to track the state of Type
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<HostConfigAllOfLogConfigTypeEnum?> TypeOption { get; private set; }
+        public Option<TypeEnum?> TypeOption { get; private set; }
 
         /// <summary>
         /// Name of the logging driver used for the container or \&quot;none\&quot; if logging is disabled.
         /// </summary>
         /// <value>Name of the logging driver used for the container or \&quot;none\&quot; if logging is disabled.</value>
         [JsonPropertyName("Type")]
-        public HostConfigAllOfLogConfigTypeEnum? Type { get { return this.TypeOption; } set { this.TypeOption = new(value); } }
+        public TypeEnum? Type { get { return this.TypeOption; } set { this.TypeOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of Config
@@ -265,117 +227,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  Config: ").Append(Config).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="HostConfigAllOfLogConfig" />
-    /// </summary>
-    public class HostConfigAllOfLogConfigJsonConverter : JsonConverter<HostConfigAllOfLogConfig>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="HostConfigAllOfLogConfig" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override HostConfigAllOfLogConfig Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<HostConfigAllOfLogConfig.HostConfigAllOfLogConfigTypeEnum?> type = default;
-            Option<Dictionary<string, string>?> config = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "Type":
-                            string? typeRawValue = utf8JsonReader.GetString();
-                            if (typeRawValue != null)
-                                type = new Option<HostConfigAllOfLogConfig.HostConfigAllOfLogConfigTypeEnum?>(HostConfigAllOfLogConfig.TypeEnumFromStringOrDefault(typeRawValue));
-                            break;
-                        case "Config":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                config = new Option<Dictionary<string, string>?>(JsonSerializer.Deserialize<Dictionary<string, string>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (type.IsSet && type.Value == null)
-                throw new ArgumentNullException(nameof(type), "Property is not nullable for class HostConfigAllOfLogConfig.");
-
-            if (config.IsSet && config.Value == null)
-                throw new ArgumentNullException(nameof(config), "Property is not nullable for class HostConfigAllOfLogConfig.");
-
-            return new HostConfigAllOfLogConfig(type, config);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="HostConfigAllOfLogConfig" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="hostConfigAllOfLogConfig"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, HostConfigAllOfLogConfig hostConfigAllOfLogConfig, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, hostConfigAllOfLogConfig, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="HostConfigAllOfLogConfig" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="hostConfigAllOfLogConfig"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, HostConfigAllOfLogConfig hostConfigAllOfLogConfig, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (hostConfigAllOfLogConfig.ConfigOption.IsSet && hostConfigAllOfLogConfig.Config == null)
-                throw new ArgumentNullException(nameof(hostConfigAllOfLogConfig.Config), "Property is required for class HostConfigAllOfLogConfig.");
-
-            var typeRawValue = HostConfigAllOfLogConfig.TypeEnumToJsonValue(hostConfigAllOfLogConfig.TypeOption.Value!.Value);
-            writer.WriteString("Type", typeRawValue);
-            if (hostConfigAllOfLogConfig.ConfigOption.IsSet)
-            {
-                writer.WritePropertyName("Config");
-                JsonSerializer.Serialize(writer, hostConfigAllOfLogConfig.Config, jsonSerializerOptions);
-            }
         }
     }
 }

@@ -20,35 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// AuthConfig
     /// </summary>
-    public partial class AuthConfig : IValidatableObject
+    public partial class AuthConfig
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AuthConfig" /> class.
-        /// </summary>
-        /// <param name="username">username</param>
-        /// <param name="password">password</param>
-        /// <param name="email">email</param>
-        /// <param name="serveraddress">serveraddress</param>
-        [JsonConstructor]
-        public AuthConfig(Option<string?> username = default, Option<string?> password = default, Option<string?> email = default, Option<string?> serveraddress = default)
-        {
-            UsernameOption = username;
-            PasswordOption = password;
-            EmailOption = email;
-            ServeraddressOption = serveraddress;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Used to track the state of Username
         /// </summary>
@@ -115,141 +96,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  Serveraddress: ").Append(Serveraddress).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="AuthConfig" />
-    /// </summary>
-    public class AuthConfigJsonConverter : JsonConverter<AuthConfig>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="AuthConfig" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override AuthConfig Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<string?> username = default;
-            Option<string?> password = default;
-            Option<string?> email = default;
-            Option<string?> serveraddress = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "username":
-                            username = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "password":
-                            password = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "email":
-                            email = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "serveraddress":
-                            serveraddress = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (username.IsSet && username.Value == null)
-                throw new ArgumentNullException(nameof(username), "Property is not nullable for class AuthConfig.");
-
-            if (password.IsSet && password.Value == null)
-                throw new ArgumentNullException(nameof(password), "Property is not nullable for class AuthConfig.");
-
-            if (email.IsSet && email.Value == null)
-                throw new ArgumentNullException(nameof(email), "Property is not nullable for class AuthConfig.");
-
-            if (serveraddress.IsSet && serveraddress.Value == null)
-                throw new ArgumentNullException(nameof(serveraddress), "Property is not nullable for class AuthConfig.");
-
-            return new AuthConfig(username, password, email, serveraddress);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="AuthConfig" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="authConfig"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, AuthConfig authConfig, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, authConfig, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="AuthConfig" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="authConfig"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, AuthConfig authConfig, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (authConfig.UsernameOption.IsSet && authConfig.Username == null)
-                throw new ArgumentNullException(nameof(authConfig.Username), "Property is required for class AuthConfig.");
-
-            if (authConfig.PasswordOption.IsSet && authConfig.Password == null)
-                throw new ArgumentNullException(nameof(authConfig.Password), "Property is required for class AuthConfig.");
-
-            if (authConfig.EmailOption.IsSet && authConfig.Email == null)
-                throw new ArgumentNullException(nameof(authConfig.Email), "Property is required for class AuthConfig.");
-
-            if (authConfig.ServeraddressOption.IsSet && authConfig.Serveraddress == null)
-                throw new ArgumentNullException(nameof(authConfig.Serveraddress), "Property is required for class AuthConfig.");
-
-            if (authConfig.UsernameOption.IsSet)
-                writer.WriteString("username", authConfig.Username);
-
-            if (authConfig.PasswordOption.IsSet)
-                writer.WriteString("password", authConfig.Password);
-
-            if (authConfig.EmailOption.IsSet)
-                writer.WriteString("email", authConfig.Email);
-
-            if (authConfig.ServeraddressOption.IsSet)
-                writer.WriteString("serveraddress", authConfig.Serveraddress);
         }
     }
 }

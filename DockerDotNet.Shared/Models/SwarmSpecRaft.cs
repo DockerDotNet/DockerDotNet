@@ -20,37 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// Raft configuration.
     /// </summary>
-    public partial class SwarmSpecRaft : IValidatableObject
+    public partial class SwarmSpecRaft
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SwarmSpecRaft" /> class.
-        /// </summary>
-        /// <param name="snapshotInterval">The number of log entries between snapshots.</param>
-        /// <param name="keepOldSnapshots">The number of snapshots to keep beyond the current snapshot. </param>
-        /// <param name="logEntriesForSlowFollowers">The number of log entries to keep around to sync up slow followers after a snapshot is created. </param>
-        /// <param name="electionTick">The number of ticks that a follower will wait for a message from the leader before becoming a candidate and starting an election. &#x60;ElectionTick&#x60; must be greater than &#x60;HeartbeatTick&#x60;.  A tick currently defaults to one second, so these translate directly to seconds currently, but this is NOT guaranteed. </param>
-        /// <param name="heartbeatTick">The number of ticks between heartbeats. Every HeartbeatTick ticks, the leader will send a heartbeat to the followers.  A tick currently defaults to one second, so these translate directly to seconds currently, but this is NOT guaranteed. </param>
-        [JsonConstructor]
-        public SwarmSpecRaft(Option<int?> snapshotInterval = default, Option<int?> keepOldSnapshots = default, Option<int?> logEntriesForSlowFollowers = default, Option<int?> electionTick = default, Option<int?> heartbeatTick = default)
-        {
-            SnapshotIntervalOption = snapshotInterval;
-            KeepOldSnapshotsOption = keepOldSnapshots;
-            LogEntriesForSlowFollowersOption = logEntriesForSlowFollowers;
-            ElectionTickOption = electionTick;
-            HeartbeatTickOption = heartbeatTick;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Used to track the state of SnapshotInterval
         /// </summary>
@@ -140,144 +119,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  HeartbeatTick: ").Append(HeartbeatTick).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="SwarmSpecRaft" />
-    /// </summary>
-    public class SwarmSpecRaftJsonConverter : JsonConverter<SwarmSpecRaft>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="SwarmSpecRaft" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override SwarmSpecRaft Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<int?> snapshotInterval = default;
-            Option<int?> keepOldSnapshots = default;
-            Option<int?> logEntriesForSlowFollowers = default;
-            Option<int?> electionTick = default;
-            Option<int?> heartbeatTick = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "SnapshotInterval":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                snapshotInterval = new Option<int?>(utf8JsonReader.GetInt32());
-                            break;
-                        case "KeepOldSnapshots":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                keepOldSnapshots = new Option<int?>(utf8JsonReader.GetInt32());
-                            break;
-                        case "LogEntriesForSlowFollowers":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                logEntriesForSlowFollowers = new Option<int?>(utf8JsonReader.GetInt32());
-                            break;
-                        case "ElectionTick":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                electionTick = new Option<int?>(utf8JsonReader.GetInt32());
-                            break;
-                        case "HeartbeatTick":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                heartbeatTick = new Option<int?>(utf8JsonReader.GetInt32());
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (snapshotInterval.IsSet && snapshotInterval.Value == null)
-                throw new ArgumentNullException(nameof(snapshotInterval), "Property is not nullable for class SwarmSpecRaft.");
-
-            if (keepOldSnapshots.IsSet && keepOldSnapshots.Value == null)
-                throw new ArgumentNullException(nameof(keepOldSnapshots), "Property is not nullable for class SwarmSpecRaft.");
-
-            if (logEntriesForSlowFollowers.IsSet && logEntriesForSlowFollowers.Value == null)
-                throw new ArgumentNullException(nameof(logEntriesForSlowFollowers), "Property is not nullable for class SwarmSpecRaft.");
-
-            if (electionTick.IsSet && electionTick.Value == null)
-                throw new ArgumentNullException(nameof(electionTick), "Property is not nullable for class SwarmSpecRaft.");
-
-            if (heartbeatTick.IsSet && heartbeatTick.Value == null)
-                throw new ArgumentNullException(nameof(heartbeatTick), "Property is not nullable for class SwarmSpecRaft.");
-
-            return new SwarmSpecRaft(snapshotInterval, keepOldSnapshots, logEntriesForSlowFollowers, electionTick, heartbeatTick);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="SwarmSpecRaft" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="swarmSpecRaft"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, SwarmSpecRaft swarmSpecRaft, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, swarmSpecRaft, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="SwarmSpecRaft" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="swarmSpecRaft"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, SwarmSpecRaft swarmSpecRaft, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (swarmSpecRaft.SnapshotIntervalOption.IsSet)
-                writer.WriteNumber("SnapshotInterval", swarmSpecRaft.SnapshotIntervalOption.Value!.Value);
-
-            if (swarmSpecRaft.KeepOldSnapshotsOption.IsSet)
-                writer.WriteNumber("KeepOldSnapshots", swarmSpecRaft.KeepOldSnapshotsOption.Value!.Value);
-
-            if (swarmSpecRaft.LogEntriesForSlowFollowersOption.IsSet)
-                writer.WriteNumber("LogEntriesForSlowFollowers", swarmSpecRaft.LogEntriesForSlowFollowersOption.Value!.Value);
-
-            if (swarmSpecRaft.ElectionTickOption.IsSet)
-                writer.WriteNumber("ElectionTick", swarmSpecRaft.ElectionTickOption.Value!.Value);
-
-            if (swarmSpecRaft.HeartbeatTickOption.IsSet)
-                writer.WriteNumber("HeartbeatTick", swarmSpecRaft.HeartbeatTickOption.Value!.Value);
         }
     }
 }

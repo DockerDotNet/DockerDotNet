@@ -20,39 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// individual image layer information in response to ImageHistory operation
     /// </summary>
-    public partial class HistoryResponseItem : IValidatableObject
+    public partial class HistoryResponseItem
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="HistoryResponseItem" /> class.
-        /// </summary>
-        /// <param name="id">id</param>
-        /// <param name="created">created</param>
-        /// <param name="createdBy">createdBy</param>
-        /// <param name="tags">tags</param>
-        /// <param name="size">size</param>
-        /// <param name="comment">comment</param>
-        [JsonConstructor]
-        public HistoryResponseItem(string id, long created, string createdBy, List<string> tags, long size, string comment)
-        {
-            Id = id;
-            Created = created;
-            CreatedBy = createdBy;
-            Tags = tags;
-            Size = size;
-            Comment = comment;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Gets or Sets Id
         /// </summary>
@@ -105,176 +82,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  Comment: ").Append(Comment).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="HistoryResponseItem" />
-    /// </summary>
-    public class HistoryResponseItemJsonConverter : JsonConverter<HistoryResponseItem>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="HistoryResponseItem" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override HistoryResponseItem Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<string?> id = default;
-            Option<long?> created = default;
-            Option<string?> createdBy = default;
-            Option<List<string>?> tags = default;
-            Option<long?> size = default;
-            Option<string?> comment = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "Id":
-                            id = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "Created":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                created = new Option<long?>(utf8JsonReader.GetInt64());
-                            break;
-                        case "CreatedBy":
-                            createdBy = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "Tags":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                tags = new Option<List<string>?>(JsonSerializer.Deserialize<List<string>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "Size":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                size = new Option<long?>(utf8JsonReader.GetInt64());
-                            break;
-                        case "Comment":
-                            comment = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (!id.IsSet)
-                throw new ArgumentException("Property is required for class HistoryResponseItem.", nameof(id));
-
-            if (!created.IsSet)
-                throw new ArgumentException("Property is required for class HistoryResponseItem.", nameof(created));
-
-            if (!createdBy.IsSet)
-                throw new ArgumentException("Property is required for class HistoryResponseItem.", nameof(createdBy));
-
-            //if (!tags.IsSet)
-            //    throw new ArgumentException("Property is required for class HistoryResponseItem.", nameof(tags));
-
-            if (!size.IsSet)
-                throw new ArgumentException("Property is required for class HistoryResponseItem.", nameof(size));
-
-            if (!comment.IsSet)
-                throw new ArgumentException("Property is required for class HistoryResponseItem.", nameof(comment));
-
-            if (id.IsSet && id.Value == null)
-                throw new ArgumentNullException(nameof(id), "Property is not nullable for class HistoryResponseItem.");
-
-            if (created.IsSet && created.Value == null)
-                throw new ArgumentNullException(nameof(created), "Property is not nullable for class HistoryResponseItem.");
-
-            if (createdBy.IsSet && createdBy.Value == null)
-                throw new ArgumentNullException(nameof(createdBy), "Property is not nullable for class HistoryResponseItem.");
-
-            //if (tags.IsSet && tags.Value == null)
-            //    throw new ArgumentNullException(nameof(tags), "Property is not nullable for class HistoryResponseItem.");
-
-            if (size.IsSet && size.Value == null)
-                throw new ArgumentNullException(nameof(size), "Property is not nullable for class HistoryResponseItem.");
-
-            if (comment.IsSet && comment.Value == null)
-                throw new ArgumentNullException(nameof(comment), "Property is not nullable for class HistoryResponseItem.");
-
-            return new HistoryResponseItem(id.Value!, created.Value!.Value!, createdBy.Value!, tags.Value!, size.Value!.Value!, comment.Value!);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="HistoryResponseItem" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="historyResponseItem"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, HistoryResponseItem historyResponseItem, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, historyResponseItem, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="HistoryResponseItem" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="historyResponseItem"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, HistoryResponseItem historyResponseItem, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (historyResponseItem.Id == null)
-                throw new ArgumentNullException(nameof(historyResponseItem.Id), "Property is required for class HistoryResponseItem.");
-
-            if (historyResponseItem.CreatedBy == null)
-                throw new ArgumentNullException(nameof(historyResponseItem.CreatedBy), "Property is required for class HistoryResponseItem.");
-
-            //if (historyResponseItem.Tags == null)
-            //    throw new ArgumentNullException(nameof(historyResponseItem.Tags), "Property is required for class HistoryResponseItem.");
-
-            if (historyResponseItem.Comment == null)
-                throw new ArgumentNullException(nameof(historyResponseItem.Comment), "Property is required for class HistoryResponseItem.");
-
-            writer.WriteString("Id", historyResponseItem.Id);
-
-            writer.WriteNumber("Created", historyResponseItem.Created);
-
-            writer.WriteString("CreatedBy", historyResponseItem.CreatedBy);
-
-            writer.WritePropertyName("Tags");
-            JsonSerializer.Serialize(writer, historyResponseItem.Tags, jsonSerializerOptions);
-            writer.WriteNumber("Size", historyResponseItem.Size);
-
-            writer.WriteString("Comment", historyResponseItem.Comment);
         }
     }
 }

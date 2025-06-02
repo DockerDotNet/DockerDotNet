@@ -20,31 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// ThrottleDevice
     /// </summary>
-    public partial class ThrottleDevice : IValidatableObject
+    public partial class ThrottleDevice
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ThrottleDevice" /> class.
-        /// </summary>
-        /// <param name="path">Device path</param>
-        /// <param name="rate">Rate</param>
-        [JsonConstructor]
-        public ThrottleDevice(Option<string?> path = default, Option<long?> rate = default)
-        {
-            PathOption = path;
-            RateOption = rate;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Used to track the state of Path
         /// </summary>
@@ -85,119 +70,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  Rate: ").Append(Rate).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            // Rate (long) minimum
-            if (this.RateOption.IsSet && this.RateOption.Value < (long)0)
-            {
-                yield return new ValidationResult("Invalid value for Rate, must be a value greater than or equal to 0.", new [] { "Rate" });
-            }
-
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="ThrottleDevice" />
-    /// </summary>
-    public class ThrottleDeviceJsonConverter : JsonConverter<ThrottleDevice>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="ThrottleDevice" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override ThrottleDevice Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<string?> path = default;
-            Option<long?> rate = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "Path":
-                            path = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "Rate":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                rate = new Option<long?>(utf8JsonReader.GetInt64());
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (path.IsSet && path.Value == null)
-                throw new ArgumentNullException(nameof(path), "Property is not nullable for class ThrottleDevice.");
-
-            if (rate.IsSet && rate.Value == null)
-                throw new ArgumentNullException(nameof(rate), "Property is not nullable for class ThrottleDevice.");
-
-            return new ThrottleDevice(path, rate);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="ThrottleDevice" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="throttleDevice"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, ThrottleDevice throttleDevice, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, throttleDevice, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="ThrottleDevice" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="throttleDevice"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, ThrottleDevice throttleDevice, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (throttleDevice.PathOption.IsSet && throttleDevice.Path == null)
-                throw new ArgumentNullException(nameof(throttleDevice.Path), "Property is required for class ThrottleDevice.");
-
-            if (throttleDevice.PathOption.IsSet)
-                writer.WriteString("Path", throttleDevice.Path);
-
-            if (throttleDevice.RateOption.IsSet)
-                writer.WriteNumber("Rate", throttleDevice.RateOption.Value!.Value);
         }
     }
 }

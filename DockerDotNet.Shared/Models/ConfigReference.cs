@@ -20,29 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// The config-only network source to provide the configuration for this network. 
     /// </summary>
-    public partial class ConfigReference : IValidatableObject
+    public partial class ConfigReference
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ConfigReference" /> class.
-        /// </summary>
-        /// <param name="network">The name of the config-only network that provides the network&#39;s configuration. The specified network must be an existing config-only network. Only network names are allowed, not network IDs. </param>
-        [JsonConstructor]
-        public ConfigReference(Option<string?> network = default)
-        {
-            NetworkOption = network;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Used to track the state of Network
         /// </summary>
@@ -69,102 +56,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  Network: ").Append(Network).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="ConfigReference" />
-    /// </summary>
-    public class ConfigReferenceJsonConverter : JsonConverter<ConfigReference>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="ConfigReference" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override ConfigReference Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<string?> network = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "Network":
-                            network = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (network.IsSet && network.Value == null)
-                throw new ArgumentNullException(nameof(network), "Property is not nullable for class ConfigReference.");
-
-            return new ConfigReference(network);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="ConfigReference" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="configReference"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, ConfigReference configReference, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, configReference, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="ConfigReference" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="configReference"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, ConfigReference configReference, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (configReference.NetworkOption.IsSet && configReference.Network == null)
-                throw new ArgumentNullException(nameof(configReference.Network), "Property is required for class ConfigReference.");
-
-            if (configReference.NetworkOption.IsSet)
-                writer.WriteString("Network", configReference.Network);
         }
     }
 }

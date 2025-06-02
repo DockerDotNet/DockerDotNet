@@ -20,31 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// The desired capacity that the volume should be created with. If empty, the plugin will decide the capacity. 
     /// </summary>
-    public partial class ClusterVolumeSpecAccessModeCapacityRange : IValidatableObject
+    public partial class ClusterVolumeSpecAccessModeCapacityRange
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ClusterVolumeSpecAccessModeCapacityRange" /> class.
-        /// </summary>
-        /// <param name="requiredBytes">The volume must be at least this big. The value of 0 indicates an unspecified minimum </param>
-        /// <param name="limitBytes">The volume must not be bigger than this. The value of 0 indicates an unspecified maximum. </param>
-        [JsonConstructor]
-        public ClusterVolumeSpecAccessModeCapacityRange(Option<long?> requiredBytes = default, Option<long?> limitBytes = default)
-        {
-            RequiredBytesOption = requiredBytes;
-            LimitBytesOption = limitBytes;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Used to track the state of RequiredBytes
         /// </summary>
@@ -85,111 +70,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  LimitBytes: ").Append(LimitBytes).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="ClusterVolumeSpecAccessModeCapacityRange" />
-    /// </summary>
-    public class ClusterVolumeSpecAccessModeCapacityRangeJsonConverter : JsonConverter<ClusterVolumeSpecAccessModeCapacityRange>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="ClusterVolumeSpecAccessModeCapacityRange" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override ClusterVolumeSpecAccessModeCapacityRange Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<long?> requiredBytes = default;
-            Option<long?> limitBytes = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "RequiredBytes":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                requiredBytes = new Option<long?>(utf8JsonReader.GetInt64());
-                            break;
-                        case "LimitBytes":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                limitBytes = new Option<long?>(utf8JsonReader.GetInt64());
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (requiredBytes.IsSet && requiredBytes.Value == null)
-                throw new ArgumentNullException(nameof(requiredBytes), "Property is not nullable for class ClusterVolumeSpecAccessModeCapacityRange.");
-
-            if (limitBytes.IsSet && limitBytes.Value == null)
-                throw new ArgumentNullException(nameof(limitBytes), "Property is not nullable for class ClusterVolumeSpecAccessModeCapacityRange.");
-
-            return new ClusterVolumeSpecAccessModeCapacityRange(requiredBytes, limitBytes);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="ClusterVolumeSpecAccessModeCapacityRange" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="clusterVolumeSpecAccessModeCapacityRange"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, ClusterVolumeSpecAccessModeCapacityRange clusterVolumeSpecAccessModeCapacityRange, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, clusterVolumeSpecAccessModeCapacityRange, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="ClusterVolumeSpecAccessModeCapacityRange" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="clusterVolumeSpecAccessModeCapacityRange"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, ClusterVolumeSpecAccessModeCapacityRange clusterVolumeSpecAccessModeCapacityRange, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (clusterVolumeSpecAccessModeCapacityRange.RequiredBytesOption.IsSet)
-                writer.WriteNumber("RequiredBytes", clusterVolumeSpecAccessModeCapacityRange.RequiredBytesOption.Value!.Value);
-
-            if (clusterVolumeSpecAccessModeCapacityRange.LimitBytesOption.IsSet)
-                writer.WriteNumber("LimitBytes", clusterVolumeSpecAccessModeCapacityRange.LimitBytesOption.Value!.Value);
         }
     }
 }

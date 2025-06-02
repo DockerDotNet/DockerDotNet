@@ -20,31 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// Summary of host-specific runtime information of the container. This is a reduced set of information in the container&#39;s \&quot;HostConfig\&quot; as available in the container \&quot;inspect\&quot; response.
     /// </summary>
-    public partial class ContainerSummaryHostConfig : IValidatableObject
+    public partial class ContainerSummaryHostConfig
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ContainerSummaryHostConfig" /> class.
-        /// </summary>
-        /// <param name="networkMode">Networking mode (&#x60;host&#x60;, &#x60;none&#x60;, &#x60;container:&lt;id&gt;&#x60;) or name of the primary network the container is using.  This field is primarily for backward compatibility. The container can be connected to multiple networks for which information can be found in the &#x60;NetworkSettings.Networks&#x60; field, which enumerates settings per network.</param>
-        /// <param name="annotations">Arbitrary key-value metadata attached to the container.</param>
-        [JsonConstructor]
-        public ContainerSummaryHostConfig(Option<string?> networkMode = default, Option<Dictionary<string, string>?> annotations = default)
-        {
-            NetworkModeOption = networkMode;
-            AnnotationsOption = annotations;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Used to track the state of NetworkMode
         /// </summary>
@@ -87,116 +72,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  Annotations: ").Append(Annotations).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="ContainerSummaryHostConfig" />
-    /// </summary>
-    public class ContainerSummaryHostConfigJsonConverter : JsonConverter<ContainerSummaryHostConfig>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="ContainerSummaryHostConfig" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override ContainerSummaryHostConfig Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<string?> networkMode = default;
-            Option<Dictionary<string, string>?> annotations = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "NetworkMode":
-                            networkMode = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "Annotations":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                annotations = new Option<Dictionary<string, string>?>(JsonSerializer.Deserialize<Dictionary<string, string>>(ref utf8JsonReader, jsonSerializerOptions));
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (networkMode.IsSet && networkMode.Value == null)
-                throw new ArgumentNullException(nameof(networkMode), "Property is not nullable for class ContainerSummaryHostConfig.");
-
-            return new ContainerSummaryHostConfig(networkMode, annotations);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="ContainerSummaryHostConfig" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="containerSummaryHostConfig"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, ContainerSummaryHostConfig containerSummaryHostConfig, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, containerSummaryHostConfig, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="ContainerSummaryHostConfig" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="containerSummaryHostConfig"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, ContainerSummaryHostConfig containerSummaryHostConfig, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (containerSummaryHostConfig.NetworkModeOption.IsSet && containerSummaryHostConfig.NetworkMode == null)
-                throw new ArgumentNullException(nameof(containerSummaryHostConfig.NetworkMode), "Property is required for class ContainerSummaryHostConfig.");
-
-            if (containerSummaryHostConfig.NetworkModeOption.IsSet)
-                writer.WriteString("NetworkMode", containerSummaryHostConfig.NetworkMode);
-
-            if (containerSummaryHostConfig.AnnotationsOption.IsSet)
-                if (containerSummaryHostConfig.AnnotationsOption.Value != null)
-                {
-                    writer.WritePropertyName("Annotations");
-                    JsonSerializer.Serialize(writer, containerSummaryHostConfig.Annotations, jsonSerializerOptions);
-                }
-                else
-                    writer.WriteNull("Annotations");
         }
     }
 }

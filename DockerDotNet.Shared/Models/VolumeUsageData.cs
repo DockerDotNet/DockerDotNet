@@ -20,31 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// Usage details about the volume. This information is used by the &#x60;GET /system/df&#x60; endpoint, and omitted in other endpoints. 
     /// </summary>
-    public partial class VolumeUsageData : IValidatableObject
+    public partial class VolumeUsageData
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="VolumeUsageData" /> class.
-        /// </summary>
-        /// <param name="size">Amount of disk space used by the volume (in bytes). This information is only available for volumes created with the &#x60;\&quot;local\&quot;&#x60; volume driver. For volumes created with other volume drivers, this field is set to &#x60;-1&#x60; (\&quot;not available\&quot;)  (default to -1)</param>
-        /// <param name="refCount">The number of containers referencing this volume. This field is set to &#x60;-1&#x60; if the reference-count is not available.  (default to -1)</param>
-        [JsonConstructor]
-        public VolumeUsageData(long size = -1, long refCount = -1)
-        {
-            Size = size;
-            RefCount = refCount;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Amount of disk space used by the volume (in bytes). This information is only available for volumes created with the &#x60;\&quot;local\&quot;&#x60; volume driver. For volumes created with other volume drivers, this field is set to &#x60;-1&#x60; (\&quot;not available\&quot;) 
         /// </summary>
@@ -71,115 +56,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  RefCount: ").Append(RefCount).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="VolumeUsageData" />
-    /// </summary>
-    public class VolumeUsageDataJsonConverter : JsonConverter<VolumeUsageData>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="VolumeUsageData" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override VolumeUsageData Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<long?> size = default;
-            Option<long?> refCount = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "Size":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                size = new Option<long?>(utf8JsonReader.GetInt64());
-                            break;
-                        case "RefCount":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                refCount = new Option<long?>(utf8JsonReader.GetInt64());
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (!size.IsSet)
-                throw new ArgumentException("Property is required for class VolumeUsageData.", nameof(size));
-
-            if (!refCount.IsSet)
-                throw new ArgumentException("Property is required for class VolumeUsageData.", nameof(refCount));
-
-            if (size.IsSet && size.Value == null)
-                throw new ArgumentNullException(nameof(size), "Property is not nullable for class VolumeUsageData.");
-
-            if (refCount.IsSet && refCount.Value == null)
-                throw new ArgumentNullException(nameof(refCount), "Property is not nullable for class VolumeUsageData.");
-
-            return new VolumeUsageData(size.Value!.Value!, refCount.Value!.Value!);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="VolumeUsageData" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="volumeUsageData"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, VolumeUsageData volumeUsageData, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, volumeUsageData, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="VolumeUsageData" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="volumeUsageData"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, VolumeUsageData volumeUsageData, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteNumber("Size", volumeUsageData.Size);
-
-            writer.WriteNumber("RefCount", volumeUsageData.RefCount);
         }
     }
 }

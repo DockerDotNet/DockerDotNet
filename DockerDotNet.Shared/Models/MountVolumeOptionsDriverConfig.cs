@@ -20,31 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// Map of driver specific options
     /// </summary>
-    public partial class MountVolumeOptionsDriverConfig : IValidatableObject
+    public partial class MountVolumeOptionsDriverConfig
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MountVolumeOptionsDriverConfig" /> class.
-        /// </summary>
-        /// <param name="name">Name of the driver to use to create the volume.</param>
-        /// <param name="options">key/value map of driver specific options.</param>
-        [JsonConstructor]
-        public MountVolumeOptionsDriverConfig(Option<string?> name = default, Option<Dictionary<string, string>?> options = default)
-        {
-            NameOption = name;
-            OptionsOption = options;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Used to track the state of Name
         /// </summary>
@@ -85,119 +70,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  Options: ").Append(Options).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="MountVolumeOptionsDriverConfig" />
-    /// </summary>
-    public class MountVolumeOptionsDriverConfigJsonConverter : JsonConverter<MountVolumeOptionsDriverConfig>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="MountVolumeOptionsDriverConfig" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override MountVolumeOptionsDriverConfig Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<string?> name = default;
-            Option<Dictionary<string, string>?> options = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "Name":
-                            name = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "Options":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                options = new Option<Dictionary<string, string>?>(JsonSerializer.Deserialize<Dictionary<string, string>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (name.IsSet && name.Value == null)
-                throw new ArgumentNullException(nameof(name), "Property is not nullable for class MountVolumeOptionsDriverConfig.");
-
-            if (options.IsSet && options.Value == null)
-                throw new ArgumentNullException(nameof(options), "Property is not nullable for class MountVolumeOptionsDriverConfig.");
-
-            return new MountVolumeOptionsDriverConfig(name, options);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="MountVolumeOptionsDriverConfig" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="mountVolumeOptionsDriverConfig"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, MountVolumeOptionsDriverConfig mountVolumeOptionsDriverConfig, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, mountVolumeOptionsDriverConfig, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="MountVolumeOptionsDriverConfig" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="mountVolumeOptionsDriverConfig"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, MountVolumeOptionsDriverConfig mountVolumeOptionsDriverConfig, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (mountVolumeOptionsDriverConfig.NameOption.IsSet && mountVolumeOptionsDriverConfig.Name == null)
-                throw new ArgumentNullException(nameof(mountVolumeOptionsDriverConfig.Name), "Property is required for class MountVolumeOptionsDriverConfig.");
-
-            if (mountVolumeOptionsDriverConfig.OptionsOption.IsSet && mountVolumeOptionsDriverConfig.Options == null)
-                throw new ArgumentNullException(nameof(mountVolumeOptionsDriverConfig.Options), "Property is required for class MountVolumeOptionsDriverConfig.");
-
-            if (mountVolumeOptionsDriverConfig.NameOption.IsSet)
-                writer.WriteString("Name", mountVolumeOptionsDriverConfig.Name);
-
-            if (mountVolumeOptionsDriverConfig.OptionsOption.IsSet)
-            {
-                writer.WritePropertyName("Options");
-                JsonSerializer.Serialize(writer, mountVolumeOptionsDriverConfig.Options, jsonSerializerOptions);
-            }
         }
     }
 }

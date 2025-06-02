@@ -20,51 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// Statistics sample for a container. 
     /// </summary>
-    public partial class ContainerStatsResponse : IValidatableObject
+    public partial class ContainerStatsResponse
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ContainerStatsResponse" /> class.
-        /// </summary>
-        /// <param name="name">Name of the container</param>
-        /// <param name="id">ID of the container</param>
-        /// <param name="read">Date and time at which this sample was collected. The value is formatted as [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) with nano-seconds. </param>
-        /// <param name="preread">Date and time at which this first sample was collected. This field is not propagated if the \&quot;one-shot\&quot; option is set. If the \&quot;one-shot\&quot; option is set, this field may be omitted, empty, or set to a default date (&#x60;0001-01-01T00:00:00Z&#x60;).  The value is formatted as [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) with nano-seconds. </param>
-        /// <param name="pidsStats">pidsStats</param>
-        /// <param name="blkioStats">blkioStats</param>
-        /// <param name="numProcs">The number of processors on the system.  This field is Windows-specific and always zero for Linux containers. </param>
-        /// <param name="storageStats">storageStats</param>
-        /// <param name="cpuStats">cpuStats</param>
-        /// <param name="precpuStats">precpuStats</param>
-        /// <param name="memoryStats">memoryStats</param>
-        /// <param name="networks">Network statistics for the container per interface.  This field is omitted if the container has no networking enabled. </param>
-        [JsonConstructor]
-        public ContainerStatsResponse(Option<string?> name = default, Option<string?> id = default, Option<DateTime?> read = default, Option<DateTime?> preread = default, Option<ContainerPidsStats?> pidsStats = default, Option<ContainerBlkioStats?> blkioStats = default, Option<uint?> numProcs = default, Option<ContainerStorageStats?> storageStats = default, Option<ContainerCPUStats?> cpuStats = default, Option<ContainerCPUStats?> precpuStats = default, Option<ContainerMemoryStats?> memoryStats = default, Option<Object?> networks = default)
-        {
-            NameOption = name;
-            IdOption = id;
-            ReadOption = read;
-            PrereadOption = preread;
-            PidsStatsOption = pidsStats;
-            BlkioStatsOption = blkioStats;
-            NumProcsOption = numProcs;
-            StorageStatsOption = storageStats;
-            CpuStatsOption = cpuStats;
-            PrecpuStatsOption = precpuStats;
-            MemoryStatsOption = memoryStats;
-            NetworksOption = networks;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Used to track the state of Name
         /// </summary>
@@ -156,7 +121,7 @@ namespace DockerDotNet.Shared.Models
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<uint?> NumProcsOption { get; private set; }
+        public Option<int?> NumProcsOption { get; private set; }
 
         /// <summary>
         /// The number of processors on the system.  This field is Windows-specific and always zero for Linux containers. 
@@ -164,7 +129,7 @@ namespace DockerDotNet.Shared.Models
         /// <value>The number of processors on the system.  This field is Windows-specific and always zero for Linux containers. </value>
         /* <example>16</example> */
         [JsonPropertyName("num_procs")]
-        public uint? NumProcs { get { return this.NumProcsOption; } set { this.NumProcsOption = new(value); } }
+        public int? NumProcs { get { return this.NumProcsOption; } set { this.NumProcsOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of StorageStats
@@ -254,247 +219,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  Networks: ").Append(Networks).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="ContainerStatsResponse" />
-    /// </summary>
-    public class ContainerStatsResponseJsonConverter : JsonConverter<ContainerStatsResponse>
-    {
-        /// <summary>
-        /// The format to use to serialize Read
-        /// </summary>
-        public static string ReadFormat { get; set; } = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffffK";
-
-        /// <summary>
-        /// The format to use to serialize Preread
-        /// </summary>
-        public static string PrereadFormat { get; set; } = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffffK";
-
-        /// <summary>
-        /// Deserializes json to <see cref="ContainerStatsResponse" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override ContainerStatsResponse Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<string?> name = default;
-            Option<string?> id = default;
-            Option<DateTime?> read = default;
-            Option<DateTime?> preread = default;
-            Option<ContainerPidsStats?> pidsStats = default;
-            Option<ContainerBlkioStats?> blkioStats = default;
-            Option<uint?> numProcs = default;
-            Option<ContainerStorageStats?> storageStats = default;
-            Option<ContainerCPUStats?> cpuStats = default;
-            Option<ContainerCPUStats?> precpuStats = default;
-            Option<ContainerMemoryStats?> memoryStats = default;
-            Option<Object?> networks = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "name":
-                            name = new Option<string?>(utf8JsonReader.GetString());
-                            break;
-                        case "id":
-                            id = new Option<string?>(utf8JsonReader.GetString());
-                            break;
-                        case "read":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                read = new Option<DateTime?>(JsonSerializer.Deserialize<DateTime>(ref utf8JsonReader, jsonSerializerOptions));
-                            break;
-                        case "preread":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                preread = new Option<DateTime?>(JsonSerializer.Deserialize<DateTime>(ref utf8JsonReader, jsonSerializerOptions));
-                            break;
-                        case "pids_stats":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                pidsStats = new Option<ContainerPidsStats?>(JsonSerializer.Deserialize<ContainerPidsStats>(ref utf8JsonReader, jsonSerializerOptions));
-                            break;
-                        case "blkio_stats":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                blkioStats = new Option<ContainerBlkioStats?>(JsonSerializer.Deserialize<ContainerBlkioStats>(ref utf8JsonReader, jsonSerializerOptions));
-                            break;
-                        case "num_procs":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                numProcs = new Option<uint?>(utf8JsonReader.GetUInt32());
-                            break;
-                        case "storage_stats":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                storageStats = new Option<ContainerStorageStats?>(JsonSerializer.Deserialize<ContainerStorageStats>(ref utf8JsonReader, jsonSerializerOptions));
-                            break;
-                        case "cpu_stats":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                cpuStats = new Option<ContainerCPUStats?>(JsonSerializer.Deserialize<ContainerCPUStats>(ref utf8JsonReader, jsonSerializerOptions));
-                            break;
-                        case "precpu_stats":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                precpuStats = new Option<ContainerCPUStats?>(JsonSerializer.Deserialize<ContainerCPUStats>(ref utf8JsonReader, jsonSerializerOptions));
-                            break;
-                        case "memory_stats":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                memoryStats = new Option<ContainerMemoryStats?>(JsonSerializer.Deserialize<ContainerMemoryStats>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "networks":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                networks = new Option<Object?>(JsonSerializer.Deserialize<Object>(ref utf8JsonReader, jsonSerializerOptions));
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (read.IsSet && read.Value == null)
-                throw new ArgumentNullException(nameof(read), "Property is not nullable for class ContainerStatsResponse.");
-
-            if (preread.IsSet && preread.Value == null)
-                throw new ArgumentNullException(nameof(preread), "Property is not nullable for class ContainerStatsResponse.");
-
-            if (numProcs.IsSet && numProcs.Value == null)
-                throw new ArgumentNullException(nameof(numProcs), "Property is not nullable for class ContainerStatsResponse.");
-
-            if (memoryStats.IsSet && memoryStats.Value == null)
-                throw new ArgumentNullException(nameof(memoryStats), "Property is not nullable for class ContainerStatsResponse.");
-
-            return new ContainerStatsResponse(name, id, read, preread, pidsStats, blkioStats, numProcs, storageStats, cpuStats, precpuStats, memoryStats, networks);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="ContainerStatsResponse" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="containerStatsResponse"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, ContainerStatsResponse containerStatsResponse, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, containerStatsResponse, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="ContainerStatsResponse" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="containerStatsResponse"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, ContainerStatsResponse containerStatsResponse, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (containerStatsResponse.MemoryStatsOption.IsSet && containerStatsResponse.MemoryStats == null)
-                throw new ArgumentNullException(nameof(containerStatsResponse.MemoryStats), "Property is required for class ContainerStatsResponse.");
-
-            if (containerStatsResponse.NameOption.IsSet)
-                if (containerStatsResponse.NameOption.Value != null)
-                    writer.WriteString("name", containerStatsResponse.Name);
-                else
-                    writer.WriteNull("name");
-
-            if (containerStatsResponse.IdOption.IsSet)
-                if (containerStatsResponse.IdOption.Value != null)
-                    writer.WriteString("id", containerStatsResponse.Id);
-                else
-                    writer.WriteNull("id");
-
-            if (containerStatsResponse.ReadOption.IsSet)
-                writer.WriteString("read", containerStatsResponse.ReadOption.Value!.Value.ToString(ReadFormat));
-
-            if (containerStatsResponse.PrereadOption.IsSet)
-                writer.WriteString("preread", containerStatsResponse.PrereadOption.Value!.Value.ToString(PrereadFormat));
-
-            if (containerStatsResponse.PidsStatsOption.IsSet)
-                if (containerStatsResponse.PidsStatsOption.Value != null)
-                {
-                    writer.WritePropertyName("pids_stats");
-                    JsonSerializer.Serialize(writer, containerStatsResponse.PidsStats, jsonSerializerOptions);
-                }
-                else
-                    writer.WriteNull("pids_stats");
-            if (containerStatsResponse.BlkioStatsOption.IsSet)
-                if (containerStatsResponse.BlkioStatsOption.Value != null)
-                {
-                    writer.WritePropertyName("blkio_stats");
-                    JsonSerializer.Serialize(writer, containerStatsResponse.BlkioStats, jsonSerializerOptions);
-                }
-                else
-                    writer.WriteNull("blkio_stats");
-            if (containerStatsResponse.NumProcsOption.IsSet)
-                writer.WriteNumber("num_procs", containerStatsResponse.NumProcsOption.Value!.Value);
-
-            if (containerStatsResponse.StorageStatsOption.IsSet)
-                if (containerStatsResponse.StorageStatsOption.Value != null)
-                {
-                    writer.WritePropertyName("storage_stats");
-                    JsonSerializer.Serialize(writer, containerStatsResponse.StorageStats, jsonSerializerOptions);
-                }
-                else
-                    writer.WriteNull("storage_stats");
-            if (containerStatsResponse.CpuStatsOption.IsSet)
-                if (containerStatsResponse.CpuStatsOption.Value != null)
-                {
-                    writer.WritePropertyName("cpu_stats");
-                    JsonSerializer.Serialize(writer, containerStatsResponse.CpuStats, jsonSerializerOptions);
-                }
-                else
-                    writer.WriteNull("cpu_stats");
-            if (containerStatsResponse.PrecpuStatsOption.IsSet)
-                if (containerStatsResponse.PrecpuStatsOption.Value != null)
-                {
-                    writer.WritePropertyName("precpu_stats");
-                    JsonSerializer.Serialize(writer, containerStatsResponse.PrecpuStats, jsonSerializerOptions);
-                }
-                else
-                    writer.WriteNull("precpu_stats");
-            if (containerStatsResponse.MemoryStatsOption.IsSet)
-            {
-                writer.WritePropertyName("memory_stats");
-                JsonSerializer.Serialize(writer, containerStatsResponse.MemoryStats, jsonSerializerOptions);
-            }
-            if (containerStatsResponse.NetworksOption.IsSet)
-                if (containerStatsResponse.NetworksOption.Value != null)
-                {
-                    writer.WritePropertyName("networks");
-                    JsonSerializer.Serialize(writer, containerStatsResponse.Networks, jsonSerializerOptions);
-                }
-                else
-                    writer.WriteNull("networks");
         }
     }
 }

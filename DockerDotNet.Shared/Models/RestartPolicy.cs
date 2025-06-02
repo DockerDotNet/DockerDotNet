@@ -20,31 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// The behavior to apply when the container exits. The default is not to restart.  An ever increasing delay (double the previous delay, starting at 100ms) is added before each restart to prevent flooding the server. 
     /// </summary>
-    public partial class RestartPolicy : IValidatableObject
+    public partial class RestartPolicy
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RestartPolicy" /> class.
-        /// </summary>
-        /// <param name="name">- Empty string means not to restart - &#x60;no&#x60; Do not automatically restart - &#x60;always&#x60; Always restart - &#x60;unless-stopped&#x60; Restart always except when the user has manually stopped the container - &#x60;on-failure&#x60; Restart only when the container exit code is non-zero </param>
-        /// <param name="maximumRetryCount">If &#x60;on-failure&#x60; is used, the number of times to retry before giving up. </param>
-        [JsonConstructor]
-        public RestartPolicy(Option<NameEnum?> name = default, Option<int?> maximumRetryCount = default)
-        {
-            NameOption = name;
-            MaximumRetryCountOption = maximumRetryCount;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// - Empty string means not to restart - &#x60;no&#x60; Do not automatically restart - &#x60;always&#x60; Always restart - &#x60;unless-stopped&#x60; Restart always except when the user has manually stopped the container - &#x60;on-failure&#x60; Restart only when the container exit code is non-zero 
         /// </summary>
@@ -77,82 +62,84 @@ namespace DockerDotNet.Shared.Models
             OnFailure = 5
         }
 
-        /// <summary>
-        /// Returns a <see cref="NameEnum"/>
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public static NameEnum NameEnumFromString(string value)
+/// <summary>
+/// A Json converter for type <see cref="NameEnum"/>
+/// </summary>
+public class NameEnumJsonConverter : JsonConverter<NameEnum>
+{
+    public override NameEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        string? enumString = reader.GetString();
+        return enumString switch
         {
-            if (value.Equals(""))
-                return NameEnum.Empty;
+            "" => NameEnum.Empty,
+            "no" => NameEnum.No,
+            "always" => NameEnum.Always,
+            "unless-stopped" => NameEnum.UnlessStopped,
+            "on-failure" => NameEnum.OnFailure,
+            _ => throw new JsonException($"Unknown value: {enumString}")
+        };
+    }
 
-            if (value.Equals("no"))
-                return NameEnum.No;
-
-            if (value.Equals("always"))
-                return NameEnum.Always;
-
-            if (value.Equals("unless-stopped"))
-                return NameEnum.UnlessStopped;
-
-            if (value.Equals("on-failure"))
-                return NameEnum.OnFailure;
-
-            throw new NotImplementedException($"Could not convert value to type NameEnum: '{value}'");
-        }
-
-        /// <summary>
-        /// Returns a <see cref="NameEnum"/>
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public static NameEnum? NameEnumFromStringOrDefault(string value)
+    public override void Write(Utf8JsonWriter writer, NameEnum value, JsonSerializerOptions options)
+    {
+        string enumString = value switch
         {
-            if (value.Equals(""))
-                return NameEnum.Empty;
+            NameEnum.Empty => "",
+            NameEnum.No => "no",
+            NameEnum.Always => "always",
+            NameEnum.UnlessStopped => "unless-stopped",
+            NameEnum.OnFailure => "on-failure",
+            _ => throw new JsonException($"Unknown value: {value}")
+        };
+        writer.WriteStringValue(enumString);
+    }
+}
 
-            if (value.Equals("no"))
-                return NameEnum.No;
-
-            if (value.Equals("always"))
-                return NameEnum.Always;
-
-            if (value.Equals("unless-stopped"))
-                return NameEnum.UnlessStopped;
-
-            if (value.Equals("on-failure"))
-                return NameEnum.OnFailure;
-
+/// <summary>
+/// A Json converter for nullable <see cref="NameEnum"/>
+/// </summary>
+public class NameEnumNullableJsonConverter : JsonConverter<NameEnum?>
+{
+    public override NameEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        if (reader.TokenType == JsonTokenType.Null)
             return null;
-        }
 
-        /// <summary>
-        /// Converts the <see cref="NameEnum"/> to the json value
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public static string NameEnumToJsonValue(NameEnum? value)
+        string? enumString = reader.GetString();
+
+        return enumString switch
         {
-            if (value == NameEnum.Empty)
-                return "";
+            "" => NameEnum.Empty,
+            "no" => NameEnum.No,
+            "always" => NameEnum.Always,
+            "unless-stopped" => NameEnum.UnlessStopped,
+            "on-failure" => NameEnum.OnFailure,
+            _ => throw new JsonException($"Unknown value: {enumString}")
+        };
+    }
 
-            if (value == NameEnum.No)
-                return "no";
-
-            if (value == NameEnum.Always)
-                return "always";
-
-            if (value == NameEnum.UnlessStopped)
-                return "unless-stopped";
-
-            if (value == NameEnum.OnFailure)
-                return "on-failure";
-
-            throw new NotImplementedException($"Value could not be handled: '{value}'");
+    public override void Write(Utf8JsonWriter writer, NameEnum? value, JsonSerializerOptions options)
+    {
+        if (value == null)
+        {
+            writer.WriteNullValue();
+            return;
         }
+
+        string enumString = value.Value switch
+        {
+            NameEnum.Empty => "",
+            NameEnum.No => "no",
+            NameEnum.Always => "always",
+            NameEnum.UnlessStopped => "unless-stopped",
+            NameEnum.OnFailure => "on-failure",
+            _ => throw new JsonException($"Unknown value: {value}")
+        };
+
+        writer.WriteStringValue(enumString);
+    }
+}
 
         /// <summary>
         /// Used to track the state of Name
@@ -194,111 +181,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  MaximumRetryCount: ").Append(MaximumRetryCount).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="RestartPolicy" />
-    /// </summary>
-    public class RestartPolicyJsonConverter : JsonConverter<RestartPolicy>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="RestartPolicy" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override RestartPolicy Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<RestartPolicy.NameEnum?> name = default;
-            Option<int?> maximumRetryCount = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "Name":
-                            string? nameRawValue = utf8JsonReader.GetString();
-                            if (nameRawValue != null)
-                                name = new Option<RestartPolicy.NameEnum?>(RestartPolicy.NameEnumFromStringOrDefault(nameRawValue));
-                            break;
-                        case "MaximumRetryCount":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                maximumRetryCount = new Option<int?>(utf8JsonReader.GetInt32());
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (name.IsSet && name.Value == null)
-                throw new ArgumentNullException(nameof(name), "Property is not nullable for class RestartPolicy.");
-
-            if (maximumRetryCount.IsSet && maximumRetryCount.Value == null)
-                throw new ArgumentNullException(nameof(maximumRetryCount), "Property is not nullable for class RestartPolicy.");
-
-            return new RestartPolicy(name, maximumRetryCount);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="RestartPolicy" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="restartPolicy"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, RestartPolicy restartPolicy, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, restartPolicy, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="RestartPolicy" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="restartPolicy"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, RestartPolicy restartPolicy, JsonSerializerOptions jsonSerializerOptions)
-        {
-            var nameRawValue = RestartPolicy.NameEnumToJsonValue(restartPolicy.NameOption.Value!.Value);
-            writer.WriteString("Name", nameRawValue);
-            if (restartPolicy.MaximumRetryCountOption.IsSet)
-                writer.WriteNumber("MaximumRetryCount", restartPolicy.MaximumRetryCountOption.Value!.Value);
         }
     }
 }

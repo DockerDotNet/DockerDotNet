@@ -20,33 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// IPAM
     /// </summary>
-    public partial class IPAM : IValidatableObject
+    public partial class IPAM
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="IPAM" /> class.
-        /// </summary>
-        /// <param name="driver">Name of the IPAM driver to use. (default to &quot;default&quot;)</param>
-        /// <param name="config">List of IPAM configuration options, specified as a map:  &#x60;&#x60;&#x60; {\&quot;Subnet\&quot;: &lt;CIDR&gt;, \&quot;IPRange\&quot;: &lt;CIDR&gt;, \&quot;Gateway\&quot;: &lt;IP address&gt;, \&quot;AuxAddress\&quot;: &lt;device_name:IP address&gt;} &#x60;&#x60;&#x60; </param>
-        /// <param name="options">Driver-specific options, specified as a map.</param>
-        [JsonConstructor]
-        public IPAM(Option<string?> driver = default, Option<List<IPAMConfig>?> config = default, Option<Dictionary<string, string>?> options = default)
-        {
-            DriverOption = driver;
-            ConfigOption = config;
-            OptionsOption = options;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Used to track the state of Driver
         /// </summary>
@@ -104,135 +87,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  Options: ").Append(Options).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="IPAM" />
-    /// </summary>
-    public class IPAMJsonConverter : JsonConverter<IPAM>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="IPAM" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override IPAM Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<string?> driver = default;
-            Option<List<IPAMConfig>?> config = default;
-            Option<Dictionary<string, string>?> options = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "Driver":
-                            driver = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "Config":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                config = new Option<List<IPAMConfig>?>(JsonSerializer.Deserialize<List<IPAMConfig>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "Options":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                options = new Option<Dictionary<string, string>?>(JsonSerializer.Deserialize<Dictionary<string, string>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (driver.IsSet && driver.Value == null)
-                throw new ArgumentNullException(nameof(driver), "Property is not nullable for class IPAM.");
-
-            if (config.IsSet && config.Value == null)
-                throw new ArgumentNullException(nameof(config), "Property is not nullable for class IPAM.");
-
-            if (options.IsSet && options.Value == null)
-                throw new ArgumentNullException(nameof(options), "Property is not nullable for class IPAM.");
-
-            return new IPAM(driver, config, options);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="IPAM" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="iPAM"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, IPAM iPAM, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, iPAM, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="IPAM" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="iPAM"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, IPAM iPAM, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (iPAM.DriverOption.IsSet && iPAM.Driver == null)
-                throw new ArgumentNullException(nameof(iPAM.Driver), "Property is required for class IPAM.");
-
-            if (iPAM.ConfigOption.IsSet && iPAM.Config == null)
-                throw new ArgumentNullException(nameof(iPAM.Config), "Property is required for class IPAM.");
-
-            if (iPAM.OptionsOption.IsSet && iPAM.Options == null)
-                throw new ArgumentNullException(nameof(iPAM.Options), "Property is required for class IPAM.");
-
-            if (iPAM.DriverOption.IsSet)
-                writer.WriteString("Driver", iPAM.Driver);
-
-            if (iPAM.ConfigOption.IsSet)
-            {
-                writer.WritePropertyName("Config");
-                JsonSerializer.Serialize(writer, iPAM.Config, jsonSerializerOptions);
-            }
-            if (iPAM.OptionsOption.IsSet)
-            {
-                writer.WritePropertyName("Options");
-                JsonSerializer.Serialize(writer, iPAM.Options, jsonSerializerOptions);
-            }
         }
     }
 }

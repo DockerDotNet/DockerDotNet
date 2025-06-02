@@ -20,37 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// A request for devices to be sent to device drivers
     /// </summary>
-    public partial class DeviceRequest : IValidatableObject
+    public partial class DeviceRequest
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DeviceRequest" /> class.
-        /// </summary>
-        /// <param name="driver">driver</param>
-        /// <param name="count">count</param>
-        /// <param name="deviceIDs">deviceIDs</param>
-        /// <param name="capabilities">A list of capabilities; an OR list of AND lists of capabilities. </param>
-        /// <param name="options">Driver-specific options, specified as a key/value pairs. These options are passed directly to the driver. </param>
-        [JsonConstructor]
-        public DeviceRequest(Option<string?> driver = default, Option<int?> count = default, Option<List<string>?> deviceIDs = default, Option<List<List<string>>?> capabilities = default, Option<Dictionary<string, string>?> options = default)
-        {
-            DriverOption = driver;
-            CountOption = count;
-            DeviceIDsOption = deviceIDs;
-            CapabilitiesOption = capabilities;
-            OptionsOption = options;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Used to track the state of Driver
         /// </summary>
@@ -137,162 +116,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  Options: ").Append(Options).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="DeviceRequest" />
-    /// </summary>
-    public class DeviceRequestJsonConverter : JsonConverter<DeviceRequest>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="DeviceRequest" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override DeviceRequest Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<string?> driver = default;
-            Option<int?> count = default;
-            Option<List<string>?> deviceIDs = default;
-            Option<List<List<string>>?> capabilities = default;
-            Option<Dictionary<string, string>?> options = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "Driver":
-                            driver = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "Count":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                count = new Option<int?>(utf8JsonReader.GetInt32());
-                            break;
-                        case "DeviceIDs":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                deviceIDs = new Option<List<string>?>(JsonSerializer.Deserialize<List<string>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "Capabilities":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                capabilities = new Option<List<List<string>>?>(JsonSerializer.Deserialize<List<List<string>>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "Options":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                options = new Option<Dictionary<string, string>?>(JsonSerializer.Deserialize<Dictionary<string, string>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (driver.IsSet && driver.Value == null)
-                throw new ArgumentNullException(nameof(driver), "Property is not nullable for class DeviceRequest.");
-
-            if (count.IsSet && count.Value == null)
-                throw new ArgumentNullException(nameof(count), "Property is not nullable for class DeviceRequest.");
-
-            if (deviceIDs.IsSet && deviceIDs.Value == null)
-                throw new ArgumentNullException(nameof(deviceIDs), "Property is not nullable for class DeviceRequest.");
-
-            if (capabilities.IsSet && capabilities.Value == null)
-                throw new ArgumentNullException(nameof(capabilities), "Property is not nullable for class DeviceRequest.");
-
-            if (options.IsSet && options.Value == null)
-                throw new ArgumentNullException(nameof(options), "Property is not nullable for class DeviceRequest.");
-
-            return new DeviceRequest(driver, count, deviceIDs, capabilities, options);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="DeviceRequest" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="deviceRequest"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, DeviceRequest deviceRequest, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, deviceRequest, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="DeviceRequest" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="deviceRequest"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, DeviceRequest deviceRequest, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (deviceRequest.DriverOption.IsSet && deviceRequest.Driver == null)
-                throw new ArgumentNullException(nameof(deviceRequest.Driver), "Property is required for class DeviceRequest.");
-
-            if (deviceRequest.DeviceIDsOption.IsSet && deviceRequest.DeviceIDs == null)
-                throw new ArgumentNullException(nameof(deviceRequest.DeviceIDs), "Property is required for class DeviceRequest.");
-
-            if (deviceRequest.CapabilitiesOption.IsSet && deviceRequest.Capabilities == null)
-                throw new ArgumentNullException(nameof(deviceRequest.Capabilities), "Property is required for class DeviceRequest.");
-
-            if (deviceRequest.OptionsOption.IsSet && deviceRequest.Options == null)
-                throw new ArgumentNullException(nameof(deviceRequest.Options), "Property is required for class DeviceRequest.");
-
-            if (deviceRequest.DriverOption.IsSet)
-                writer.WriteString("Driver", deviceRequest.Driver);
-
-            if (deviceRequest.CountOption.IsSet)
-                writer.WriteNumber("Count", deviceRequest.CountOption.Value!.Value);
-
-            if (deviceRequest.DeviceIDsOption.IsSet)
-            {
-                writer.WritePropertyName("DeviceIDs");
-                JsonSerializer.Serialize(writer, deviceRequest.DeviceIDs, jsonSerializerOptions);
-            }
-            if (deviceRequest.CapabilitiesOption.IsSet)
-            {
-                writer.WritePropertyName("Capabilities");
-                JsonSerializer.Serialize(writer, deviceRequest.Capabilities, jsonSerializerOptions);
-            }
-            if (deviceRequest.OptionsOption.IsSet)
-            {
-                writer.WritePropertyName("Options");
-                JsonSerializer.Serialize(writer, deviceRequest.Options, jsonSerializerOptions);
-            }
         }
     }
 }

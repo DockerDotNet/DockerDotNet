@@ -20,33 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// ClusterVolumePublishStatusInner
     /// </summary>
-    public partial class ClusterVolumePublishStatusInner : IValidatableObject
+    public partial class ClusterVolumePublishStatusInner
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ClusterVolumePublishStatusInner" /> class.
-        /// </summary>
-        /// <param name="nodeID">The ID of the Swarm node the volume is published on. </param>
-        /// <param name="state">The published state of the volume. * &#x60;pending-publish&#x60; The volume should be published to this node, but the call to the controller plugin to do so has not yet been successfully completed. * &#x60;published&#x60; The volume is published successfully to the node. * &#x60;pending-node-unpublish&#x60; The volume should be unpublished from the node, and the manager is awaiting confirmation from the worker that it has done so. * &#x60;pending-controller-unpublish&#x60; The volume is successfully unpublished from the node, but has not yet been successfully unpublished on the controller. </param>
-        /// <param name="publishContext">A map of strings to strings returned by the CSI controller plugin when a volume is published. </param>
-        [JsonConstructor]
-        public ClusterVolumePublishStatusInner(Option<string?> nodeID = default, Option<StateEnum?> state = default, Option<Dictionary<string, string>?> publishContext = default)
-        {
-            NodeIDOption = nodeID;
-            StateOption = state;
-            PublishContextOption = publishContext;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// The published state of the volume. * &#x60;pending-publish&#x60; The volume should be published to this node, but the call to the controller plugin to do so has not yet been successfully completed. * &#x60;published&#x60; The volume is published successfully to the node. * &#x60;pending-node-unpublish&#x60; The volume should be unpublished from the node, and the manager is awaiting confirmation from the worker that it has done so. * &#x60;pending-controller-unpublish&#x60; The volume is successfully unpublished from the node, but has not yet been successfully unpublished on the controller. 
         /// </summary>
@@ -74,73 +57,80 @@ namespace DockerDotNet.Shared.Models
             PendingControllerUnpublish = 4
         }
 
-        /// <summary>
-        /// Returns a <see cref="StateEnum"/>
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public static StateEnum StateEnumFromString(string value)
+/// <summary>
+/// A Json converter for type <see cref="StateEnum"/>
+/// </summary>
+public class StateEnumJsonConverter : JsonConverter<StateEnum>
+{
+    public override StateEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        string? enumString = reader.GetString();
+        return enumString switch
         {
-            if (value.Equals("pending-publish"))
-                return StateEnum.PendingPublish;
+            "pending-publish" => StateEnum.PendingPublish,
+            "published" => StateEnum.Published,
+            "pending-node-unpublish" => StateEnum.PendingNodeUnpublish,
+            "pending-controller-unpublish" => StateEnum.PendingControllerUnpublish,
+            _ => throw new JsonException($"Unknown value: {enumString}")
+        };
+    }
 
-            if (value.Equals("published"))
-                return StateEnum.Published;
-
-            if (value.Equals("pending-node-unpublish"))
-                return StateEnum.PendingNodeUnpublish;
-
-            if (value.Equals("pending-controller-unpublish"))
-                return StateEnum.PendingControllerUnpublish;
-
-            throw new NotImplementedException($"Could not convert value to type StateEnum: '{value}'");
-        }
-
-        /// <summary>
-        /// Returns a <see cref="StateEnum"/>
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public static StateEnum? StateEnumFromStringOrDefault(string value)
+    public override void Write(Utf8JsonWriter writer, StateEnum value, JsonSerializerOptions options)
+    {
+        string enumString = value switch
         {
-            if (value.Equals("pending-publish"))
-                return StateEnum.PendingPublish;
+            StateEnum.PendingPublish => "pending-publish",
+            StateEnum.Published => "published",
+            StateEnum.PendingNodeUnpublish => "pending-node-unpublish",
+            StateEnum.PendingControllerUnpublish => "pending-controller-unpublish",
+            _ => throw new JsonException($"Unknown value: {value}")
+        };
+        writer.WriteStringValue(enumString);
+    }
+}
 
-            if (value.Equals("published"))
-                return StateEnum.Published;
-
-            if (value.Equals("pending-node-unpublish"))
-                return StateEnum.PendingNodeUnpublish;
-
-            if (value.Equals("pending-controller-unpublish"))
-                return StateEnum.PendingControllerUnpublish;
-
+/// <summary>
+/// A Json converter for nullable <see cref="StateEnum"/>
+/// </summary>
+public class StateEnumNullableJsonConverter : JsonConverter<StateEnum?>
+{
+    public override StateEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        if (reader.TokenType == JsonTokenType.Null)
             return null;
-        }
 
-        /// <summary>
-        /// Converts the <see cref="StateEnum"/> to the json value
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public static string StateEnumToJsonValue(StateEnum? value)
+        string? enumString = reader.GetString();
+
+        return enumString switch
         {
-            if (value == StateEnum.PendingPublish)
-                return "pending-publish";
+            "pending-publish" => StateEnum.PendingPublish,
+            "published" => StateEnum.Published,
+            "pending-node-unpublish" => StateEnum.PendingNodeUnpublish,
+            "pending-controller-unpublish" => StateEnum.PendingControllerUnpublish,
+            _ => throw new JsonException($"Unknown value: {enumString}")
+        };
+    }
 
-            if (value == StateEnum.Published)
-                return "published";
-
-            if (value == StateEnum.PendingNodeUnpublish)
-                return "pending-node-unpublish";
-
-            if (value == StateEnum.PendingControllerUnpublish)
-                return "pending-controller-unpublish";
-
-            throw new NotImplementedException($"Value could not be handled: '{value}'");
+    public override void Write(Utf8JsonWriter writer, StateEnum? value, JsonSerializerOptions options)
+    {
+        if (value == null)
+        {
+            writer.WriteNullValue();
+            return;
         }
+
+        string enumString = value.Value switch
+        {
+            StateEnum.PendingPublish => "pending-publish",
+            StateEnum.Published => "published",
+            StateEnum.PendingNodeUnpublish => "pending-node-unpublish",
+            StateEnum.PendingControllerUnpublish => "pending-controller-unpublish",
+            _ => throw new JsonException($"Unknown value: {value}")
+        };
+
+        writer.WriteStringValue(enumString);
+    }
+}
 
         /// <summary>
         /// Used to track the state of State
@@ -197,130 +187,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  PublishContext: ").Append(PublishContext).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="ClusterVolumePublishStatusInner" />
-    /// </summary>
-    public class ClusterVolumePublishStatusInnerJsonConverter : JsonConverter<ClusterVolumePublishStatusInner>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="ClusterVolumePublishStatusInner" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override ClusterVolumePublishStatusInner Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<string?> nodeID = default;
-            Option<ClusterVolumePublishStatusInner.StateEnum?> state = default;
-            Option<Dictionary<string, string>?> publishContext = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "NodeID":
-                            nodeID = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "State":
-                            string? stateRawValue = utf8JsonReader.GetString();
-                            if (stateRawValue != null)
-                                state = new Option<ClusterVolumePublishStatusInner.StateEnum?>(ClusterVolumePublishStatusInner.StateEnumFromStringOrDefault(stateRawValue));
-                            break;
-                        case "PublishContext":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                publishContext = new Option<Dictionary<string, string>?>(JsonSerializer.Deserialize<Dictionary<string, string>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (nodeID.IsSet && nodeID.Value == null)
-                throw new ArgumentNullException(nameof(nodeID), "Property is not nullable for class ClusterVolumePublishStatusInner.");
-
-            if (state.IsSet && state.Value == null)
-                throw new ArgumentNullException(nameof(state), "Property is not nullable for class ClusterVolumePublishStatusInner.");
-
-            if (publishContext.IsSet && publishContext.Value == null)
-                throw new ArgumentNullException(nameof(publishContext), "Property is not nullable for class ClusterVolumePublishStatusInner.");
-
-            return new ClusterVolumePublishStatusInner(nodeID, state, publishContext);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="ClusterVolumePublishStatusInner" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="clusterVolumePublishStatusInner"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, ClusterVolumePublishStatusInner clusterVolumePublishStatusInner, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, clusterVolumePublishStatusInner, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="ClusterVolumePublishStatusInner" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="clusterVolumePublishStatusInner"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, ClusterVolumePublishStatusInner clusterVolumePublishStatusInner, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (clusterVolumePublishStatusInner.NodeIDOption.IsSet && clusterVolumePublishStatusInner.NodeID == null)
-                throw new ArgumentNullException(nameof(clusterVolumePublishStatusInner.NodeID), "Property is required for class ClusterVolumePublishStatusInner.");
-
-            if (clusterVolumePublishStatusInner.PublishContextOption.IsSet && clusterVolumePublishStatusInner.PublishContext == null)
-                throw new ArgumentNullException(nameof(clusterVolumePublishStatusInner.PublishContext), "Property is required for class ClusterVolumePublishStatusInner.");
-
-            if (clusterVolumePublishStatusInner.NodeIDOption.IsSet)
-                writer.WriteString("NodeID", clusterVolumePublishStatusInner.NodeID);
-
-            var stateRawValue = ClusterVolumePublishStatusInner.StateEnumToJsonValue(clusterVolumePublishStatusInner.StateOption.Value!.Value);
-            writer.WriteString("State", stateRawValue);
-            if (clusterVolumePublishStatusInner.PublishContextOption.IsSet)
-            {
-                writer.WritePropertyName("PublishContext");
-                JsonSerializer.Serialize(writer, clusterVolumePublishStatusInner.PublishContext, jsonSerializerOptions);
-            }
         }
     }
 }

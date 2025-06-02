@@ -20,8 +20,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
@@ -61,172 +60,86 @@ namespace DockerDotNet.Shared.Models
         /// </summary>
         Locked = 6
     }
-
-    /// <summary>
-    /// Converts <see cref="LocalNodeState"/> to and from the JSON value
-    /// </summary>
-    public static class LocalNodeStateValueConverter
+/// <summary>
+/// A Json converter for type <see cref="LocalNodeState"/>
+/// </summary>
+public class LocalNodeStateJsonConverter : JsonConverter<LocalNodeState>
+{
+    public override LocalNodeState Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        /// <summary>
-        /// Parses a given value to <see cref="LocalNodeState"/>
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public static LocalNodeState FromString(string value)
+        string? enumString = reader.GetString();
+        return enumString switch
         {
-            if (value.Equals(""))
-                return LocalNodeState.Empty;
+            "" => LocalNodeState.Empty,
+            "inactive" => LocalNodeState.Inactive,
+            "pending" => LocalNodeState.Pending,
+            "active" => LocalNodeState.Active,
+            "error" => LocalNodeState.Error,
+            "locked" => LocalNodeState.Locked,
+            _ => throw new JsonException($"Unknown value: {enumString}")
+        };
+    }
 
-            if (value.Equals("inactive"))
-                return LocalNodeState.Inactive;
-
-            if (value.Equals("pending"))
-                return LocalNodeState.Pending;
-
-            if (value.Equals("active"))
-                return LocalNodeState.Active;
-
-            if (value.Equals("error"))
-                return LocalNodeState.Error;
-
-            if (value.Equals("locked"))
-                return LocalNodeState.Locked;
-
-            throw new NotImplementedException($"Could not convert value to type LocalNodeState: '{value}'");
-        }
-
-        /// <summary>
-        /// Parses a given value to <see cref="LocalNodeState"/>
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public static LocalNodeState? FromStringOrDefault(string value)
+    public override void Write(Utf8JsonWriter writer, LocalNodeState value, JsonSerializerOptions options)
+    {
+        string enumString = value switch
         {
-            if (value.Equals(""))
-                return LocalNodeState.Empty;
+            LocalNodeState.Empty => "",
+            LocalNodeState.Inactive => "inactive",
+            LocalNodeState.Pending => "pending",
+            LocalNodeState.Active => "active",
+            LocalNodeState.Error => "error",
+            LocalNodeState.Locked => "locked",
+            _ => throw new JsonException($"Unknown value: {value}")
+        };
+        writer.WriteStringValue(enumString);
+    }
+}
 
-            if (value.Equals("inactive"))
-                return LocalNodeState.Inactive;
-
-            if (value.Equals("pending"))
-                return LocalNodeState.Pending;
-
-            if (value.Equals("active"))
-                return LocalNodeState.Active;
-
-            if (value.Equals("error"))
-                return LocalNodeState.Error;
-
-            if (value.Equals("locked"))
-                return LocalNodeState.Locked;
-
+/// <summary>
+/// A Json converter for nullable <see cref="LocalNodeState"/>
+/// </summary>
+public class LocalNodeStateNullableJsonConverter : JsonConverter<LocalNodeState?>
+{
+    public override LocalNodeState? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        if (reader.TokenType == JsonTokenType.Null)
             return null;
-        }
 
-        /// <summary>
-        /// Converts the <see cref="LocalNodeState"/> to the json value
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public static string ToJsonValue(LocalNodeState value)
+        string? enumString = reader.GetString();
+
+        return enumString switch
         {
-            if (value == LocalNodeState.Empty)
-                return "";
-
-            if (value == LocalNodeState.Inactive)
-                return "inactive";
-
-            if (value == LocalNodeState.Pending)
-                return "pending";
-
-            if (value == LocalNodeState.Active)
-                return "active";
-
-            if (value == LocalNodeState.Error)
-                return "error";
-
-            if (value == LocalNodeState.Locked)
-                return "locked";
-
-            throw new NotImplementedException($"Value could not be handled: '{value}'");
-        }
+            "" => LocalNodeState.Empty,
+            "inactive" => LocalNodeState.Inactive,
+            "pending" => LocalNodeState.Pending,
+            "active" => LocalNodeState.Active,
+            "error" => LocalNodeState.Error,
+            "locked" => LocalNodeState.Locked,
+            _ => throw new JsonException($"Unknown value: {enumString}")
+        };
     }
 
-    /// <summary>
-    /// A Json converter for type <see cref="LocalNodeState"/>
-    /// </summary>
-    /// <exception cref="NotImplementedException"></exception>
-    public class LocalNodeStateJsonConverter : JsonConverter<LocalNodeState>
+    public override void Write(Utf8JsonWriter writer, LocalNodeState? value, JsonSerializerOptions options)
     {
-        /// <summary>
-        /// Returns a  from the Json object
-        /// </summary>
-        /// <param name="reader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="options"></param>
-        /// <returns></returns>
-        public override LocalNodeState Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        if (value == null)
         {
-            string? rawValue = reader.GetString();
-
-            LocalNodeState? result = rawValue == null
-                ? null
-                : LocalNodeStateValueConverter.FromStringOrDefault(rawValue);
-
-            if (result != null)
-                return result.Value;
-
-            throw new JsonException();
+            writer.WriteNullValue();
+            return;
         }
 
-        /// <summary>
-        /// Writes the LocalNodeState to the json writer
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="localNodeState"></param>
-        /// <param name="options"></param>
-        public override void Write(Utf8JsonWriter writer, LocalNodeState localNodeState, JsonSerializerOptions options)
+        string enumString = value.Value switch
         {
-            writer.WriteStringValue(localNodeState.ToString());
-        }
+            LocalNodeState.Empty => "",
+            LocalNodeState.Inactive => "inactive",
+            LocalNodeState.Pending => "pending",
+            LocalNodeState.Active => "active",
+            LocalNodeState.Error => "error",
+            LocalNodeState.Locked => "locked",
+            _ => throw new JsonException($"Unknown value: {value}")
+        };
+
+        writer.WriteStringValue(enumString);
     }
-
-    /// <summary>
-    /// A Json converter for type <see cref="LocalNodeState"/>
-    /// </summary>
-    public class LocalNodeStateNullableJsonConverter : JsonConverter<LocalNodeState?>
-    {
-        /// <summary>
-        /// Returns a LocalNodeState from the Json object
-        /// </summary>
-        /// <param name="reader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="options"></param>
-        /// <returns></returns>
-        public override LocalNodeState? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        {
-            string? rawValue = reader.GetString();
-
-            LocalNodeState? result = rawValue == null
-                ? null
-                : LocalNodeStateValueConverter.FromStringOrDefault(rawValue);
-
-            if (result != null)
-                return result.Value;
-
-            throw new JsonException();
-        }
-
-        /// <summary>
-        /// Writes the DateTime to the json writer
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="localNodeState"></param>
-        /// <param name="options"></param>
-        public override void Write(Utf8JsonWriter writer, LocalNodeState? localNodeState, JsonSerializerOptions options)
-        {
-            writer.WriteStringValue(localNodeState?.ToString() ?? "null");
-        }
-    }
+}
 }

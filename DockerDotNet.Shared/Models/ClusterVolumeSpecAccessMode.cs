@@ -20,41 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// Defines how the volume is used by tasks. 
     /// </summary>
-    public partial class ClusterVolumeSpecAccessMode : IValidatableObject
+    public partial class ClusterVolumeSpecAccessMode
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ClusterVolumeSpecAccessMode" /> class.
-        /// </summary>
-        /// <param name="scope">The set of nodes this volume can be used on at one time. - &#x60;single&#x60; The volume may only be scheduled to one node at a time. - &#x60;multi&#x60; the volume may be scheduled to any supported number of nodes at a time.  (default to ScopeEnum.Single)</param>
-        /// <param name="sharing">The number and way that different tasks can use this volume at one time. - &#x60;none&#x60; The volume may only be used by one task at a time. - &#x60;readonly&#x60; The volume may be used by any number of tasks, but they all must mount the volume as readonly - &#x60;onewriter&#x60; The volume may be used by any number of tasks, but only one may mount it as read/write. - &#x60;all&#x60; The volume may have any number of readers and writers.  (default to SharingEnum.None)</param>
-        /// <param name="mountVolume">Options for using this volume as a Mount-type volume.      Either MountVolume or BlockVolume, but not both, must be     present.   properties:     FsType:       type: \&quot;string\&quot;       description: |         Specifies the filesystem type for the mount volume.         Optional.     MountFlags:       type: \&quot;array\&quot;       description: |         Flags to pass when mounting the volume. Optional.       items:         type: \&quot;string\&quot; BlockVolume:   type: \&quot;object\&quot;   description: |     Options for using this volume as a Block-type volume.     Intentionally empty. </param>
-        /// <param name="secrets">Swarm Secrets that are passed to the CSI storage plugin when operating on this volume. </param>
-        /// <param name="accessibilityRequirements">accessibilityRequirements</param>
-        /// <param name="capacityRange">capacityRange</param>
-        /// <param name="availability">The availability of the volume for use in tasks. - &#x60;active&#x60; The volume is fully available for scheduling on the cluster - &#x60;pause&#x60; No new workloads should use the volume, but existing workloads are not stopped. - &#x60;drain&#x60; All workloads using this volume should be stopped and rescheduled, and no new ones should be started.  (default to AvailabilityEnum.Active)</param>
-        [JsonConstructor]
-        public ClusterVolumeSpecAccessMode(Option<ScopeEnum?> scope = default, Option<SharingEnum?> sharing = default, Option<Object?> mountVolume = default, Option<List<ClusterVolumeSpecAccessModeSecretsInner>?> secrets = default, Option<ClusterVolumeSpecAccessModeAccessibilityRequirements?> accessibilityRequirements = default, Option<ClusterVolumeSpecAccessModeCapacityRange?> capacityRange = default, Option<AvailabilityEnum?> availability = default)
-        {
-            ScopeOption = scope;
-            SharingOption = sharing;
-            MountVolumeOption = mountVolume;
-            SecretsOption = secrets;
-            AccessibilityRequirementsOption = accessibilityRequirements;
-            CapacityRangeOption = capacityRange;
-            AvailabilityOption = availability;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// The set of nodes this volume can be used on at one time. - &#x60;single&#x60; The volume may only be scheduled to one node at a time. - &#x60;multi&#x60; the volume may be scheduled to any supported number of nodes at a time. 
         /// </summary>
@@ -72,55 +47,72 @@ namespace DockerDotNet.Shared.Models
             Multi = 2
         }
 
-        /// <summary>
-        /// Returns a <see cref="ScopeEnum"/>
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public static ScopeEnum ScopeEnumFromString(string value)
+/// <summary>
+/// A Json converter for type <see cref="ScopeEnum"/>
+/// </summary>
+public class ScopeEnumJsonConverter : JsonConverter<ScopeEnum>
+{
+    public override ScopeEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        string? enumString = reader.GetString();
+        return enumString switch
         {
-            if (value.Equals("single"))
-                return ScopeEnum.Single;
+            "single" => ScopeEnum.Single,
+            "multi" => ScopeEnum.Multi,
+            _ => throw new JsonException($"Unknown value: {enumString}")
+        };
+    }
 
-            if (value.Equals("multi"))
-                return ScopeEnum.Multi;
-
-            throw new NotImplementedException($"Could not convert value to type ScopeEnum: '{value}'");
-        }
-
-        /// <summary>
-        /// Returns a <see cref="ScopeEnum"/>
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public static ScopeEnum? ScopeEnumFromStringOrDefault(string value)
+    public override void Write(Utf8JsonWriter writer, ScopeEnum value, JsonSerializerOptions options)
+    {
+        string enumString = value switch
         {
-            if (value.Equals("single"))
-                return ScopeEnum.Single;
+            ScopeEnum.Single => "single",
+            ScopeEnum.Multi => "multi",
+            _ => throw new JsonException($"Unknown value: {value}")
+        };
+        writer.WriteStringValue(enumString);
+    }
+}
 
-            if (value.Equals("multi"))
-                return ScopeEnum.Multi;
-
+/// <summary>
+/// A Json converter for nullable <see cref="ScopeEnum"/>
+/// </summary>
+public class ScopeEnumNullableJsonConverter : JsonConverter<ScopeEnum?>
+{
+    public override ScopeEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        if (reader.TokenType == JsonTokenType.Null)
             return null;
-        }
 
-        /// <summary>
-        /// Converts the <see cref="ScopeEnum"/> to the json value
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public static string ScopeEnumToJsonValue(ScopeEnum? value)
+        string? enumString = reader.GetString();
+
+        return enumString switch
         {
-            if (value == ScopeEnum.Single)
-                return "single";
+            "single" => ScopeEnum.Single,
+            "multi" => ScopeEnum.Multi,
+            _ => throw new JsonException($"Unknown value: {enumString}")
+        };
+    }
 
-            if (value == ScopeEnum.Multi)
-                return "multi";
-
-            throw new NotImplementedException($"Value could not be handled: '{value}'");
+    public override void Write(Utf8JsonWriter writer, ScopeEnum? value, JsonSerializerOptions options)
+    {
+        if (value == null)
+        {
+            writer.WriteNullValue();
+            return;
         }
+
+        string enumString = value.Value switch
+        {
+            ScopeEnum.Single => "single",
+            ScopeEnum.Multi => "multi",
+            _ => throw new JsonException($"Unknown value: {value}")
+        };
+
+        writer.WriteStringValue(enumString);
+    }
+}
 
         /// <summary>
         /// Used to track the state of Scope
@@ -163,73 +155,80 @@ namespace DockerDotNet.Shared.Models
             All = 4
         }
 
-        /// <summary>
-        /// Returns a <see cref="SharingEnum"/>
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public static SharingEnum SharingEnumFromString(string value)
+/// <summary>
+/// A Json converter for type <see cref="SharingEnum"/>
+/// </summary>
+public class SharingEnumJsonConverter : JsonConverter<SharingEnum>
+{
+    public override SharingEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        string? enumString = reader.GetString();
+        return enumString switch
         {
-            if (value.Equals("none"))
-                return SharingEnum.None;
+            "none" => SharingEnum.None,
+            "readonly" => SharingEnum.Readonly,
+            "onewriter" => SharingEnum.Onewriter,
+            "all" => SharingEnum.All,
+            _ => throw new JsonException($"Unknown value: {enumString}")
+        };
+    }
 
-            if (value.Equals("readonly"))
-                return SharingEnum.Readonly;
-
-            if (value.Equals("onewriter"))
-                return SharingEnum.Onewriter;
-
-            if (value.Equals("all"))
-                return SharingEnum.All;
-
-            throw new NotImplementedException($"Could not convert value to type SharingEnum: '{value}'");
-        }
-
-        /// <summary>
-        /// Returns a <see cref="SharingEnum"/>
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public static SharingEnum? SharingEnumFromStringOrDefault(string value)
+    public override void Write(Utf8JsonWriter writer, SharingEnum value, JsonSerializerOptions options)
+    {
+        string enumString = value switch
         {
-            if (value.Equals("none"))
-                return SharingEnum.None;
+            SharingEnum.None => "none",
+            SharingEnum.Readonly => "readonly",
+            SharingEnum.Onewriter => "onewriter",
+            SharingEnum.All => "all",
+            _ => throw new JsonException($"Unknown value: {value}")
+        };
+        writer.WriteStringValue(enumString);
+    }
+}
 
-            if (value.Equals("readonly"))
-                return SharingEnum.Readonly;
-
-            if (value.Equals("onewriter"))
-                return SharingEnum.Onewriter;
-
-            if (value.Equals("all"))
-                return SharingEnum.All;
-
+/// <summary>
+/// A Json converter for nullable <see cref="SharingEnum"/>
+/// </summary>
+public class SharingEnumNullableJsonConverter : JsonConverter<SharingEnum?>
+{
+    public override SharingEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        if (reader.TokenType == JsonTokenType.Null)
             return null;
-        }
 
-        /// <summary>
-        /// Converts the <see cref="SharingEnum"/> to the json value
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public static string SharingEnumToJsonValue(SharingEnum? value)
+        string? enumString = reader.GetString();
+
+        return enumString switch
         {
-            if (value == SharingEnum.None)
-                return "none";
+            "none" => SharingEnum.None,
+            "readonly" => SharingEnum.Readonly,
+            "onewriter" => SharingEnum.Onewriter,
+            "all" => SharingEnum.All,
+            _ => throw new JsonException($"Unknown value: {enumString}")
+        };
+    }
 
-            if (value == SharingEnum.Readonly)
-                return "readonly";
-
-            if (value == SharingEnum.Onewriter)
-                return "onewriter";
-
-            if (value == SharingEnum.All)
-                return "all";
-
-            throw new NotImplementedException($"Value could not be handled: '{value}'");
+    public override void Write(Utf8JsonWriter writer, SharingEnum? value, JsonSerializerOptions options)
+    {
+        if (value == null)
+        {
+            writer.WriteNullValue();
+            return;
         }
+
+        string enumString = value.Value switch
+        {
+            SharingEnum.None => "none",
+            SharingEnum.Readonly => "readonly",
+            SharingEnum.Onewriter => "onewriter",
+            SharingEnum.All => "all",
+            _ => throw new JsonException($"Unknown value: {value}")
+        };
+
+        writer.WriteStringValue(enumString);
+    }
+}
 
         /// <summary>
         /// Used to track the state of Sharing
@@ -267,64 +266,76 @@ namespace DockerDotNet.Shared.Models
             Drain = 3
         }
 
-        /// <summary>
-        /// Returns a <see cref="AvailabilityEnum"/>
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public static AvailabilityEnum AvailabilityEnumFromString(string value)
+/// <summary>
+/// A Json converter for type <see cref="AvailabilityEnum"/>
+/// </summary>
+public class AvailabilityEnumJsonConverter : JsonConverter<AvailabilityEnum>
+{
+    public override AvailabilityEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        string? enumString = reader.GetString();
+        return enumString switch
         {
-            if (value.Equals("active"))
-                return AvailabilityEnum.Active;
+            "active" => AvailabilityEnum.Active,
+            "pause" => AvailabilityEnum.Pause,
+            "drain" => AvailabilityEnum.Drain,
+            _ => throw new JsonException($"Unknown value: {enumString}")
+        };
+    }
 
-            if (value.Equals("pause"))
-                return AvailabilityEnum.Pause;
-
-            if (value.Equals("drain"))
-                return AvailabilityEnum.Drain;
-
-            throw new NotImplementedException($"Could not convert value to type AvailabilityEnum: '{value}'");
-        }
-
-        /// <summary>
-        /// Returns a <see cref="AvailabilityEnum"/>
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public static AvailabilityEnum? AvailabilityEnumFromStringOrDefault(string value)
+    public override void Write(Utf8JsonWriter writer, AvailabilityEnum value, JsonSerializerOptions options)
+    {
+        string enumString = value switch
         {
-            if (value.Equals("active"))
-                return AvailabilityEnum.Active;
+            AvailabilityEnum.Active => "active",
+            AvailabilityEnum.Pause => "pause",
+            AvailabilityEnum.Drain => "drain",
+            _ => throw new JsonException($"Unknown value: {value}")
+        };
+        writer.WriteStringValue(enumString);
+    }
+}
 
-            if (value.Equals("pause"))
-                return AvailabilityEnum.Pause;
-
-            if (value.Equals("drain"))
-                return AvailabilityEnum.Drain;
-
+/// <summary>
+/// A Json converter for nullable <see cref="AvailabilityEnum"/>
+/// </summary>
+public class AvailabilityEnumNullableJsonConverter : JsonConverter<AvailabilityEnum?>
+{
+    public override AvailabilityEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        if (reader.TokenType == JsonTokenType.Null)
             return null;
-        }
 
-        /// <summary>
-        /// Converts the <see cref="AvailabilityEnum"/> to the json value
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public static string AvailabilityEnumToJsonValue(AvailabilityEnum? value)
+        string? enumString = reader.GetString();
+
+        return enumString switch
         {
-            if (value == AvailabilityEnum.Active)
-                return "active";
+            "active" => AvailabilityEnum.Active,
+            "pause" => AvailabilityEnum.Pause,
+            "drain" => AvailabilityEnum.Drain,
+            _ => throw new JsonException($"Unknown value: {enumString}")
+        };
+    }
 
-            if (value == AvailabilityEnum.Pause)
-                return "pause";
-
-            if (value == AvailabilityEnum.Drain)
-                return "drain";
-
-            throw new NotImplementedException($"Value could not be handled: '{value}'");
+    public override void Write(Utf8JsonWriter writer, AvailabilityEnum? value, JsonSerializerOptions options)
+    {
+        if (value == null)
+        {
+            writer.WriteNullValue();
+            return;
         }
+
+        string enumString = value.Value switch
+        {
+            AvailabilityEnum.Active => "active",
+            AvailabilityEnum.Pause => "pause",
+            AvailabilityEnum.Drain => "drain",
+            _ => throw new JsonException($"Unknown value: {value}")
+        };
+
+        writer.WriteStringValue(enumString);
+    }
+}
 
         /// <summary>
         /// Used to track the state of Availability
@@ -411,187 +422,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  Availability: ").Append(Availability).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="ClusterVolumeSpecAccessMode" />
-    /// </summary>
-    public class ClusterVolumeSpecAccessModeJsonConverter : JsonConverter<ClusterVolumeSpecAccessMode>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="ClusterVolumeSpecAccessMode" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override ClusterVolumeSpecAccessMode Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<ClusterVolumeSpecAccessMode.ScopeEnum?> scope = default;
-            Option<ClusterVolumeSpecAccessMode.SharingEnum?> sharing = default;
-            Option<Object?> mountVolume = default;
-            Option<List<ClusterVolumeSpecAccessModeSecretsInner>?> secrets = default;
-            Option<ClusterVolumeSpecAccessModeAccessibilityRequirements?> accessibilityRequirements = default;
-            Option<ClusterVolumeSpecAccessModeCapacityRange?> capacityRange = default;
-            Option<ClusterVolumeSpecAccessMode.AvailabilityEnum?> availability = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "Scope":
-                            string? scopeRawValue = utf8JsonReader.GetString();
-                            if (scopeRawValue != null)
-                                scope = new Option<ClusterVolumeSpecAccessMode.ScopeEnum?>(ClusterVolumeSpecAccessMode.ScopeEnumFromStringOrDefault(scopeRawValue));
-                            break;
-                        case "Sharing":
-                            string? sharingRawValue = utf8JsonReader.GetString();
-                            if (sharingRawValue != null)
-                                sharing = new Option<ClusterVolumeSpecAccessMode.SharingEnum?>(ClusterVolumeSpecAccessMode.SharingEnumFromStringOrDefault(sharingRawValue));
-                            break;
-                        case "MountVolume":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                mountVolume = new Option<Object?>(JsonSerializer.Deserialize<Object>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "Secrets":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                secrets = new Option<List<ClusterVolumeSpecAccessModeSecretsInner>?>(JsonSerializer.Deserialize<List<ClusterVolumeSpecAccessModeSecretsInner>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "AccessibilityRequirements":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                accessibilityRequirements = new Option<ClusterVolumeSpecAccessModeAccessibilityRequirements?>(JsonSerializer.Deserialize<ClusterVolumeSpecAccessModeAccessibilityRequirements>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "CapacityRange":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                capacityRange = new Option<ClusterVolumeSpecAccessModeCapacityRange?>(JsonSerializer.Deserialize<ClusterVolumeSpecAccessModeCapacityRange>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "Availability":
-                            string? availabilityRawValue = utf8JsonReader.GetString();
-                            if (availabilityRawValue != null)
-                                availability = new Option<ClusterVolumeSpecAccessMode.AvailabilityEnum?>(ClusterVolumeSpecAccessMode.AvailabilityEnumFromStringOrDefault(availabilityRawValue));
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (scope.IsSet && scope.Value == null)
-                throw new ArgumentNullException(nameof(scope), "Property is not nullable for class ClusterVolumeSpecAccessMode.");
-
-            if (sharing.IsSet && sharing.Value == null)
-                throw new ArgumentNullException(nameof(sharing), "Property is not nullable for class ClusterVolumeSpecAccessMode.");
-
-            if (mountVolume.IsSet && mountVolume.Value == null)
-                throw new ArgumentNullException(nameof(mountVolume), "Property is not nullable for class ClusterVolumeSpecAccessMode.");
-
-            if (secrets.IsSet && secrets.Value == null)
-                throw new ArgumentNullException(nameof(secrets), "Property is not nullable for class ClusterVolumeSpecAccessMode.");
-
-            if (accessibilityRequirements.IsSet && accessibilityRequirements.Value == null)
-                throw new ArgumentNullException(nameof(accessibilityRequirements), "Property is not nullable for class ClusterVolumeSpecAccessMode.");
-
-            if (capacityRange.IsSet && capacityRange.Value == null)
-                throw new ArgumentNullException(nameof(capacityRange), "Property is not nullable for class ClusterVolumeSpecAccessMode.");
-
-            if (availability.IsSet && availability.Value == null)
-                throw new ArgumentNullException(nameof(availability), "Property is not nullable for class ClusterVolumeSpecAccessMode.");
-
-            return new ClusterVolumeSpecAccessMode(scope, sharing, mountVolume, secrets, accessibilityRequirements, capacityRange, availability);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="ClusterVolumeSpecAccessMode" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="clusterVolumeSpecAccessMode"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, ClusterVolumeSpecAccessMode clusterVolumeSpecAccessMode, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, clusterVolumeSpecAccessMode, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="ClusterVolumeSpecAccessMode" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="clusterVolumeSpecAccessMode"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, ClusterVolumeSpecAccessMode clusterVolumeSpecAccessMode, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (clusterVolumeSpecAccessMode.MountVolumeOption.IsSet && clusterVolumeSpecAccessMode.MountVolume == null)
-                throw new ArgumentNullException(nameof(clusterVolumeSpecAccessMode.MountVolume), "Property is required for class ClusterVolumeSpecAccessMode.");
-
-            if (clusterVolumeSpecAccessMode.SecretsOption.IsSet && clusterVolumeSpecAccessMode.Secrets == null)
-                throw new ArgumentNullException(nameof(clusterVolumeSpecAccessMode.Secrets), "Property is required for class ClusterVolumeSpecAccessMode.");
-
-            if (clusterVolumeSpecAccessMode.AccessibilityRequirementsOption.IsSet && clusterVolumeSpecAccessMode.AccessibilityRequirements == null)
-                throw new ArgumentNullException(nameof(clusterVolumeSpecAccessMode.AccessibilityRequirements), "Property is required for class ClusterVolumeSpecAccessMode.");
-
-            if (clusterVolumeSpecAccessMode.CapacityRangeOption.IsSet && clusterVolumeSpecAccessMode.CapacityRange == null)
-                throw new ArgumentNullException(nameof(clusterVolumeSpecAccessMode.CapacityRange), "Property is required for class ClusterVolumeSpecAccessMode.");
-
-            var scopeRawValue = ClusterVolumeSpecAccessMode.ScopeEnumToJsonValue(clusterVolumeSpecAccessMode.ScopeOption.Value!.Value);
-            writer.WriteString("Scope", scopeRawValue);
-            var sharingRawValue = ClusterVolumeSpecAccessMode.SharingEnumToJsonValue(clusterVolumeSpecAccessMode.SharingOption.Value!.Value);
-            writer.WriteString("Sharing", sharingRawValue);
-            if (clusterVolumeSpecAccessMode.MountVolumeOption.IsSet)
-            {
-                writer.WritePropertyName("MountVolume");
-                JsonSerializer.Serialize(writer, clusterVolumeSpecAccessMode.MountVolume, jsonSerializerOptions);
-            }
-            if (clusterVolumeSpecAccessMode.SecretsOption.IsSet)
-            {
-                writer.WritePropertyName("Secrets");
-                JsonSerializer.Serialize(writer, clusterVolumeSpecAccessMode.Secrets, jsonSerializerOptions);
-            }
-            if (clusterVolumeSpecAccessMode.AccessibilityRequirementsOption.IsSet)
-            {
-                writer.WritePropertyName("AccessibilityRequirements");
-                JsonSerializer.Serialize(writer, clusterVolumeSpecAccessMode.AccessibilityRequirements, jsonSerializerOptions);
-            }
-            if (clusterVolumeSpecAccessMode.CapacityRangeOption.IsSet)
-            {
-                writer.WritePropertyName("CapacityRange");
-                JsonSerializer.Serialize(writer, clusterVolumeSpecAccessMode.CapacityRange, jsonSerializerOptions);
-            }
-            var availabilityRawValue = ClusterVolumeSpecAccessMode.AvailabilityEnumToJsonValue(clusterVolumeSpecAccessMode.AvailabilityOption.Value!.Value);
-            writer.WriteString("Availability", availabilityRawValue);
         }
     }
 }

@@ -20,35 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// Information about the global status of the volume. 
     /// </summary>
-    public partial class ClusterVolumeInfo : IValidatableObject
+    public partial class ClusterVolumeInfo
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ClusterVolumeInfo" /> class.
-        /// </summary>
-        /// <param name="capacityBytes">The capacity of the volume in bytes. A value of 0 indicates that the capacity is unknown. </param>
-        /// <param name="volumeContext">A map of strings to strings returned from the storage plugin when the volume is created. </param>
-        /// <param name="volumeID">The ID of the volume as returned by the CSI storage plugin. This is distinct from the volume&#39;s ID as provided by Docker. This ID is never used by the user when communicating with Docker to refer to this volume. If the ID is blank, then the Volume has not been successfully created in the plugin yet. </param>
-        /// <param name="accessibleTopology">The topology this volume is actually accessible from. </param>
-        [JsonConstructor]
-        public ClusterVolumeInfo(Option<long?> capacityBytes = default, Option<Dictionary<string, string>?> volumeContext = default, Option<string?> volumeID = default, Option<List<Dictionary<string, string>>?> accessibleTopology = default)
-        {
-            CapacityBytesOption = capacityBytes;
-            VolumeContextOption = volumeContext;
-            VolumeIDOption = volumeID;
-            AccessibleTopologyOption = accessibleTopology;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Used to track the state of CapacityBytes
         /// </summary>
@@ -119,146 +100,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  AccessibleTopology: ").Append(AccessibleTopology).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="ClusterVolumeInfo" />
-    /// </summary>
-    public class ClusterVolumeInfoJsonConverter : JsonConverter<ClusterVolumeInfo>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="ClusterVolumeInfo" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override ClusterVolumeInfo Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<long?> capacityBytes = default;
-            Option<Dictionary<string, string>?> volumeContext = default;
-            Option<string?> volumeID = default;
-            Option<List<Dictionary<string, string>>?> accessibleTopology = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "CapacityBytes":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                capacityBytes = new Option<long?>(utf8JsonReader.GetInt64());
-                            break;
-                        case "VolumeContext":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                volumeContext = new Option<Dictionary<string, string>?>(JsonSerializer.Deserialize<Dictionary<string, string>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "VolumeID":
-                            volumeID = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "AccessibleTopology":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                accessibleTopology = new Option<List<Dictionary<string, string>>?>(JsonSerializer.Deserialize<List<Dictionary<string, string>>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (capacityBytes.IsSet && capacityBytes.Value == null)
-                throw new ArgumentNullException(nameof(capacityBytes), "Property is not nullable for class ClusterVolumeInfo.");
-
-            if (volumeContext.IsSet && volumeContext.Value == null)
-                throw new ArgumentNullException(nameof(volumeContext), "Property is not nullable for class ClusterVolumeInfo.");
-
-            if (volumeID.IsSet && volumeID.Value == null)
-                throw new ArgumentNullException(nameof(volumeID), "Property is not nullable for class ClusterVolumeInfo.");
-
-            if (accessibleTopology.IsSet && accessibleTopology.Value == null)
-                throw new ArgumentNullException(nameof(accessibleTopology), "Property is not nullable for class ClusterVolumeInfo.");
-
-            return new ClusterVolumeInfo(capacityBytes, volumeContext, volumeID, accessibleTopology);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="ClusterVolumeInfo" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="clusterVolumeInfo"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, ClusterVolumeInfo clusterVolumeInfo, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, clusterVolumeInfo, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="ClusterVolumeInfo" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="clusterVolumeInfo"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, ClusterVolumeInfo clusterVolumeInfo, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (clusterVolumeInfo.VolumeContextOption.IsSet && clusterVolumeInfo.VolumeContext == null)
-                throw new ArgumentNullException(nameof(clusterVolumeInfo.VolumeContext), "Property is required for class ClusterVolumeInfo.");
-
-            if (clusterVolumeInfo.VolumeIDOption.IsSet && clusterVolumeInfo.VolumeID == null)
-                throw new ArgumentNullException(nameof(clusterVolumeInfo.VolumeID), "Property is required for class ClusterVolumeInfo.");
-
-            if (clusterVolumeInfo.AccessibleTopologyOption.IsSet && clusterVolumeInfo.AccessibleTopology == null)
-                throw new ArgumentNullException(nameof(clusterVolumeInfo.AccessibleTopology), "Property is required for class ClusterVolumeInfo.");
-
-            if (clusterVolumeInfo.CapacityBytesOption.IsSet)
-                writer.WriteNumber("CapacityBytes", clusterVolumeInfo.CapacityBytesOption.Value!.Value);
-
-            if (clusterVolumeInfo.VolumeContextOption.IsSet)
-            {
-                writer.WritePropertyName("VolumeContext");
-                JsonSerializer.Serialize(writer, clusterVolumeInfo.VolumeContext, jsonSerializerOptions);
-            }
-            if (clusterVolumeInfo.VolumeIDOption.IsSet)
-                writer.WriteString("VolumeID", clusterVolumeInfo.VolumeID);
-
-            if (clusterVolumeInfo.AccessibleTopologyOption.IsSet)
-            {
-                writer.WritePropertyName("AccessibleTopology");
-                JsonSerializer.Serialize(writer, clusterVolumeInfo.AccessibleTopology, jsonSerializerOptions);
-            }
         }
     }
 }

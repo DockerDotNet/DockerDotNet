@@ -20,33 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// Information about the issuer of leaf TLS certificates and the trusted root CA certificate. 
     /// </summary>
-    public partial class TLSInfo : IValidatableObject
+    public partial class TLSInfo
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TLSInfo" /> class.
-        /// </summary>
-        /// <param name="trustRoot">The root CA certificate(s) that are used to validate leaf TLS certificates. </param>
-        /// <param name="certIssuerSubject">The base64-url-safe-encoded raw subject bytes of the issuer.</param>
-        /// <param name="certIssuerPublicKey">The base64-url-safe-encoded raw public key bytes of the issuer. </param>
-        [JsonConstructor]
-        public TLSInfo(Option<string?> trustRoot = default, Option<string?> certIssuerSubject = default, Option<string?> certIssuerPublicKey = default)
-        {
-            TrustRootOption = trustRoot;
-            CertIssuerSubjectOption = certIssuerSubject;
-            CertIssuerPublicKeyOption = certIssuerPublicKey;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Used to track the state of TrustRoot
         /// </summary>
@@ -102,128 +85,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  CertIssuerPublicKey: ").Append(CertIssuerPublicKey).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="TLSInfo" />
-    /// </summary>
-    public class TLSInfoJsonConverter : JsonConverter<TLSInfo>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="TLSInfo" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override TLSInfo Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<string?> trustRoot = default;
-            Option<string?> certIssuerSubject = default;
-            Option<string?> certIssuerPublicKey = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "TrustRoot":
-                            trustRoot = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "CertIssuerSubject":
-                            certIssuerSubject = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "CertIssuerPublicKey":
-                            certIssuerPublicKey = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (trustRoot.IsSet && trustRoot.Value == null)
-                throw new ArgumentNullException(nameof(trustRoot), "Property is not nullable for class TLSInfo.");
-
-            if (certIssuerSubject.IsSet && certIssuerSubject.Value == null)
-                throw new ArgumentNullException(nameof(certIssuerSubject), "Property is not nullable for class TLSInfo.");
-
-            if (certIssuerPublicKey.IsSet && certIssuerPublicKey.Value == null)
-                throw new ArgumentNullException(nameof(certIssuerPublicKey), "Property is not nullable for class TLSInfo.");
-
-            return new TLSInfo(trustRoot, certIssuerSubject, certIssuerPublicKey);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="TLSInfo" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="tLSInfo"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, TLSInfo tLSInfo, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, tLSInfo, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="TLSInfo" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="tLSInfo"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, TLSInfo tLSInfo, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (tLSInfo.TrustRootOption.IsSet && tLSInfo.TrustRoot == null)
-                throw new ArgumentNullException(nameof(tLSInfo.TrustRoot), "Property is required for class TLSInfo.");
-
-            if (tLSInfo.CertIssuerSubjectOption.IsSet && tLSInfo.CertIssuerSubject == null)
-                throw new ArgumentNullException(nameof(tLSInfo.CertIssuerSubject), "Property is required for class TLSInfo.");
-
-            if (tLSInfo.CertIssuerPublicKeyOption.IsSet && tLSInfo.CertIssuerPublicKey == null)
-                throw new ArgumentNullException(nameof(tLSInfo.CertIssuerPublicKey), "Property is required for class TLSInfo.");
-
-            if (tLSInfo.TrustRootOption.IsSet)
-                writer.WriteString("TrustRoot", tLSInfo.TrustRoot);
-
-            if (tLSInfo.CertIssuerSubjectOption.IsSet)
-                writer.WriteString("CertIssuerSubject", tLSInfo.CertIssuerSubject);
-
-            if (tLSInfo.CertIssuerPublicKeyOption.IsSet)
-                writer.WriteString("CertIssuerPublicKey", tLSInfo.CertIssuerPublicKey);
         }
     }
 }

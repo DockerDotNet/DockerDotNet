@@ -20,167 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// Container configuration that depends on the host we are running on
     /// </summary>
-    public partial class HostConfig : IValidatableObject
+    public partial class HostConfig
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="HostConfig" /> class.
-        /// </summary>
-        /// <param name="cpuShares">An integer value representing this container&#39;s relative CPU weight versus other containers. </param>
-        /// <param name="memory">Memory limit in bytes. (default to 0)</param>
-        /// <param name="cgroupParent">Path to &#x60;cgroups&#x60; under which the container&#39;s &#x60;cgroup&#x60; is created. If the path is not absolute, the path is considered to be relative to the &#x60;cgroups&#x60; path of the init process. Cgroups are created if they do not already exist. </param>
-        /// <param name="blkioWeight">Block IO weight (relative weight).</param>
-        /// <param name="blkioWeightDevice">Block IO weight (relative device weight) in the form:  &#x60;&#x60;&#x60; [{\&quot;Path\&quot;: \&quot;device_path\&quot;, \&quot;Weight\&quot;: weight}] &#x60;&#x60;&#x60; </param>
-        /// <param name="blkioDeviceReadBps">Limit read rate (bytes per second) from a device, in the form:  &#x60;&#x60;&#x60; [{\&quot;Path\&quot;: \&quot;device_path\&quot;, \&quot;Rate\&quot;: rate}] &#x60;&#x60;&#x60; </param>
-        /// <param name="blkioDeviceWriteBps">Limit write rate (bytes per second) to a device, in the form:  &#x60;&#x60;&#x60; [{\&quot;Path\&quot;: \&quot;device_path\&quot;, \&quot;Rate\&quot;: rate}] &#x60;&#x60;&#x60; </param>
-        /// <param name="blkioDeviceReadIOps">Limit read rate (IO per second) from a device, in the form:  &#x60;&#x60;&#x60; [{\&quot;Path\&quot;: \&quot;device_path\&quot;, \&quot;Rate\&quot;: rate}] &#x60;&#x60;&#x60; </param>
-        /// <param name="blkioDeviceWriteIOps">Limit write rate (IO per second) to a device, in the form:  &#x60;&#x60;&#x60; [{\&quot;Path\&quot;: \&quot;device_path\&quot;, \&quot;Rate\&quot;: rate}] &#x60;&#x60;&#x60; </param>
-        /// <param name="cpuPeriod">The length of a CPU period in microseconds.</param>
-        /// <param name="cpuQuota">Microseconds of CPU time that the container can get in a CPU period. </param>
-        /// <param name="cpuRealtimePeriod">The length of a CPU real-time period in microseconds. Set to 0 to allocate no time allocated to real-time tasks. </param>
-        /// <param name="cpuRealtimeRuntime">The length of a CPU real-time runtime in microseconds. Set to 0 to allocate no time allocated to real-time tasks. </param>
-        /// <param name="cpusetCpus">CPUs in which to allow execution (e.g., &#x60;0-3&#x60;, &#x60;0,1&#x60;). </param>
-        /// <param name="cpusetMems">Memory nodes (MEMs) in which to allow execution (0-3, 0,1). Only effective on NUMA systems. </param>
-        /// <param name="devices">A list of devices to add to the container.</param>
-        /// <param name="deviceCgroupRules">a list of cgroup rules to apply to the container</param>
-        /// <param name="deviceRequests">A list of requests for devices to be sent to device drivers. </param>
-        /// <param name="kernelMemoryTCP">Hard limit for kernel TCP buffer memory (in bytes). Depending on the OCI runtime in use, this option may be ignored. It is no longer supported by the default (runc) runtime.  This field is omitted when empty. </param>
-        /// <param name="memoryReservation">Memory soft limit in bytes.</param>
-        /// <param name="memorySwap">Total memory limit (memory + swap). Set as &#x60;-1&#x60; to enable unlimited swap. </param>
-        /// <param name="memorySwappiness">Tune a container&#39;s memory swappiness behavior. Accepts an integer between 0 and 100. </param>
-        /// <param name="nanoCpus">CPU quota in units of 10&lt;sup&gt;-9&lt;/sup&gt; CPUs.</param>
-        /// <param name="oomKillDisable">Disable OOM Killer for the container.</param>
-        /// <param name="init">Run an init inside the container that forwards signals and reaps processes. This field is omitted if empty, and the default (as configured on the daemon) is used. </param>
-        /// <param name="pidsLimit">Tune a container&#39;s PIDs limit. Set &#x60;0&#x60; or &#x60;-1&#x60; for unlimited, or &#x60;null&#x60; to not change. </param>
-        /// <param name="ulimits">A list of resource limits to set in the container. For example:  &#x60;&#x60;&#x60; {\&quot;Name\&quot;: \&quot;nofile\&quot;, \&quot;Soft\&quot;: 1024, \&quot;Hard\&quot;: 2048} &#x60;&#x60;&#x60; </param>
-        /// <param name="cpuCount">The number of usable CPUs (Windows only).  On Windows Server containers, the processor resource controls are mutually exclusive. The order of precedence is &#x60;CPUCount&#x60; first, then &#x60;CPUShares&#x60;, and &#x60;CPUPercent&#x60; last. </param>
-        /// <param name="cpuPercent">The usable percentage of the available CPUs (Windows only).  On Windows Server containers, the processor resource controls are mutually exclusive. The order of precedence is &#x60;CPUCount&#x60; first, then &#x60;CPUShares&#x60;, and &#x60;CPUPercent&#x60; last. </param>
-        /// <param name="iOMaximumIOps">Maximum IOps for the container system drive (Windows only)</param>
-        /// <param name="iOMaximumBandwidth">Maximum IO in bytes per second for the container system drive (Windows only). </param>
-        /// <param name="binds">A list of volume bindings for this container. Each volume binding is a string in one of these forms:  - &#x60;host-src:container-dest[:options]&#x60; to bind-mount a host path   into the container. Both &#x60;host-src&#x60;, and &#x60;container-dest&#x60; must   be an _absolute_ path. - &#x60;volume-name:container-dest[:options]&#x60; to bind-mount a volume   managed by a volume driver into the container. &#x60;container-dest&#x60;   must be an _absolute_ path.  &#x60;options&#x60; is an optional, comma-delimited list of:  - &#x60;nocopy&#x60; disables automatic copying of data from the container   path to the volume. The &#x60;nocopy&#x60; flag only applies to named volumes. - &#x60;[ro|rw]&#x60; mounts a volume read-only or read-write, respectively.   If omitted or set to &#x60;rw&#x60;, volumes are mounted read-write. - &#x60;[z|Z]&#x60; applies SELinux labels to allow or deny multiple containers   to read and write to the same volume.     - &#x60;z&#x60;: a _shared_ content label is applied to the content. This       label indicates that multiple containers can share the volume       content, for both reading and writing.     - &#x60;Z&#x60;: a _private unshared_ label is applied to the content.       This label indicates that only the current container can use       a private volume. Labeling systems such as SELinux require       proper labels to be placed on volume content that is mounted       into a container. Without a label, the security system can       prevent a container&#39;s processes from using the content. By       default, the labels set by the host operating system are not       modified. - &#x60;[[r]shared|[r]slave|[r]private]&#x60; specifies mount   [propagation behavior](https://www.kernel.org/doc/Documentation/filesystems/sharedsubtree.txt).   This only applies to bind-mounted volumes, not internal volumes   or named volumes. Mount propagation requires the source mount   point (the location where the source directory is mounted in the   host operating system) to have the correct propagation properties.   For shared volumes, the source mount point must be set to &#x60;shared&#x60;.   For slave volumes, the mount must be set to either &#x60;shared&#x60; or   &#x60;slave&#x60;. </param>
-        /// <param name="containerIDFile">Path to a file where the container ID is written</param>
-        /// <param name="logConfig">logConfig</param>
-        /// <param name="networkMode">Network mode to use for this container. Supported standard values are: &#x60;bridge&#x60;, &#x60;host&#x60;, &#x60;none&#x60;, and &#x60;container:&lt;name|id&gt;&#x60;. Any other value is taken as a custom network&#39;s name to which this container should connect to. </param>
-        /// <param name="portBindings">PortMap describes the mapping of container ports to host ports, using the container&#39;s port-number and protocol as key in the format &#x60;&lt;port&gt;/&lt;protocol&gt;&#x60;, for example, &#x60;80/udp&#x60;.  If a container&#39;s port is mapped for multiple protocols, separate entries are added to the mapping table. </param>
-        /// <param name="restartPolicy">restartPolicy</param>
-        /// <param name="autoRemove">Automatically remove the container when the container&#39;s process exits. This has no effect if &#x60;RestartPolicy&#x60; is set. </param>
-        /// <param name="volumeDriver">Driver that this container uses to mount volumes.</param>
-        /// <param name="volumesFrom">A list of volumes to inherit from another container, specified in the form &#x60;&lt;container name&gt;[:&lt;ro|rw&gt;]&#x60;. </param>
-        /// <param name="mounts">Specification for mounts to be added to the container. </param>
-        /// <param name="consoleSize">Initial console size, as an &#x60;[height, width]&#x60; array. </param>
-        /// <param name="annotations">Arbitrary non-identifying metadata attached to container and provided to the runtime when the container is started. </param>
-        /// <param name="capAdd">A list of kernel capabilities to add to the container. Conflicts with option &#39;Capabilities&#39;. </param>
-        /// <param name="capDrop">A list of kernel capabilities to drop from the container. Conflicts with option &#39;Capabilities&#39;. </param>
-        /// <param name="cgroupnsMode">cgroup namespace mode for the container. Possible values are:  - &#x60;\&quot;private\&quot;&#x60;: the container runs in its own private cgroup namespace - &#x60;\&quot;host\&quot;&#x60;: use the host system&#39;s cgroup namespace  If not specified, the daemon default is used, which can either be &#x60;\&quot;private\&quot;&#x60; or &#x60;\&quot;host\&quot;&#x60;, depending on daemon version, kernel support and configuration. </param>
-        /// <param name="dns">A list of DNS servers for the container to use.</param>
-        /// <param name="dnsOptions">A list of DNS options.</param>
-        /// <param name="dnsSearch">A list of DNS search domains.</param>
-        /// <param name="extraHosts">A list of hostnames/IP mappings to add to the container&#39;s &#x60;/etc/hosts&#x60; file. Specified in the form &#x60;[\&quot;hostname:IP\&quot;]&#x60;. </param>
-        /// <param name="groupAdd">A list of additional groups that the container process will run as. </param>
-        /// <param name="ipcMode">IPC sharing mode for the container. Possible values are:  - &#x60;\&quot;none\&quot;&#x60;: own private IPC namespace, with /dev/shm not mounted - &#x60;\&quot;private\&quot;&#x60;: own private IPC namespace - &#x60;\&quot;shareable\&quot;&#x60;: own private IPC namespace, with a possibility to share it with other containers - &#x60;\&quot;container:&lt;name|id&gt;\&quot;&#x60;: join another (shareable) container&#39;s IPC namespace - &#x60;\&quot;host\&quot;&#x60;: use the host system&#39;s IPC namespace  If not specified, daemon default is used, which can either be &#x60;\&quot;private\&quot;&#x60; or &#x60;\&quot;shareable\&quot;&#x60;, depending on daemon version and configuration. </param>
-        /// <param name="cgroup">Cgroup to use for the container.</param>
-        /// <param name="links">A list of links for the container in the form &#x60;container_name:alias&#x60;. </param>
-        /// <param name="oomScoreAdj">An integer value containing the score given to the container in order to tune OOM killer preferences. </param>
-        /// <param name="pidMode">Set the PID (Process) Namespace mode for the container. It can be either:  - &#x60;\&quot;container:&lt;name|id&gt;\&quot;&#x60;: joins another container&#39;s PID namespace - &#x60;\&quot;host\&quot;&#x60;: use the host&#39;s PID namespace inside the container </param>
-        /// <param name="privileged">Gives the container full access to the host.</param>
-        /// <param name="publishAllPorts">Allocates an ephemeral host port for all of a container&#39;s exposed ports.  Ports are de-allocated when the container stops and allocated when the container starts. The allocated port might be changed when restarting the container.  The port is selected from the ephemeral port range that depends on the kernel. For example, on Linux the range is defined by &#x60;/proc/sys/net/ipv4/ip_local_port_range&#x60;. </param>
-        /// <param name="readonlyRootfs">Mount the container&#39;s root filesystem as read only.</param>
-        /// <param name="securityOpt">A list of string values to customize labels for MLS systems, such as SELinux. </param>
-        /// <param name="storageOpt">Storage driver options for this container, in the form &#x60;{\&quot;size\&quot;: \&quot;120G\&quot;}&#x60;. </param>
-        /// <param name="tmpfs">A map of container directories which should be replaced by tmpfs mounts, and their corresponding mount options. For example:  &#x60;&#x60;&#x60; { \&quot;/run\&quot;: \&quot;rw,noexec,nosuid,size&#x3D;65536k\&quot; } &#x60;&#x60;&#x60; </param>
-        /// <param name="uTSMode">UTS namespace to use for the container.</param>
-        /// <param name="usernsMode">Sets the usernamespace mode for the container when usernamespace remapping option is enabled. </param>
-        /// <param name="shmSize">Size of &#x60;/dev/shm&#x60; in bytes. If omitted, the system uses 64MB. </param>
-        /// <param name="sysctls">A list of kernel parameters (sysctls) to set in the container.  This field is omitted if not set.</param>
-        /// <param name="runtime">Runtime to use with this container.</param>
-        /// <param name="isolation">Isolation technology of the container. (Windows only) </param>
-        /// <param name="maskedPaths">The list of paths to be masked inside the container (this overrides the default set of paths). </param>
-        /// <param name="readonlyPaths">The list of paths to be set as read-only inside the container (this overrides the default set of paths). </param>
-        [JsonConstructor]
-        public HostConfig(Option<int?> cpuShares = default, Option<long?> memory = default, Option<string?> cgroupParent = default, Option<int?> blkioWeight = default, Option<List<ResourcesBlkioWeightDeviceInner>?> blkioWeightDevice = default, Option<List<ThrottleDevice>?> blkioDeviceReadBps = default, Option<List<ThrottleDevice>?> blkioDeviceWriteBps = default, Option<List<ThrottleDevice>?> blkioDeviceReadIOps = default, Option<List<ThrottleDevice>?> blkioDeviceWriteIOps = default, Option<long?> cpuPeriod = default, Option<long?> cpuQuota = default, Option<long?> cpuRealtimePeriod = default, Option<long?> cpuRealtimeRuntime = default, Option<string?> cpusetCpus = default, Option<string?> cpusetMems = default, Option<List<DeviceMapping>?> devices = default, Option<List<string>?> deviceCgroupRules = default, Option<List<DeviceRequest>?> deviceRequests = default, Option<long?> kernelMemoryTCP = default, Option<long?> memoryReservation = default, Option<long?> memorySwap = default, Option<long?> memorySwappiness = default, Option<long?> nanoCpus = default, Option<bool?> oomKillDisable = default, Option<bool?> init = default, Option<long?> pidsLimit = default, Option<List<ResourcesUlimitsInner>?> ulimits = default, Option<long?> cpuCount = default, Option<long?> cpuPercent = default, Option<long?> iOMaximumIOps = default, Option<long?> iOMaximumBandwidth = default, Option<List<string>?> binds = default, Option<string?> containerIDFile = default, Option<HostConfigAllOfLogConfig?> logConfig = default, Option<string?> networkMode = default, Option<Dictionary<string, List<PortBinding>>?> portBindings = default, Option<RestartPolicy?> restartPolicy = default, Option<bool?> autoRemove = default, Option<string?> volumeDriver = default, Option<List<string>?> volumesFrom = default, Option<List<Mount>?> mounts = default, Option<List<int>?> consoleSize = default, Option<Dictionary<string, string>?> annotations = default, Option<List<string>?> capAdd = default, Option<List<string>?> capDrop = default, Option<CgroupnsModeEnum?> cgroupnsMode = default, Option<List<string>?> dns = default, Option<List<string>?> dnsOptions = default, Option<List<string>?> dnsSearch = default, Option<List<string>?> extraHosts = default, Option<List<string>?> groupAdd = default, Option<string?> ipcMode = default, Option<string?> cgroup = default, Option<List<string>?> links = default, Option<int?> oomScoreAdj = default, Option<string?> pidMode = default, Option<bool?> privileged = default, Option<bool?> publishAllPorts = default, Option<bool?> readonlyRootfs = default, Option<List<string>?> securityOpt = default, Option<Dictionary<string, string>?> storageOpt = default, Option<Dictionary<string, string>?> tmpfs = default, Option<string?> uTSMode = default, Option<string?> usernsMode = default, Option<long?> shmSize = default, Option<Dictionary<string, string>?> sysctls = default, Option<string?> runtime = default, Option<HostConfigIsolationEnum?> isolation = default, Option<List<string>?> maskedPaths = default, Option<List<string>?> readonlyPaths = default)
-        {
-            CpuSharesOption = cpuShares;
-            MemoryOption = memory;
-            CgroupParentOption = cgroupParent;
-            BlkioWeightOption = blkioWeight;
-            BlkioWeightDeviceOption = blkioWeightDevice;
-            BlkioDeviceReadBpsOption = blkioDeviceReadBps;
-            BlkioDeviceWriteBpsOption = blkioDeviceWriteBps;
-            BlkioDeviceReadIOpsOption = blkioDeviceReadIOps;
-            BlkioDeviceWriteIOpsOption = blkioDeviceWriteIOps;
-            CpuPeriodOption = cpuPeriod;
-            CpuQuotaOption = cpuQuota;
-            CpuRealtimePeriodOption = cpuRealtimePeriod;
-            CpuRealtimeRuntimeOption = cpuRealtimeRuntime;
-            CpusetCpusOption = cpusetCpus;
-            CpusetMemsOption = cpusetMems;
-            DevicesOption = devices;
-            DeviceCgroupRulesOption = deviceCgroupRules;
-            DeviceRequestsOption = deviceRequests;
-            KernelMemoryTCPOption = kernelMemoryTCP;
-            MemoryReservationOption = memoryReservation;
-            MemorySwapOption = memorySwap;
-            MemorySwappinessOption = memorySwappiness;
-            NanoCpusOption = nanoCpus;
-            OomKillDisableOption = oomKillDisable;
-            InitOption = init;
-            PidsLimitOption = pidsLimit;
-            UlimitsOption = ulimits;
-            CpuCountOption = cpuCount;
-            CpuPercentOption = cpuPercent;
-            IOMaximumIOpsOption = iOMaximumIOps;
-            IOMaximumBandwidthOption = iOMaximumBandwidth;
-            BindsOption = binds;
-            ContainerIDFileOption = containerIDFile;
-            LogConfigOption = logConfig;
-            NetworkModeOption = networkMode;
-            PortBindingsOption = portBindings;
-            RestartPolicyOption = restartPolicy;
-            AutoRemoveOption = autoRemove;
-            VolumeDriverOption = volumeDriver;
-            VolumesFromOption = volumesFrom;
-            MountsOption = mounts;
-            ConsoleSizeOption = consoleSize;
-            AnnotationsOption = annotations;
-            CapAddOption = capAdd;
-            CapDropOption = capDrop;
-            CgroupnsModeOption = cgroupnsMode;
-            DnsOption = dns;
-            DnsOptionsOption = dnsOptions;
-            DnsSearchOption = dnsSearch;
-            ExtraHostsOption = extraHosts;
-            GroupAddOption = groupAdd;
-            IpcModeOption = ipcMode;
-            CgroupOption = cgroup;
-            LinksOption = links;
-            OomScoreAdjOption = oomScoreAdj;
-            PidModeOption = pidMode;
-            PrivilegedOption = privileged;
-            PublishAllPortsOption = publishAllPorts;
-            ReadonlyRootfsOption = readonlyRootfs;
-            SecurityOptOption = securityOpt;
-            StorageOptOption = storageOpt;
-            TmpfsOption = tmpfs;
-            UTSModeOption = uTSMode;
-            UsernsModeOption = usernsMode;
-            ShmSizeOption = shmSize;
-            SysctlsOption = sysctls;
-            RuntimeOption = runtime;
-            IsolationOption = isolation;
-            MaskedPathsOption = maskedPaths;
-            ReadonlyPathsOption = readonlyPaths;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// cgroup namespace mode for the container. Possible values are:  - &#x60;\&quot;private\&quot;&#x60;: the container runs in its own private cgroup namespace - &#x60;\&quot;host\&quot;&#x60;: use the host system&#39;s cgroup namespace  If not specified, the daemon default is used, which can either be &#x60;\&quot;private\&quot;&#x60; or &#x60;\&quot;host\&quot;&#x60;, depending on daemon version, kernel support and configuration. 
         /// </summary>
@@ -198,55 +47,72 @@ namespace DockerDotNet.Shared.Models
             Host = 2
         }
 
-        /// <summary>
-        /// Returns a <see cref="CgroupnsModeEnum"/>
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public static CgroupnsModeEnum CgroupnsModeEnumFromString(string value)
+/// <summary>
+/// A Json converter for type <see cref="CgroupnsModeEnum"/>
+/// </summary>
+public class CgroupnsModeEnumJsonConverter : JsonConverter<CgroupnsModeEnum>
+{
+    public override CgroupnsModeEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        string? enumString = reader.GetString();
+        return enumString switch
         {
-            if (value.Equals("private"))
-                return CgroupnsModeEnum.Private;
+            "private" => CgroupnsModeEnum.Private,
+            "host" => CgroupnsModeEnum.Host,
+            _ => throw new JsonException($"Unknown value: {enumString}")
+        };
+    }
 
-            if (value.Equals("host"))
-                return CgroupnsModeEnum.Host;
-
-            throw new NotImplementedException($"Could not convert value to type CgroupnsModeEnum: '{value}'");
-        }
-
-        /// <summary>
-        /// Returns a <see cref="CgroupnsModeEnum"/>
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public static CgroupnsModeEnum? CgroupnsModeEnumFromStringOrDefault(string value)
+    public override void Write(Utf8JsonWriter writer, CgroupnsModeEnum value, JsonSerializerOptions options)
+    {
+        string enumString = value switch
         {
-            if (value.Equals("private"))
-                return CgroupnsModeEnum.Private;
+            CgroupnsModeEnum.Private => "private",
+            CgroupnsModeEnum.Host => "host",
+            _ => throw new JsonException($"Unknown value: {value}")
+        };
+        writer.WriteStringValue(enumString);
+    }
+}
 
-            if (value.Equals("host"))
-                return CgroupnsModeEnum.Host;
-
+/// <summary>
+/// A Json converter for nullable <see cref="CgroupnsModeEnum"/>
+/// </summary>
+public class CgroupnsModeEnumNullableJsonConverter : JsonConverter<CgroupnsModeEnum?>
+{
+    public override CgroupnsModeEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        if (reader.TokenType == JsonTokenType.Null)
             return null;
-        }
 
-        /// <summary>
-        /// Converts the <see cref="CgroupnsModeEnum"/> to the json value
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public static string CgroupnsModeEnumToJsonValue(CgroupnsModeEnum? value)
+        string? enumString = reader.GetString();
+
+        return enumString switch
         {
-            if (value == CgroupnsModeEnum.Private)
-                return "private";
+            "private" => CgroupnsModeEnum.Private,
+            "host" => CgroupnsModeEnum.Host,
+            _ => throw new JsonException($"Unknown value: {enumString}")
+        };
+    }
 
-            if (value == CgroupnsModeEnum.Host)
-                return "host";
-
-            throw new NotImplementedException($"Value could not be handled: '{value}'");
+    public override void Write(Utf8JsonWriter writer, CgroupnsModeEnum? value, JsonSerializerOptions options)
+    {
+        if (value == null)
+        {
+            writer.WriteNullValue();
+            return;
         }
+
+        string enumString = value.Value switch
+        {
+            CgroupnsModeEnum.Private => "private",
+            CgroupnsModeEnum.Host => "host",
+            _ => throw new JsonException($"Unknown value: {value}")
+        };
+
+        writer.WriteStringValue(enumString);
+    }
+}
 
         /// <summary>
         /// Used to track the state of CgroupnsMode
@@ -266,7 +132,7 @@ namespace DockerDotNet.Shared.Models
         /// Isolation technology of the container. (Windows only) 
         /// </summary>
         /// <value>Isolation technology of the container. (Windows only) </value>
-        public enum HostConfigIsolationEnum
+        public enum IsolationEnum
         {
             /// <summary>
             /// Enum Default for value: default
@@ -289,87 +155,94 @@ namespace DockerDotNet.Shared.Models
             Empty = 4
         }
 
-        /// <summary>
-        /// Returns a <see cref="HostConfigIsolationEnum"/>
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public static HostConfigIsolationEnum IsolationEnumFromString(string value)
+/// <summary>
+/// A Json converter for type <see cref="IsolationEnum"/>
+/// </summary>
+public class IsolationEnumJsonConverter : JsonConverter<IsolationEnum>
+{
+    public override IsolationEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        string? enumString = reader.GetString();
+        return enumString switch
         {
-            if (value.Equals("default"))
-                return HostConfigIsolationEnum.Default;
+            "default" => IsolationEnum.Default,
+            "process" => IsolationEnum.Process,
+            "hyperv" => IsolationEnum.Hyperv,
+            "" => IsolationEnum.Empty,
+            _ => throw new JsonException($"Unknown value: {enumString}")
+        };
+    }
 
-            if (value.Equals("process"))
-                return HostConfigIsolationEnum.Process;
-
-            if (value.Equals("hyperv"))
-                return HostConfigIsolationEnum.Hyperv;
-
-            if (value.Equals(""))
-                return HostConfigIsolationEnum.Empty;
-
-            throw new NotImplementedException($"Could not convert value to type IsolationEnum: '{value}'");
-        }
-
-        /// <summary>
-        /// Returns a <see cref="HostConfigIsolationEnum"/>
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public static HostConfigIsolationEnum? IsolationEnumFromStringOrDefault(string value)
+    public override void Write(Utf8JsonWriter writer, IsolationEnum value, JsonSerializerOptions options)
+    {
+        string enumString = value switch
         {
-            if (value.Equals("default"))
-                return HostConfigIsolationEnum.Default;
+            IsolationEnum.Default => "default",
+            IsolationEnum.Process => "process",
+            IsolationEnum.Hyperv => "hyperv",
+            IsolationEnum.Empty => "",
+            _ => throw new JsonException($"Unknown value: {value}")
+        };
+        writer.WriteStringValue(enumString);
+    }
+}
 
-            if (value.Equals("process"))
-                return HostConfigIsolationEnum.Process;
-
-            if (value.Equals("hyperv"))
-                return HostConfigIsolationEnum.Hyperv;
-
-            if (value.Equals(""))
-                return HostConfigIsolationEnum.Empty;
-
+/// <summary>
+/// A Json converter for nullable <see cref="IsolationEnum"/>
+/// </summary>
+public class IsolationEnumNullableJsonConverter : JsonConverter<IsolationEnum?>
+{
+    public override IsolationEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        if (reader.TokenType == JsonTokenType.Null)
             return null;
-        }
 
-        /// <summary>
-        /// Converts the <see cref="HostConfigIsolationEnum"/> to the json value
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public static string IsolationEnumToJsonValue(HostConfigIsolationEnum? value)
+        string? enumString = reader.GetString();
+
+        return enumString switch
         {
-            if (value == HostConfigIsolationEnum.Default)
-                return "default";
+            "default" => IsolationEnum.Default,
+            "process" => IsolationEnum.Process,
+            "hyperv" => IsolationEnum.Hyperv,
+            "" => IsolationEnum.Empty,
+            _ => throw new JsonException($"Unknown value: {enumString}")
+        };
+    }
 
-            if (value == HostConfigIsolationEnum.Process)
-                return "process";
-
-            if (value == HostConfigIsolationEnum.Hyperv)
-                return "hyperv";
-
-            if (value == HostConfigIsolationEnum.Empty)
-                return "";
-
-            throw new NotImplementedException($"Value could not be handled: '{value}'");
+    public override void Write(Utf8JsonWriter writer, IsolationEnum? value, JsonSerializerOptions options)
+    {
+        if (value == null)
+        {
+            writer.WriteNullValue();
+            return;
         }
+
+        string enumString = value.Value switch
+        {
+            IsolationEnum.Default => "default",
+            IsolationEnum.Process => "process",
+            IsolationEnum.Hyperv => "hyperv",
+            IsolationEnum.Empty => "",
+            _ => throw new JsonException($"Unknown value: {value}")
+        };
+
+        writer.WriteStringValue(enumString);
+    }
+}
 
         /// <summary>
         /// Used to track the state of Isolation
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<HostConfigIsolationEnum?> IsolationOption { get; private set; }
+        public Option<IsolationEnum?> IsolationOption { get; private set; }
 
         /// <summary>
         /// Isolation technology of the container. (Windows only) 
         /// </summary>
         /// <value>Isolation technology of the container. (Windows only) </value>
         [JsonPropertyName("Isolation")]
-        public HostConfigIsolationEnum? Isolation { get { return this.IsolationOption; } set { this.IsolationOption = new(value); } }
+        public IsolationEnum? Isolation { get { return this.IsolationOption; } set { this.IsolationOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of CpuShares
@@ -1408,1060 +1281,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  ReadonlyPaths: ").Append(ReadonlyPaths).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            // BlkioWeight (int) maximum
-            if (this.BlkioWeightOption.IsSet && this.BlkioWeightOption.Value > (int)1000)
-            {
-                yield return new ValidationResult("Invalid value for BlkioWeight, must be a value less than or equal to 1000.", new [] { "BlkioWeight" });
-            }
-
-            // BlkioWeight (int) minimum
-            if (this.BlkioWeightOption.IsSet && this.BlkioWeightOption.Value < (int)0)
-            {
-                yield return new ValidationResult("Invalid value for BlkioWeight, must be a value greater than or equal to 0.", new [] { "BlkioWeight" });
-            }
-
-            // MemorySwappiness (long) maximum
-            if (this.MemorySwappinessOption.IsSet && this.MemorySwappinessOption.Value > (long)100)
-            {
-                yield return new ValidationResult("Invalid value for MemorySwappiness, must be a value less than or equal to 100.", new [] { "MemorySwappiness" });
-            }
-
-            // MemorySwappiness (long) minimum
-            if (this.MemorySwappinessOption.IsSet && this.MemorySwappinessOption.Value < (long)0)
-            {
-                yield return new ValidationResult("Invalid value for MemorySwappiness, must be a value greater than or equal to 0.", new [] { "MemorySwappiness" });
-            }
-
-            // ShmSize (long) minimum
-            if (this.ShmSizeOption.IsSet && this.ShmSizeOption.Value < (long)0)
-            {
-                yield return new ValidationResult("Invalid value for ShmSize, must be a value greater than or equal to 0.", new [] { "ShmSize" });
-            }
-
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="HostConfig" />
-    /// </summary>
-    public class HostConfigJsonConverter : JsonConverter<HostConfig>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="HostConfig" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override HostConfig Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<int?> cpuShares = default;
-            Option<long?> memory = default;
-            Option<string?> cgroupParent = default;
-            Option<int?> blkioWeight = default;
-            Option<List<ResourcesBlkioWeightDeviceInner>?> blkioWeightDevice = default;
-            Option<List<ThrottleDevice>?> blkioDeviceReadBps = default;
-            Option<List<ThrottleDevice>?> blkioDeviceWriteBps = default;
-            Option<List<ThrottleDevice>?> blkioDeviceReadIOps = default;
-            Option<List<ThrottleDevice>?> blkioDeviceWriteIOps = default;
-            Option<long?> cpuPeriod = default;
-            Option<long?> cpuQuota = default;
-            Option<long?> cpuRealtimePeriod = default;
-            Option<long?> cpuRealtimeRuntime = default;
-            Option<string?> cpusetCpus = default;
-            Option<string?> cpusetMems = default;
-            Option<List<DeviceMapping>?> devices = default;
-            Option<List<string>?> deviceCgroupRules = default;
-            Option<List<DeviceRequest>?> deviceRequests = default;
-            Option<long?> kernelMemoryTCP = default;
-            Option<long?> memoryReservation = default;
-            Option<long?> memorySwap = default;
-            Option<long?> memorySwappiness = default;
-            Option<long?> nanoCpus = default;
-            Option<bool?> oomKillDisable = default;
-            Option<bool?> init = default;
-            Option<long?> pidsLimit = default;
-            Option<List<ResourcesUlimitsInner>?> ulimits = default;
-            Option<long?> cpuCount = default;
-            Option<long?> cpuPercent = default;
-            Option<long?> iOMaximumIOps = default;
-            Option<long?> iOMaximumBandwidth = default;
-            Option<List<string>?> binds = default;
-            Option<string?> containerIDFile = default;
-            Option<HostConfigAllOfLogConfig?> logConfig = default;
-            Option<string?> networkMode = default;
-            Option<Dictionary<string, List<PortBinding>>?> portBindings = default;
-            Option<RestartPolicy?> restartPolicy = default;
-            Option<bool?> autoRemove = default;
-            Option<string?> volumeDriver = default;
-            Option<List<string>?> volumesFrom = default;
-            Option<List<Mount>?> mounts = default;
-            Option<List<int>?> consoleSize = default;
-            Option<Dictionary<string, string>?> annotations = default;
-            Option<List<string>?> capAdd = default;
-            Option<List<string>?> capDrop = default;
-            Option<HostConfig.CgroupnsModeEnum?> cgroupnsMode = default;
-            Option<List<string>?> dns = default;
-            Option<List<string>?> dnsOptions = default;
-            Option<List<string>?> dnsSearch = default;
-            Option<List<string>?> extraHosts = default;
-            Option<List<string>?> groupAdd = default;
-            Option<string?> ipcMode = default;
-            Option<string?> cgroup = default;
-            Option<List<string>?> links = default;
-            Option<int?> oomScoreAdj = default;
-            Option<string?> pidMode = default;
-            Option<bool?> privileged = default;
-            Option<bool?> publishAllPorts = default;
-            Option<bool?> readonlyRootfs = default;
-            Option<List<string>?> securityOpt = default;
-            Option<Dictionary<string, string>?> storageOpt = default;
-            Option<Dictionary<string, string>?> tmpfs = default;
-            Option<string?> uTSMode = default;
-            Option<string?> usernsMode = default;
-            Option<long?> shmSize = default;
-            Option<Dictionary<string, string>?> sysctls = default;
-            Option<string?> runtime = default;
-            Option<HostConfig.HostConfigIsolationEnum?> isolation = default;
-            Option<List<string>?> maskedPaths = default;
-            Option<List<string>?> readonlyPaths = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "CpuShares":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                cpuShares = new Option<int?>(utf8JsonReader.GetInt32());
-                            break;
-                        case "Memory":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                memory = new Option<long?>(utf8JsonReader.GetInt64());
-                            break;
-                        case "CgroupParent":
-                            cgroupParent = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "BlkioWeight":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                blkioWeight = new Option<int?>(utf8JsonReader.GetInt32());
-                            break;
-                        case "BlkioWeightDevice":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                blkioWeightDevice = new Option<List<ResourcesBlkioWeightDeviceInner>?>(JsonSerializer.Deserialize<List<ResourcesBlkioWeightDeviceInner>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "BlkioDeviceReadBps":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                blkioDeviceReadBps = new Option<List<ThrottleDevice>?>(JsonSerializer.Deserialize<List<ThrottleDevice>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "BlkioDeviceWriteBps":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                blkioDeviceWriteBps = new Option<List<ThrottleDevice>?>(JsonSerializer.Deserialize<List<ThrottleDevice>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "BlkioDeviceReadIOps":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                blkioDeviceReadIOps = new Option<List<ThrottleDevice>?>(JsonSerializer.Deserialize<List<ThrottleDevice>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "BlkioDeviceWriteIOps":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                blkioDeviceWriteIOps = new Option<List<ThrottleDevice>?>(JsonSerializer.Deserialize<List<ThrottleDevice>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "CpuPeriod":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                cpuPeriod = new Option<long?>(utf8JsonReader.GetInt64());
-                            break;
-                        case "CpuQuota":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                cpuQuota = new Option<long?>(utf8JsonReader.GetInt64());
-                            break;
-                        case "CpuRealtimePeriod":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                cpuRealtimePeriod = new Option<long?>(utf8JsonReader.GetInt64());
-                            break;
-                        case "CpuRealtimeRuntime":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                cpuRealtimeRuntime = new Option<long?>(utf8JsonReader.GetInt64());
-                            break;
-                        case "CpusetCpus":
-                            cpusetCpus = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "CpusetMems":
-                            cpusetMems = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "Devices":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                devices = new Option<List<DeviceMapping>?>(JsonSerializer.Deserialize<List<DeviceMapping>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "DeviceCgroupRules":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                deviceCgroupRules = new Option<List<string>?>(JsonSerializer.Deserialize<List<string>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "DeviceRequests":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                deviceRequests = new Option<List<DeviceRequest>?>(JsonSerializer.Deserialize<List<DeviceRequest>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "KernelMemoryTCP":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                kernelMemoryTCP = new Option<long?>(utf8JsonReader.GetInt64());
-                            break;
-                        case "MemoryReservation":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                memoryReservation = new Option<long?>(utf8JsonReader.GetInt64());
-                            break;
-                        case "MemorySwap":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                memorySwap = new Option<long?>(utf8JsonReader.GetInt64());
-                            break;
-                        case "MemorySwappiness":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                memorySwappiness = new Option<long?>(utf8JsonReader.GetInt64());
-                            break;
-                        case "NanoCpus":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                nanoCpus = new Option<long?>(utf8JsonReader.GetInt64());
-                            break;
-                        case "OomKillDisable":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                oomKillDisable = new Option<bool?>(utf8JsonReader.GetBoolean());
-                            break;
-                        case "Init":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                init = new Option<bool?>(utf8JsonReader.GetBoolean());
-                            break;
-                        case "PidsLimit":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                pidsLimit = new Option<long?>(utf8JsonReader.GetInt64());
-                            break;
-                        case "Ulimits":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                ulimits = new Option<List<ResourcesUlimitsInner>?>(JsonSerializer.Deserialize<List<ResourcesUlimitsInner>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "CpuCount":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                cpuCount = new Option<long?>(utf8JsonReader.GetInt64());
-                            break;
-                        case "CpuPercent":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                cpuPercent = new Option<long?>(utf8JsonReader.GetInt64());
-                            break;
-                        case "IOMaximumIOps":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                iOMaximumIOps = new Option<long?>(utf8JsonReader.GetInt64());
-                            break;
-                        case "IOMaximumBandwidth":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                iOMaximumBandwidth = new Option<long?>(utf8JsonReader.GetInt64());
-                            break;
-                        case "Binds":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                binds = new Option<List<string>?>(JsonSerializer.Deserialize<List<string>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "ContainerIDFile":
-                            containerIDFile = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "LogConfig":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                logConfig = new Option<HostConfigAllOfLogConfig?>(JsonSerializer.Deserialize<HostConfigAllOfLogConfig>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "NetworkMode":
-                            networkMode = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "PortBindings":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                portBindings = new Option<Dictionary<string, List<PortBinding>>?>(JsonSerializer.Deserialize<Dictionary<string, List<PortBinding>>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "RestartPolicy":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                restartPolicy = new Option<RestartPolicy?>(JsonSerializer.Deserialize<RestartPolicy>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "AutoRemove":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                autoRemove = new Option<bool?>(utf8JsonReader.GetBoolean());
-                            break;
-                        case "VolumeDriver":
-                            volumeDriver = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "VolumesFrom":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                volumesFrom = new Option<List<string>?>(JsonSerializer.Deserialize<List<string>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "Mounts":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                mounts = new Option<List<Mount>?>(JsonSerializer.Deserialize<List<Mount>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "ConsoleSize":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                consoleSize = new Option<List<int>?>(JsonSerializer.Deserialize<List<int>>(ref utf8JsonReader, jsonSerializerOptions));
-                            break;
-                        case "Annotations":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                annotations = new Option<Dictionary<string, string>?>(JsonSerializer.Deserialize<Dictionary<string, string>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "CapAdd":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                capAdd = new Option<List<string>?>(JsonSerializer.Deserialize<List<string>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "CapDrop":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                capDrop = new Option<List<string>?>(JsonSerializer.Deserialize<List<string>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "CgroupnsMode":
-                            string? cgroupnsModeRawValue = utf8JsonReader.GetString();
-                            if (cgroupnsModeRawValue != null)
-                                cgroupnsMode = new Option<HostConfig.CgroupnsModeEnum?>(HostConfig.CgroupnsModeEnumFromStringOrDefault(cgroupnsModeRawValue));
-                            break;
-                        case "Dns":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                dns = new Option<List<string>?>(JsonSerializer.Deserialize<List<string>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "DnsOptions":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                dnsOptions = new Option<List<string>?>(JsonSerializer.Deserialize<List<string>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "DnsSearch":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                dnsSearch = new Option<List<string>?>(JsonSerializer.Deserialize<List<string>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "ExtraHosts":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                extraHosts = new Option<List<string>?>(JsonSerializer.Deserialize<List<string>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "GroupAdd":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                groupAdd = new Option<List<string>?>(JsonSerializer.Deserialize<List<string>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "IpcMode":
-                            ipcMode = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "Cgroup":
-                            cgroup = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "Links":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                links = new Option<List<string>?>(JsonSerializer.Deserialize<List<string>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "OomScoreAdj":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                oomScoreAdj = new Option<int?>(utf8JsonReader.GetInt32());
-                            break;
-                        case "PidMode":
-                            pidMode = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "Privileged":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                privileged = new Option<bool?>(utf8JsonReader.GetBoolean());
-                            break;
-                        case "PublishAllPorts":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                publishAllPorts = new Option<bool?>(utf8JsonReader.GetBoolean());
-                            break;
-                        case "ReadonlyRootfs":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                readonlyRootfs = new Option<bool?>(utf8JsonReader.GetBoolean());
-                            break;
-                        case "SecurityOpt":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                securityOpt = new Option<List<string>?>(JsonSerializer.Deserialize<List<string>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "StorageOpt":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                storageOpt = new Option<Dictionary<string, string>?>(JsonSerializer.Deserialize<Dictionary<string, string>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "Tmpfs":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                tmpfs = new Option<Dictionary<string, string>?>(JsonSerializer.Deserialize<Dictionary<string, string>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "UTSMode":
-                            uTSMode = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "UsernsMode":
-                            usernsMode = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "ShmSize":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                shmSize = new Option<long?>(utf8JsonReader.GetInt64());
-                            break;
-                        case "Sysctls":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                sysctls = new Option<Dictionary<string, string>?>(JsonSerializer.Deserialize<Dictionary<string, string>>(ref utf8JsonReader, jsonSerializerOptions));
-                            break;
-                        case "Runtime":
-                            runtime = new Option<string?>(utf8JsonReader.GetString());
-                            break;
-                        case "Isolation":
-                            string? isolationRawValue = utf8JsonReader.GetString();
-                            if (isolationRawValue != null)
-                                isolation = new Option<HostConfig.HostConfigIsolationEnum?>(HostConfig.IsolationEnumFromStringOrDefault(isolationRawValue));
-                            break;
-                        case "MaskedPaths":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                maskedPaths = new Option<List<string>?>(JsonSerializer.Deserialize<List<string>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "ReadonlyPaths":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                readonlyPaths = new Option<List<string>?>(JsonSerializer.Deserialize<List<string>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (cpuShares.IsSet && cpuShares.Value == null)
-                throw new ArgumentNullException(nameof(cpuShares), "Property is not nullable for class HostConfig.");
-
-            if (memory.IsSet && memory.Value == null)
-                throw new ArgumentNullException(nameof(memory), "Property is not nullable for class HostConfig.");
-
-            if (cgroupParent.IsSet && cgroupParent.Value == null)
-                throw new ArgumentNullException(nameof(cgroupParent), "Property is not nullable for class HostConfig.");
-
-            if (blkioWeight.IsSet && blkioWeight.Value == null)
-                throw new ArgumentNullException(nameof(blkioWeight), "Property is not nullable for class HostConfig.");
-
-            if (blkioWeightDevice.IsSet && blkioWeightDevice.Value == null)
-                throw new ArgumentNullException(nameof(blkioWeightDevice), "Property is not nullable for class HostConfig.");
-
-            if (blkioDeviceReadBps.IsSet && blkioDeviceReadBps.Value == null)
-                throw new ArgumentNullException(nameof(blkioDeviceReadBps), "Property is not nullable for class HostConfig.");
-
-            if (blkioDeviceWriteBps.IsSet && blkioDeviceWriteBps.Value == null)
-                throw new ArgumentNullException(nameof(blkioDeviceWriteBps), "Property is not nullable for class HostConfig.");
-
-            if (blkioDeviceReadIOps.IsSet && blkioDeviceReadIOps.Value == null)
-                throw new ArgumentNullException(nameof(blkioDeviceReadIOps), "Property is not nullable for class HostConfig.");
-
-            if (blkioDeviceWriteIOps.IsSet && blkioDeviceWriteIOps.Value == null)
-                throw new ArgumentNullException(nameof(blkioDeviceWriteIOps), "Property is not nullable for class HostConfig.");
-
-            if (cpuPeriod.IsSet && cpuPeriod.Value == null)
-                throw new ArgumentNullException(nameof(cpuPeriod), "Property is not nullable for class HostConfig.");
-
-            if (cpuQuota.IsSet && cpuQuota.Value == null)
-                throw new ArgumentNullException(nameof(cpuQuota), "Property is not nullable for class HostConfig.");
-
-            if (cpuRealtimePeriod.IsSet && cpuRealtimePeriod.Value == null)
-                throw new ArgumentNullException(nameof(cpuRealtimePeriod), "Property is not nullable for class HostConfig.");
-
-            if (cpuRealtimeRuntime.IsSet && cpuRealtimeRuntime.Value == null)
-                throw new ArgumentNullException(nameof(cpuRealtimeRuntime), "Property is not nullable for class HostConfig.");
-
-            if (cpusetCpus.IsSet && cpusetCpus.Value == null)
-                throw new ArgumentNullException(nameof(cpusetCpus), "Property is not nullable for class HostConfig.");
-
-            if (cpusetMems.IsSet && cpusetMems.Value == null)
-                throw new ArgumentNullException(nameof(cpusetMems), "Property is not nullable for class HostConfig.");
-
-            if (devices.IsSet && devices.Value == null)
-                throw new ArgumentNullException(nameof(devices), "Property is not nullable for class HostConfig.");
-
-            if (deviceCgroupRules.IsSet && deviceCgroupRules.Value == null)
-                throw new ArgumentNullException(nameof(deviceCgroupRules), "Property is not nullable for class HostConfig.");
-
-            if (deviceRequests.IsSet && deviceRequests.Value == null)
-                throw new ArgumentNullException(nameof(deviceRequests), "Property is not nullable for class HostConfig.");
-
-            if (kernelMemoryTCP.IsSet && kernelMemoryTCP.Value == null)
-                throw new ArgumentNullException(nameof(kernelMemoryTCP), "Property is not nullable for class HostConfig.");
-
-            if (memoryReservation.IsSet && memoryReservation.Value == null)
-                throw new ArgumentNullException(nameof(memoryReservation), "Property is not nullable for class HostConfig.");
-
-            if (memorySwap.IsSet && memorySwap.Value == null)
-                throw new ArgumentNullException(nameof(memorySwap), "Property is not nullable for class HostConfig.");
-
-            if (memorySwappiness.IsSet && memorySwappiness.Value == null)
-                throw new ArgumentNullException(nameof(memorySwappiness), "Property is not nullable for class HostConfig.");
-
-            if (nanoCpus.IsSet && nanoCpus.Value == null)
-                throw new ArgumentNullException(nameof(nanoCpus), "Property is not nullable for class HostConfig.");
-
-            if (oomKillDisable.IsSet && oomKillDisable.Value == null)
-                throw new ArgumentNullException(nameof(oomKillDisable), "Property is not nullable for class HostConfig.");
-
-            if (ulimits.IsSet && ulimits.Value == null)
-                throw new ArgumentNullException(nameof(ulimits), "Property is not nullable for class HostConfig.");
-
-            if (cpuCount.IsSet && cpuCount.Value == null)
-                throw new ArgumentNullException(nameof(cpuCount), "Property is not nullable for class HostConfig.");
-
-            if (cpuPercent.IsSet && cpuPercent.Value == null)
-                throw new ArgumentNullException(nameof(cpuPercent), "Property is not nullable for class HostConfig.");
-
-            if (iOMaximumIOps.IsSet && iOMaximumIOps.Value == null)
-                throw new ArgumentNullException(nameof(iOMaximumIOps), "Property is not nullable for class HostConfig.");
-
-            if (iOMaximumBandwidth.IsSet && iOMaximumBandwidth.Value == null)
-                throw new ArgumentNullException(nameof(iOMaximumBandwidth), "Property is not nullable for class HostConfig.");
-
-            if (binds.IsSet && binds.Value == null)
-                throw new ArgumentNullException(nameof(binds), "Property is not nullable for class HostConfig.");
-
-            if (containerIDFile.IsSet && containerIDFile.Value == null)
-                throw new ArgumentNullException(nameof(containerIDFile), "Property is not nullable for class HostConfig.");
-
-            if (logConfig.IsSet && logConfig.Value == null)
-                throw new ArgumentNullException(nameof(logConfig), "Property is not nullable for class HostConfig.");
-
-            if (networkMode.IsSet && networkMode.Value == null)
-                throw new ArgumentNullException(nameof(networkMode), "Property is not nullable for class HostConfig.");
-
-            if (portBindings.IsSet && portBindings.Value == null)
-                throw new ArgumentNullException(nameof(portBindings), "Property is not nullable for class HostConfig.");
-
-            if (restartPolicy.IsSet && restartPolicy.Value == null)
-                throw new ArgumentNullException(nameof(restartPolicy), "Property is not nullable for class HostConfig.");
-
-            if (autoRemove.IsSet && autoRemove.Value == null)
-                throw new ArgumentNullException(nameof(autoRemove), "Property is not nullable for class HostConfig.");
-
-            if (volumeDriver.IsSet && volumeDriver.Value == null)
-                throw new ArgumentNullException(nameof(volumeDriver), "Property is not nullable for class HostConfig.");
-
-            if (volumesFrom.IsSet && volumesFrom.Value == null)
-                throw new ArgumentNullException(nameof(volumesFrom), "Property is not nullable for class HostConfig.");
-
-            if (mounts.IsSet && mounts.Value == null)
-                throw new ArgumentNullException(nameof(mounts), "Property is not nullable for class HostConfig.");
-
-            if (annotations.IsSet && annotations.Value == null)
-                throw new ArgumentNullException(nameof(annotations), "Property is not nullable for class HostConfig.");
-
-            if (capAdd.IsSet && capAdd.Value == null)
-                throw new ArgumentNullException(nameof(capAdd), "Property is not nullable for class HostConfig.");
-
-            if (capDrop.IsSet && capDrop.Value == null)
-                throw new ArgumentNullException(nameof(capDrop), "Property is not nullable for class HostConfig.");
-
-            if (cgroupnsMode.IsSet && cgroupnsMode.Value == null)
-                throw new ArgumentNullException(nameof(cgroupnsMode), "Property is not nullable for class HostConfig.");
-
-            if (dns.IsSet && dns.Value == null)
-                throw new ArgumentNullException(nameof(dns), "Property is not nullable for class HostConfig.");
-
-            if (dnsOptions.IsSet && dnsOptions.Value == null)
-                throw new ArgumentNullException(nameof(dnsOptions), "Property is not nullable for class HostConfig.");
-
-            if (dnsSearch.IsSet && dnsSearch.Value == null)
-                throw new ArgumentNullException(nameof(dnsSearch), "Property is not nullable for class HostConfig.");
-
-            if (extraHosts.IsSet && extraHosts.Value == null)
-                throw new ArgumentNullException(nameof(extraHosts), "Property is not nullable for class HostConfig.");
-
-            if (groupAdd.IsSet && groupAdd.Value == null)
-                throw new ArgumentNullException(nameof(groupAdd), "Property is not nullable for class HostConfig.");
-
-            if (ipcMode.IsSet && ipcMode.Value == null)
-                throw new ArgumentNullException(nameof(ipcMode), "Property is not nullable for class HostConfig.");
-
-            if (cgroup.IsSet && cgroup.Value == null)
-                throw new ArgumentNullException(nameof(cgroup), "Property is not nullable for class HostConfig.");
-
-            if (links.IsSet && links.Value == null)
-                throw new ArgumentNullException(nameof(links), "Property is not nullable for class HostConfig.");
-
-            if (oomScoreAdj.IsSet && oomScoreAdj.Value == null)
-                throw new ArgumentNullException(nameof(oomScoreAdj), "Property is not nullable for class HostConfig.");
-
-            if (pidMode.IsSet && pidMode.Value == null)
-                throw new ArgumentNullException(nameof(pidMode), "Property is not nullable for class HostConfig.");
-
-            if (privileged.IsSet && privileged.Value == null)
-                throw new ArgumentNullException(nameof(privileged), "Property is not nullable for class HostConfig.");
-
-            if (publishAllPorts.IsSet && publishAllPorts.Value == null)
-                throw new ArgumentNullException(nameof(publishAllPorts), "Property is not nullable for class HostConfig.");
-
-            if (readonlyRootfs.IsSet && readonlyRootfs.Value == null)
-                throw new ArgumentNullException(nameof(readonlyRootfs), "Property is not nullable for class HostConfig.");
-
-            if (securityOpt.IsSet && securityOpt.Value == null)
-                throw new ArgumentNullException(nameof(securityOpt), "Property is not nullable for class HostConfig.");
-
-            if (storageOpt.IsSet && storageOpt.Value == null)
-                throw new ArgumentNullException(nameof(storageOpt), "Property is not nullable for class HostConfig.");
-
-            if (tmpfs.IsSet && tmpfs.Value == null)
-                throw new ArgumentNullException(nameof(tmpfs), "Property is not nullable for class HostConfig.");
-
-            if (uTSMode.IsSet && uTSMode.Value == null)
-                throw new ArgumentNullException(nameof(uTSMode), "Property is not nullable for class HostConfig.");
-
-            if (usernsMode.IsSet && usernsMode.Value == null)
-                throw new ArgumentNullException(nameof(usernsMode), "Property is not nullable for class HostConfig.");
-
-            if (shmSize.IsSet && shmSize.Value == null)
-                throw new ArgumentNullException(nameof(shmSize), "Property is not nullable for class HostConfig.");
-
-            if (isolation.IsSet && isolation.Value == null)
-                throw new ArgumentNullException(nameof(isolation), "Property is not nullable for class HostConfig.");
-
-            if (maskedPaths.IsSet && maskedPaths.Value == null)
-                throw new ArgumentNullException(nameof(maskedPaths), "Property is not nullable for class HostConfig.");
-
-            if (readonlyPaths.IsSet && readonlyPaths.Value == null)
-                throw new ArgumentNullException(nameof(readonlyPaths), "Property is not nullable for class HostConfig.");
-
-            return new HostConfig(cpuShares, memory, cgroupParent, blkioWeight, blkioWeightDevice, blkioDeviceReadBps, blkioDeviceWriteBps, blkioDeviceReadIOps, blkioDeviceWriteIOps, cpuPeriod, cpuQuota, cpuRealtimePeriod, cpuRealtimeRuntime, cpusetCpus, cpusetMems, devices, deviceCgroupRules, deviceRequests, kernelMemoryTCP, memoryReservation, memorySwap, memorySwappiness, nanoCpus, oomKillDisable, init, pidsLimit, ulimits, cpuCount, cpuPercent, iOMaximumIOps, iOMaximumBandwidth, binds, containerIDFile, logConfig, networkMode, portBindings, restartPolicy, autoRemove, volumeDriver, volumesFrom, mounts, consoleSize, annotations, capAdd, capDrop, cgroupnsMode, dns, dnsOptions, dnsSearch, extraHosts, groupAdd, ipcMode, cgroup, links, oomScoreAdj, pidMode, privileged, publishAllPorts, readonlyRootfs, securityOpt, storageOpt, tmpfs, uTSMode, usernsMode, shmSize, sysctls, runtime, isolation, maskedPaths, readonlyPaths);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="HostConfig" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="hostConfig"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, HostConfig hostConfig, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, hostConfig, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="HostConfig" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="hostConfig"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, HostConfig hostConfig, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (hostConfig.CgroupParentOption.IsSet && hostConfig.CgroupParent == null)
-                throw new ArgumentNullException(nameof(hostConfig.CgroupParent), "Property is required for class HostConfig.");
-
-            if (hostConfig.BlkioWeightDeviceOption.IsSet && hostConfig.BlkioWeightDevice == null)
-                throw new ArgumentNullException(nameof(hostConfig.BlkioWeightDevice), "Property is required for class HostConfig.");
-
-            if (hostConfig.BlkioDeviceReadBpsOption.IsSet && hostConfig.BlkioDeviceReadBps == null)
-                throw new ArgumentNullException(nameof(hostConfig.BlkioDeviceReadBps), "Property is required for class HostConfig.");
-
-            if (hostConfig.BlkioDeviceWriteBpsOption.IsSet && hostConfig.BlkioDeviceWriteBps == null)
-                throw new ArgumentNullException(nameof(hostConfig.BlkioDeviceWriteBps), "Property is required for class HostConfig.");
-
-            if (hostConfig.BlkioDeviceReadIOpsOption.IsSet && hostConfig.BlkioDeviceReadIOps == null)
-                throw new ArgumentNullException(nameof(hostConfig.BlkioDeviceReadIOps), "Property is required for class HostConfig.");
-
-            if (hostConfig.BlkioDeviceWriteIOpsOption.IsSet && hostConfig.BlkioDeviceWriteIOps == null)
-                throw new ArgumentNullException(nameof(hostConfig.BlkioDeviceWriteIOps), "Property is required for class HostConfig.");
-
-            if (hostConfig.CpusetCpusOption.IsSet && hostConfig.CpusetCpus == null)
-                throw new ArgumentNullException(nameof(hostConfig.CpusetCpus), "Property is required for class HostConfig.");
-
-            if (hostConfig.CpusetMemsOption.IsSet && hostConfig.CpusetMems == null)
-                throw new ArgumentNullException(nameof(hostConfig.CpusetMems), "Property is required for class HostConfig.");
-
-            if (hostConfig.DevicesOption.IsSet && hostConfig.Devices == null)
-                throw new ArgumentNullException(nameof(hostConfig.Devices), "Property is required for class HostConfig.");
-
-            if (hostConfig.DeviceCgroupRulesOption.IsSet && hostConfig.DeviceCgroupRules == null)
-                throw new ArgumentNullException(nameof(hostConfig.DeviceCgroupRules), "Property is required for class HostConfig.");
-
-            if (hostConfig.DeviceRequestsOption.IsSet && hostConfig.DeviceRequests == null)
-                throw new ArgumentNullException(nameof(hostConfig.DeviceRequests), "Property is required for class HostConfig.");
-
-            if (hostConfig.UlimitsOption.IsSet && hostConfig.Ulimits == null)
-                throw new ArgumentNullException(nameof(hostConfig.Ulimits), "Property is required for class HostConfig.");
-
-            if (hostConfig.BindsOption.IsSet && hostConfig.Binds == null)
-                throw new ArgumentNullException(nameof(hostConfig.Binds), "Property is required for class HostConfig.");
-
-            if (hostConfig.ContainerIDFileOption.IsSet && hostConfig.ContainerIDFile == null)
-                throw new ArgumentNullException(nameof(hostConfig.ContainerIDFile), "Property is required for class HostConfig.");
-
-            if (hostConfig.LogConfigOption.IsSet && hostConfig.LogConfig == null)
-                throw new ArgumentNullException(nameof(hostConfig.LogConfig), "Property is required for class HostConfig.");
-
-            if (hostConfig.NetworkModeOption.IsSet && hostConfig.NetworkMode == null)
-                throw new ArgumentNullException(nameof(hostConfig.NetworkMode), "Property is required for class HostConfig.");
-
-            if (hostConfig.PortBindingsOption.IsSet && hostConfig.PortBindings == null)
-                throw new ArgumentNullException(nameof(hostConfig.PortBindings), "Property is required for class HostConfig.");
-
-            if (hostConfig.RestartPolicyOption.IsSet && hostConfig.RestartPolicy == null)
-                throw new ArgumentNullException(nameof(hostConfig.RestartPolicy), "Property is required for class HostConfig.");
-
-            if (hostConfig.VolumeDriverOption.IsSet && hostConfig.VolumeDriver == null)
-                throw new ArgumentNullException(nameof(hostConfig.VolumeDriver), "Property is required for class HostConfig.");
-
-            if (hostConfig.VolumesFromOption.IsSet && hostConfig.VolumesFrom == null)
-                throw new ArgumentNullException(nameof(hostConfig.VolumesFrom), "Property is required for class HostConfig.");
-
-            if (hostConfig.MountsOption.IsSet && hostConfig.Mounts == null)
-                throw new ArgumentNullException(nameof(hostConfig.Mounts), "Property is required for class HostConfig.");
-
-            if (hostConfig.AnnotationsOption.IsSet && hostConfig.Annotations == null)
-                throw new ArgumentNullException(nameof(hostConfig.Annotations), "Property is required for class HostConfig.");
-
-            if (hostConfig.CapAddOption.IsSet && hostConfig.CapAdd == null)
-                throw new ArgumentNullException(nameof(hostConfig.CapAdd), "Property is required for class HostConfig.");
-
-            if (hostConfig.CapDropOption.IsSet && hostConfig.CapDrop == null)
-                throw new ArgumentNullException(nameof(hostConfig.CapDrop), "Property is required for class HostConfig.");
-
-            if (hostConfig.DnsOption.IsSet && hostConfig.Dns == null)
-                throw new ArgumentNullException(nameof(hostConfig.Dns), "Property is required for class HostConfig.");
-
-            if (hostConfig.DnsOptionsOption.IsSet && hostConfig.DnsOptions == null)
-                throw new ArgumentNullException(nameof(hostConfig.DnsOptions), "Property is required for class HostConfig.");
-
-            if (hostConfig.DnsSearchOption.IsSet && hostConfig.DnsSearch == null)
-                throw new ArgumentNullException(nameof(hostConfig.DnsSearch), "Property is required for class HostConfig.");
-
-            if (hostConfig.ExtraHostsOption.IsSet && hostConfig.ExtraHosts == null)
-                throw new ArgumentNullException(nameof(hostConfig.ExtraHosts), "Property is required for class HostConfig.");
-
-            if (hostConfig.GroupAddOption.IsSet && hostConfig.GroupAdd == null)
-                throw new ArgumentNullException(nameof(hostConfig.GroupAdd), "Property is required for class HostConfig.");
-
-            if (hostConfig.IpcModeOption.IsSet && hostConfig.IpcMode == null)
-                throw new ArgumentNullException(nameof(hostConfig.IpcMode), "Property is required for class HostConfig.");
-
-            if (hostConfig.CgroupOption.IsSet && hostConfig.Cgroup == null)
-                throw new ArgumentNullException(nameof(hostConfig.Cgroup), "Property is required for class HostConfig.");
-
-            if (hostConfig.LinksOption.IsSet && hostConfig.Links == null)
-                throw new ArgumentNullException(nameof(hostConfig.Links), "Property is required for class HostConfig.");
-
-            if (hostConfig.PidModeOption.IsSet && hostConfig.PidMode == null)
-                throw new ArgumentNullException(nameof(hostConfig.PidMode), "Property is required for class HostConfig.");
-
-            if (hostConfig.SecurityOptOption.IsSet && hostConfig.SecurityOpt == null)
-                throw new ArgumentNullException(nameof(hostConfig.SecurityOpt), "Property is required for class HostConfig.");
-
-            if (hostConfig.StorageOptOption.IsSet && hostConfig.StorageOpt == null)
-                throw new ArgumentNullException(nameof(hostConfig.StorageOpt), "Property is required for class HostConfig.");
-
-            if (hostConfig.TmpfsOption.IsSet && hostConfig.Tmpfs == null)
-                throw new ArgumentNullException(nameof(hostConfig.Tmpfs), "Property is required for class HostConfig.");
-
-            if (hostConfig.UTSModeOption.IsSet && hostConfig.UTSMode == null)
-                throw new ArgumentNullException(nameof(hostConfig.UTSMode), "Property is required for class HostConfig.");
-
-            if (hostConfig.UsernsModeOption.IsSet && hostConfig.UsernsMode == null)
-                throw new ArgumentNullException(nameof(hostConfig.UsernsMode), "Property is required for class HostConfig.");
-
-            if (hostConfig.MaskedPathsOption.IsSet && hostConfig.MaskedPaths == null)
-                throw new ArgumentNullException(nameof(hostConfig.MaskedPaths), "Property is required for class HostConfig.");
-
-            if (hostConfig.ReadonlyPathsOption.IsSet && hostConfig.ReadonlyPaths == null)
-                throw new ArgumentNullException(nameof(hostConfig.ReadonlyPaths), "Property is required for class HostConfig.");
-
-            if (hostConfig.CpuSharesOption.IsSet)
-                writer.WriteNumber("CpuShares", hostConfig.CpuSharesOption.Value!.Value);
-
-            if (hostConfig.MemoryOption.IsSet)
-                writer.WriteNumber("Memory", hostConfig.MemoryOption.Value!.Value);
-
-            if (hostConfig.CgroupParentOption.IsSet)
-                writer.WriteString("CgroupParent", hostConfig.CgroupParent);
-
-            if (hostConfig.BlkioWeightOption.IsSet)
-                writer.WriteNumber("BlkioWeight", hostConfig.BlkioWeightOption.Value!.Value);
-
-            if (hostConfig.BlkioWeightDeviceOption.IsSet)
-            {
-                writer.WritePropertyName("BlkioWeightDevice");
-                JsonSerializer.Serialize(writer, hostConfig.BlkioWeightDevice, jsonSerializerOptions);
-            }
-            if (hostConfig.BlkioDeviceReadBpsOption.IsSet)
-            {
-                writer.WritePropertyName("BlkioDeviceReadBps");
-                JsonSerializer.Serialize(writer, hostConfig.BlkioDeviceReadBps, jsonSerializerOptions);
-            }
-            if (hostConfig.BlkioDeviceWriteBpsOption.IsSet)
-            {
-                writer.WritePropertyName("BlkioDeviceWriteBps");
-                JsonSerializer.Serialize(writer, hostConfig.BlkioDeviceWriteBps, jsonSerializerOptions);
-            }
-            if (hostConfig.BlkioDeviceReadIOpsOption.IsSet)
-            {
-                writer.WritePropertyName("BlkioDeviceReadIOps");
-                JsonSerializer.Serialize(writer, hostConfig.BlkioDeviceReadIOps, jsonSerializerOptions);
-            }
-            if (hostConfig.BlkioDeviceWriteIOpsOption.IsSet)
-            {
-                writer.WritePropertyName("BlkioDeviceWriteIOps");
-                JsonSerializer.Serialize(writer, hostConfig.BlkioDeviceWriteIOps, jsonSerializerOptions);
-            }
-            if (hostConfig.CpuPeriodOption.IsSet)
-                writer.WriteNumber("CpuPeriod", hostConfig.CpuPeriodOption.Value!.Value);
-
-            if (hostConfig.CpuQuotaOption.IsSet)
-                writer.WriteNumber("CpuQuota", hostConfig.CpuQuotaOption.Value!.Value);
-
-            if (hostConfig.CpuRealtimePeriodOption.IsSet)
-                writer.WriteNumber("CpuRealtimePeriod", hostConfig.CpuRealtimePeriodOption.Value!.Value);
-
-            if (hostConfig.CpuRealtimeRuntimeOption.IsSet)
-                writer.WriteNumber("CpuRealtimeRuntime", hostConfig.CpuRealtimeRuntimeOption.Value!.Value);
-
-            if (hostConfig.CpusetCpusOption.IsSet)
-                writer.WriteString("CpusetCpus", hostConfig.CpusetCpus);
-
-            if (hostConfig.CpusetMemsOption.IsSet)
-                writer.WriteString("CpusetMems", hostConfig.CpusetMems);
-
-            if (hostConfig.DevicesOption.IsSet)
-            {
-                writer.WritePropertyName("Devices");
-                JsonSerializer.Serialize(writer, hostConfig.Devices, jsonSerializerOptions);
-            }
-            if (hostConfig.DeviceCgroupRulesOption.IsSet)
-            {
-                writer.WritePropertyName("DeviceCgroupRules");
-                JsonSerializer.Serialize(writer, hostConfig.DeviceCgroupRules, jsonSerializerOptions);
-            }
-            if (hostConfig.DeviceRequestsOption.IsSet)
-            {
-                writer.WritePropertyName("DeviceRequests");
-                JsonSerializer.Serialize(writer, hostConfig.DeviceRequests, jsonSerializerOptions);
-            }
-            if (hostConfig.KernelMemoryTCPOption.IsSet)
-                writer.WriteNumber("KernelMemoryTCP", hostConfig.KernelMemoryTCPOption.Value!.Value);
-
-            if (hostConfig.MemoryReservationOption.IsSet)
-                writer.WriteNumber("MemoryReservation", hostConfig.MemoryReservationOption.Value!.Value);
-
-            if (hostConfig.MemorySwapOption.IsSet)
-                writer.WriteNumber("MemorySwap", hostConfig.MemorySwapOption.Value!.Value);
-
-            if (hostConfig.MemorySwappinessOption.IsSet)
-                writer.WriteNumber("MemorySwappiness", hostConfig.MemorySwappinessOption.Value!.Value);
-
-            if (hostConfig.NanoCpusOption.IsSet)
-                writer.WriteNumber("NanoCpus", hostConfig.NanoCpusOption.Value!.Value);
-
-            if (hostConfig.OomKillDisableOption.IsSet)
-                writer.WriteBoolean("OomKillDisable", hostConfig.OomKillDisableOption.Value!.Value);
-
-            if (hostConfig.InitOption.IsSet)
-                if (hostConfig.InitOption.Value != null)
-                    writer.WriteBoolean("Init", hostConfig.InitOption.Value!.Value);
-                else
-                    writer.WriteNull("Init");
-
-            if (hostConfig.PidsLimitOption.IsSet)
-                if (hostConfig.PidsLimitOption.Value != null)
-                    writer.WriteNumber("PidsLimit", hostConfig.PidsLimitOption.Value!.Value);
-                else
-                    writer.WriteNull("PidsLimit");
-
-            if (hostConfig.UlimitsOption.IsSet)
-            {
-                writer.WritePropertyName("Ulimits");
-                JsonSerializer.Serialize(writer, hostConfig.Ulimits, jsonSerializerOptions);
-            }
-            if (hostConfig.CpuCountOption.IsSet)
-                writer.WriteNumber("CpuCount", hostConfig.CpuCountOption.Value!.Value);
-
-            if (hostConfig.CpuPercentOption.IsSet)
-                writer.WriteNumber("CpuPercent", hostConfig.CpuPercentOption.Value!.Value);
-
-            if (hostConfig.IOMaximumIOpsOption.IsSet)
-                writer.WriteNumber("IOMaximumIOps", hostConfig.IOMaximumIOpsOption.Value!.Value);
-
-            if (hostConfig.IOMaximumBandwidthOption.IsSet)
-                writer.WriteNumber("IOMaximumBandwidth", hostConfig.IOMaximumBandwidthOption.Value!.Value);
-
-            if (hostConfig.BindsOption.IsSet)
-            {
-                writer.WritePropertyName("Binds");
-                JsonSerializer.Serialize(writer, hostConfig.Binds, jsonSerializerOptions);
-            }
-            if (hostConfig.ContainerIDFileOption.IsSet)
-                writer.WriteString("ContainerIDFile", hostConfig.ContainerIDFile);
-
-            if (hostConfig.LogConfigOption.IsSet)
-            {
-                writer.WritePropertyName("LogConfig");
-                JsonSerializer.Serialize(writer, hostConfig.LogConfig, jsonSerializerOptions);
-            }
-            if (hostConfig.NetworkModeOption.IsSet)
-                writer.WriteString("NetworkMode", hostConfig.NetworkMode);
-
-            if (hostConfig.PortBindingsOption.IsSet)
-            {
-                writer.WritePropertyName("PortBindings");
-                JsonSerializer.Serialize(writer, hostConfig.PortBindings, jsonSerializerOptions);
-            }
-            if (hostConfig.RestartPolicyOption.IsSet)
-            {
-                writer.WritePropertyName("RestartPolicy");
-                JsonSerializer.Serialize(writer, hostConfig.RestartPolicy, jsonSerializerOptions);
-            }
-            if (hostConfig.AutoRemoveOption.IsSet)
-                writer.WriteBoolean("AutoRemove", hostConfig.AutoRemoveOption.Value!.Value);
-
-            if (hostConfig.VolumeDriverOption.IsSet)
-                writer.WriteString("VolumeDriver", hostConfig.VolumeDriver);
-
-            if (hostConfig.VolumesFromOption.IsSet)
-            {
-                writer.WritePropertyName("VolumesFrom");
-                JsonSerializer.Serialize(writer, hostConfig.VolumesFrom, jsonSerializerOptions);
-            }
-            if (hostConfig.MountsOption.IsSet)
-            {
-                writer.WritePropertyName("Mounts");
-                JsonSerializer.Serialize(writer, hostConfig.Mounts, jsonSerializerOptions);
-            }
-            if (hostConfig.ConsoleSizeOption.IsSet)
-                if (hostConfig.ConsoleSizeOption.Value != null)
-                {
-                    writer.WritePropertyName("ConsoleSize");
-                    JsonSerializer.Serialize(writer, hostConfig.ConsoleSize, jsonSerializerOptions);
-                }
-                else
-                    writer.WriteNull("ConsoleSize");
-            if (hostConfig.AnnotationsOption.IsSet)
-            {
-                writer.WritePropertyName("Annotations");
-                JsonSerializer.Serialize(writer, hostConfig.Annotations, jsonSerializerOptions);
-            }
-            if (hostConfig.CapAddOption.IsSet)
-            {
-                writer.WritePropertyName("CapAdd");
-                JsonSerializer.Serialize(writer, hostConfig.CapAdd, jsonSerializerOptions);
-            }
-            if (hostConfig.CapDropOption.IsSet)
-            {
-                writer.WritePropertyName("CapDrop");
-                JsonSerializer.Serialize(writer, hostConfig.CapDrop, jsonSerializerOptions);
-            }
-            var cgroupnsModeRawValue = HostConfig.CgroupnsModeEnumToJsonValue(hostConfig.CgroupnsModeOption.Value!.Value);
-            writer.WriteString("CgroupnsMode", cgroupnsModeRawValue);
-            if (hostConfig.DnsOption.IsSet)
-            {
-                writer.WritePropertyName("Dns");
-                JsonSerializer.Serialize(writer, hostConfig.Dns, jsonSerializerOptions);
-            }
-            if (hostConfig.DnsOptionsOption.IsSet)
-            {
-                writer.WritePropertyName("DnsOptions");
-                JsonSerializer.Serialize(writer, hostConfig.DnsOptions, jsonSerializerOptions);
-            }
-            if (hostConfig.DnsSearchOption.IsSet)
-            {
-                writer.WritePropertyName("DnsSearch");
-                JsonSerializer.Serialize(writer, hostConfig.DnsSearch, jsonSerializerOptions);
-            }
-            if (hostConfig.ExtraHostsOption.IsSet)
-            {
-                writer.WritePropertyName("ExtraHosts");
-                JsonSerializer.Serialize(writer, hostConfig.ExtraHosts, jsonSerializerOptions);
-            }
-            if (hostConfig.GroupAddOption.IsSet)
-            {
-                writer.WritePropertyName("GroupAdd");
-                JsonSerializer.Serialize(writer, hostConfig.GroupAdd, jsonSerializerOptions);
-            }
-            if (hostConfig.IpcModeOption.IsSet)
-                writer.WriteString("IpcMode", hostConfig.IpcMode);
-
-            if (hostConfig.CgroupOption.IsSet)
-                writer.WriteString("Cgroup", hostConfig.Cgroup);
-
-            if (hostConfig.LinksOption.IsSet)
-            {
-                writer.WritePropertyName("Links");
-                JsonSerializer.Serialize(writer, hostConfig.Links, jsonSerializerOptions);
-            }
-            if (hostConfig.OomScoreAdjOption.IsSet)
-                writer.WriteNumber("OomScoreAdj", hostConfig.OomScoreAdjOption.Value!.Value);
-
-            if (hostConfig.PidModeOption.IsSet)
-                writer.WriteString("PidMode", hostConfig.PidMode);
-
-            if (hostConfig.PrivilegedOption.IsSet)
-                writer.WriteBoolean("Privileged", hostConfig.PrivilegedOption.Value!.Value);
-
-            if (hostConfig.PublishAllPortsOption.IsSet)
-                writer.WriteBoolean("PublishAllPorts", hostConfig.PublishAllPortsOption.Value!.Value);
-
-            if (hostConfig.ReadonlyRootfsOption.IsSet)
-                writer.WriteBoolean("ReadonlyRootfs", hostConfig.ReadonlyRootfsOption.Value!.Value);
-
-            if (hostConfig.SecurityOptOption.IsSet)
-            {
-                writer.WritePropertyName("SecurityOpt");
-                JsonSerializer.Serialize(writer, hostConfig.SecurityOpt, jsonSerializerOptions);
-            }
-            if (hostConfig.StorageOptOption.IsSet)
-            {
-                writer.WritePropertyName("StorageOpt");
-                JsonSerializer.Serialize(writer, hostConfig.StorageOpt, jsonSerializerOptions);
-            }
-            if (hostConfig.TmpfsOption.IsSet)
-            {
-                writer.WritePropertyName("Tmpfs");
-                JsonSerializer.Serialize(writer, hostConfig.Tmpfs, jsonSerializerOptions);
-            }
-            if (hostConfig.UTSModeOption.IsSet)
-                writer.WriteString("UTSMode", hostConfig.UTSMode);
-
-            if (hostConfig.UsernsModeOption.IsSet)
-                writer.WriteString("UsernsMode", hostConfig.UsernsMode);
-
-            if (hostConfig.ShmSizeOption.IsSet)
-                writer.WriteNumber("ShmSize", hostConfig.ShmSizeOption.Value!.Value);
-
-            if (hostConfig.SysctlsOption.IsSet)
-                if (hostConfig.SysctlsOption.Value != null)
-                {
-                    writer.WritePropertyName("Sysctls");
-                    JsonSerializer.Serialize(writer, hostConfig.Sysctls, jsonSerializerOptions);
-                }
-                else
-                    writer.WriteNull("Sysctls");
-            if (hostConfig.RuntimeOption.IsSet)
-                if (hostConfig.RuntimeOption.Value != null)
-                    writer.WriteString("Runtime", hostConfig.Runtime);
-                else
-                    writer.WriteNull("Runtime");
-
-            var isolationRawValue = HostConfig.IsolationEnumToJsonValue(hostConfig.IsolationOption.Value!.Value);
-            writer.WriteString("Isolation", isolationRawValue);
-            if (hostConfig.MaskedPathsOption.IsSet)
-            {
-                writer.WritePropertyName("MaskedPaths");
-                JsonSerializer.Serialize(writer, hostConfig.MaskedPaths, jsonSerializerOptions);
-            }
-            if (hostConfig.ReadonlyPathsOption.IsSet)
-            {
-                writer.WritePropertyName("ReadonlyPaths");
-                JsonSerializer.Serialize(writer, hostConfig.ReadonlyPaths, jsonSerializerOptions);
-            }
         }
     }
 }

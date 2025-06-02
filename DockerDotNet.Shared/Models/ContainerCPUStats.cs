@@ -20,35 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// CPU related info of the container 
     /// </summary>
-    public partial class ContainerCPUStats : IValidatableObject
+    public partial class ContainerCPUStats
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ContainerCPUStats" /> class.
-        /// </summary>
-        /// <param name="cpuUsage">cpuUsage</param>
-        /// <param name="systemCpuUsage">System Usage.  This field is Linux-specific and omitted for Windows containers. </param>
-        /// <param name="onlineCpus">Number of online CPUs.  This field is Linux-specific and omitted for Windows containers. </param>
-        /// <param name="throttlingData">throttlingData</param>
-        [JsonConstructor]
-        public ContainerCPUStats(Option<ContainerCPUUsage?> cpuUsage = default, Option<ulong?> systemCpuUsage = default, Option<uint?> onlineCpus = default, Option<ContainerThrottlingData?> throttlingData = default)
-        {
-            CpuUsageOption = cpuUsage;
-            SystemCpuUsageOption = systemCpuUsage;
-            OnlineCpusOption = onlineCpus;
-            ThrottlingDataOption = throttlingData;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Used to track the state of CpuUsage
         /// </summary>
@@ -67,7 +48,7 @@ namespace DockerDotNet.Shared.Models
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<ulong?> SystemCpuUsageOption { get; private set; }
+        public Option<int?> SystemCpuUsageOption { get; private set; }
 
         /// <summary>
         /// System Usage.  This field is Linux-specific and omitted for Windows containers. 
@@ -75,14 +56,14 @@ namespace DockerDotNet.Shared.Models
         /// <value>System Usage.  This field is Linux-specific and omitted for Windows containers. </value>
         /* <example>5</example> */
         [JsonPropertyName("system_cpu_usage")]
-        public ulong? SystemCpuUsage { get { return this.SystemCpuUsageOption; } set { this.SystemCpuUsageOption = new(value); } }
+        public int? SystemCpuUsage { get { return this.SystemCpuUsageOption; } set { this.SystemCpuUsageOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of OnlineCpus
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<uint?> OnlineCpusOption { get; private set; }
+        public Option<int?> OnlineCpusOption { get; private set; }
 
         /// <summary>
         /// Number of online CPUs.  This field is Linux-specific and omitted for Windows containers. 
@@ -90,7 +71,7 @@ namespace DockerDotNet.Shared.Models
         /// <value>Number of online CPUs.  This field is Linux-specific and omitted for Windows containers. </value>
         /* <example>5</example> */
         [JsonPropertyName("online_cpus")]
-        public uint? OnlineCpus { get { return this.OnlineCpusOption; } set { this.OnlineCpusOption = new(value); } }
+        public int? OnlineCpus { get { return this.OnlineCpusOption; } set { this.OnlineCpusOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of ThrottlingData
@@ -119,138 +100,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  ThrottlingData: ").Append(ThrottlingData).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="ContainerCPUStats" />
-    /// </summary>
-    public class ContainerCPUStatsJsonConverter : JsonConverter<ContainerCPUStats>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="ContainerCPUStats" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override ContainerCPUStats Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<ContainerCPUUsage?> cpuUsage = default;
-            Option<ulong?> systemCpuUsage = default;
-            Option<uint?> onlineCpus = default;
-            Option<ContainerThrottlingData?> throttlingData = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "cpu_usage":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                cpuUsage = new Option<ContainerCPUUsage?>(JsonSerializer.Deserialize<ContainerCPUUsage>(ref utf8JsonReader, jsonSerializerOptions));
-                            break;
-                        case "system_cpu_usage":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                systemCpuUsage = new Option<ulong?>(utf8JsonReader.GetUInt64());
-                            break;
-                        case "online_cpus":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                onlineCpus = new Option<uint?>(utf8JsonReader.GetUInt32());
-                            break;
-                        case "throttling_data":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                throttlingData = new Option<ContainerThrottlingData?>(JsonSerializer.Deserialize<ContainerThrottlingData>(ref utf8JsonReader, jsonSerializerOptions));
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            return new ContainerCPUStats(cpuUsage, systemCpuUsage, onlineCpus, throttlingData);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="ContainerCPUStats" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="containerCPUStats"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, ContainerCPUStats containerCPUStats, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, containerCPUStats, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="ContainerCPUStats" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="containerCPUStats"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, ContainerCPUStats containerCPUStats, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (containerCPUStats.CpuUsageOption.IsSet)
-                if (containerCPUStats.CpuUsageOption.Value != null)
-                {
-                    writer.WritePropertyName("cpu_usage");
-                    JsonSerializer.Serialize(writer, containerCPUStats.CpuUsage, jsonSerializerOptions);
-                }
-                else
-                    writer.WriteNull("cpu_usage");
-            if (containerCPUStats.SystemCpuUsageOption.IsSet)
-                if (containerCPUStats.SystemCpuUsageOption.Value != null)
-                    writer.WriteNumber("system_cpu_usage", containerCPUStats.SystemCpuUsageOption.Value!.Value);
-                else
-                    writer.WriteNull("system_cpu_usage");
-
-            if (containerCPUStats.OnlineCpusOption.IsSet)
-                if (containerCPUStats.OnlineCpusOption.Value != null)
-                    writer.WriteNumber("online_cpus", containerCPUStats.OnlineCpusOption.Value!.Value);
-                else
-                    writer.WriteNull("online_cpus");
-
-            if (containerCPUStats.ThrottlingDataOption.IsSet)
-                if (containerCPUStats.ThrottlingDataOption.Value != null)
-                {
-                    writer.WritePropertyName("throttling_data");
-                    JsonSerializer.Serialize(writer, containerCPUStats.ThrottlingData, jsonSerializerOptions);
-                }
-                else
-                    writer.WriteNull("throttling_data");
         }
     }
 }

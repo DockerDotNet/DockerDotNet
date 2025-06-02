@@ -20,47 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// Volume
     /// </summary>
-    public partial class Volume : IValidatableObject
+    public partial class Volume
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Volume" /> class.
-        /// </summary>
-        /// <param name="name">Name of the volume.</param>
-        /// <param name="driver">Name of the volume driver used by the volume.</param>
-        /// <param name="mountpoint">Mount path of the volume on the host.</param>
-        /// <param name="labels">User-defined key/value metadata.</param>
-        /// <param name="options">The driver specific options used when creating the volume. </param>
-        /// <param name="createdAt">Date/Time the volume was created.</param>
-        /// <param name="status">Low-level details about the volume, provided by the volume driver. Details are returned as a map with key/value pairs: &#x60;{\&quot;key\&quot;:\&quot;value\&quot;,\&quot;key2\&quot;:\&quot;value2\&quot;}&#x60;.  The &#x60;Status&#x60; field is optional, and is omitted if the volume driver does not support this feature. </param>
-        /// <param name="scope">The level at which the volume exists. Either &#x60;global&#x60; for cluster-wide, or &#x60;local&#x60; for machine level.  (default to ScopeEnum.Local)</param>
-        /// <param name="clusterVolume">clusterVolume</param>
-        /// <param name="usageData">usageData</param>
-        [JsonConstructor]
-        public Volume(string name, string driver, string mountpoint, Dictionary<string, string> labels, Dictionary<string, string> options, Option<string?> createdAt = default, Option<Dictionary<string, Object>?> status = default, ScopeEnum scope = ScopeEnum.Local, Option<ClusterVolume?> clusterVolume = default, Option<VolumeUsageData?> usageData = default)
-        {
-            Name = name;
-            Driver = driver;
-            Mountpoint = mountpoint;
-            Labels = labels;
-            Options = options;
-            CreatedAtOption = createdAt;
-            StatusOption = status;
-            Scope = scope;
-            ClusterVolumeOption = clusterVolume;
-            UsageDataOption = usageData;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// The level at which the volume exists. Either &#x60;global&#x60; for cluster-wide, or &#x60;local&#x60; for machine level. 
         /// </summary>
@@ -78,55 +47,72 @@ namespace DockerDotNet.Shared.Models
             Global = 2
         }
 
-        /// <summary>
-        /// Returns a <see cref="ScopeEnum"/>
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public static ScopeEnum ScopeEnumFromString(string value)
+/// <summary>
+/// A Json converter for type <see cref="ScopeEnum"/>
+/// </summary>
+public class ScopeEnumJsonConverter : JsonConverter<ScopeEnum>
+{
+    public override ScopeEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        string? enumString = reader.GetString();
+        return enumString switch
         {
-            if (value.Equals("local"))
-                return ScopeEnum.Local;
+            "local" => ScopeEnum.Local,
+            "global" => ScopeEnum.Global,
+            _ => throw new JsonException($"Unknown value: {enumString}")
+        };
+    }
 
-            if (value.Equals("global"))
-                return ScopeEnum.Global;
-
-            throw new NotImplementedException($"Could not convert value to type ScopeEnum: '{value}'");
-        }
-
-        /// <summary>
-        /// Returns a <see cref="ScopeEnum"/>
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public static ScopeEnum? ScopeEnumFromStringOrDefault(string value)
+    public override void Write(Utf8JsonWriter writer, ScopeEnum value, JsonSerializerOptions options)
+    {
+        string enumString = value switch
         {
-            if (value.Equals("local"))
-                return ScopeEnum.Local;
+            ScopeEnum.Local => "local",
+            ScopeEnum.Global => "global",
+            _ => throw new JsonException($"Unknown value: {value}")
+        };
+        writer.WriteStringValue(enumString);
+    }
+}
 
-            if (value.Equals("global"))
-                return ScopeEnum.Global;
-
+/// <summary>
+/// A Json converter for nullable <see cref="ScopeEnum"/>
+/// </summary>
+public class ScopeEnumNullableJsonConverter : JsonConverter<ScopeEnum?>
+{
+    public override ScopeEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        if (reader.TokenType == JsonTokenType.Null)
             return null;
-        }
 
-        /// <summary>
-        /// Converts the <see cref="ScopeEnum"/> to the json value
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public static string ScopeEnumToJsonValue(ScopeEnum value)
+        string? enumString = reader.GetString();
+
+        return enumString switch
         {
-            if (value == ScopeEnum.Local)
-                return "local";
+            "local" => ScopeEnum.Local,
+            "global" => ScopeEnum.Global,
+            _ => throw new JsonException($"Unknown value: {enumString}")
+        };
+    }
 
-            if (value == ScopeEnum.Global)
-                return "global";
-
-            throw new NotImplementedException($"Value could not be handled: '{value}'");
+    public override void Write(Utf8JsonWriter writer, ScopeEnum? value, JsonSerializerOptions options)
+    {
+        if (value == null)
+        {
+            writer.WriteNullValue();
+            return;
         }
+
+        string enumString = value.Value switch
+        {
+            ScopeEnum.Local => "local",
+            ScopeEnum.Global => "global",
+            _ => throw new JsonException($"Unknown value: {value}")
+        };
+
+        writer.WriteStringValue(enumString);
+    }
+}
 
         /// <summary>
         /// The level at which the volume exists. Either &#x60;global&#x60; for cluster-wide, or &#x60;local&#x60; for machine level. 
@@ -252,239 +238,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  UsageData: ").Append(UsageData).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="Volume" />
-    /// </summary>
-    public class VolumeJsonConverter : JsonConverter<Volume>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="Volume" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override Volume Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<string?> name = default;
-            Option<string?> driver = default;
-            Option<string?> mountpoint = default;
-            Option<Dictionary<string, string>?> labels = default;
-            Option<Dictionary<string, string>?> options = default;
-            Option<string?> createdAt = default;
-            Option<Dictionary<string, Object>?> status = default;
-            Option<Volume.ScopeEnum?> scope = default;
-            Option<ClusterVolume?> clusterVolume = default;
-            Option<VolumeUsageData?> usageData = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "Name":
-                            name = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "Driver":
-                            driver = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "Mountpoint":
-                            mountpoint = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "Labels":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                labels = new Option<Dictionary<string, string>?>(JsonSerializer.Deserialize<Dictionary<string, string>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "Options":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                options = new Option<Dictionary<string, string>?>(JsonSerializer.Deserialize<Dictionary<string, string>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "CreatedAt":
-                            createdAt = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "Status":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                status = new Option<Dictionary<string, Object>?>(JsonSerializer.Deserialize<Dictionary<string, Object>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "Scope":
-                            string? scopeRawValue = utf8JsonReader.GetString();
-                            if (scopeRawValue != null)
-                                scope = new Option<Volume.ScopeEnum?>(Volume.ScopeEnumFromStringOrDefault(scopeRawValue));
-                            break;
-                        case "ClusterVolume":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                clusterVolume = new Option<ClusterVolume?>(JsonSerializer.Deserialize<ClusterVolume>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "UsageData":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                usageData = new Option<VolumeUsageData?>(JsonSerializer.Deserialize<VolumeUsageData>(ref utf8JsonReader, jsonSerializerOptions));
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            //if (!name.IsSet)
-            //    throw new ArgumentException("Property is required for class Volume.", nameof(name));
-
-            //if (!driver.IsSet)
-            //    throw new ArgumentException("Property is required for class Volume.", nameof(driver));
-
-            //if (!mountpoint.IsSet)
-            //    throw new ArgumentException("Property is required for class Volume.", nameof(mountpoint));
-
-            //if (!labels.IsSet)
-            //    throw new ArgumentException("Property is required for class Volume.", nameof(labels));
-
-            //if (!options.IsSet)
-            //    throw new ArgumentException("Property is required for class Volume.", nameof(options));
-
-            //if (!scope.IsSet)
-            //    throw new ArgumentException("Property is required for class Volume.", nameof(scope));
-
-            //if (name.IsSet && name.Value == null)
-            //    throw new ArgumentNullException(nameof(name), "Property is not nullable for class Volume.");
-
-            //if (driver.IsSet && driver.Value == null)
-            //    throw new ArgumentNullException(nameof(driver), "Property is not nullable for class Volume.");
-
-            //if (mountpoint.IsSet && mountpoint.Value == null)
-            //    throw new ArgumentNullException(nameof(mountpoint), "Property is not nullable for class Volume.");
-
-            //if (labels.IsSet && labels.Value == null)
-            //    throw new ArgumentNullException(nameof(labels), "Property is not nullable for class Volume.");
-
-            //if (options.IsSet && options.Value == null)
-            //    throw new ArgumentNullException(nameof(options), "Property is not nullable for class Volume.");
-
-            //if (createdAt.IsSet && createdAt.Value == null)
-            //    throw new ArgumentNullException(nameof(createdAt), "Property is not nullable for class Volume.");
-
-            //if (status.IsSet && status.Value == null)
-            //    throw new ArgumentNullException(nameof(status), "Property is not nullable for class Volume.");
-
-            //if (scope.IsSet && scope.Value == null)
-            //    throw new ArgumentNullException(nameof(scope), "Property is not nullable for class Volume.");
-
-            //if (clusterVolume.IsSet && clusterVolume.Value == null)
-            //    throw new ArgumentNullException(nameof(clusterVolume), "Property is not nullable for class Volume.");
-
-            return new Volume(name.Value!, driver.Value!, mountpoint.Value!, labels.Value!, options.Value!, createdAt, status, scope.Value!.Value!, clusterVolume, usageData);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="Volume" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="volume"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, Volume volume, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, volume, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="Volume" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="volume"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, Volume volume, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (volume.Name == null)
-                throw new ArgumentNullException(nameof(volume.Name), "Property is required for class Volume.");
-
-            if (volume.Driver == null)
-                throw new ArgumentNullException(nameof(volume.Driver), "Property is required for class Volume.");
-
-            if (volume.Mountpoint == null)
-                throw new ArgumentNullException(nameof(volume.Mountpoint), "Property is required for class Volume.");
-
-            if (volume.Labels == null)
-                throw new ArgumentNullException(nameof(volume.Labels), "Property is required for class Volume.");
-
-            if (volume.Options == null)
-                throw new ArgumentNullException(nameof(volume.Options), "Property is required for class Volume.");
-
-            if (volume.CreatedAtOption.IsSet && volume.CreatedAt == null)
-                throw new ArgumentNullException(nameof(volume.CreatedAt), "Property is required for class Volume.");
-
-            if (volume.StatusOption.IsSet && volume.Status == null)
-                throw new ArgumentNullException(nameof(volume.Status), "Property is required for class Volume.");
-
-            if (volume.ClusterVolumeOption.IsSet && volume.ClusterVolume == null)
-                throw new ArgumentNullException(nameof(volume.ClusterVolume), "Property is required for class Volume.");
-
-            writer.WriteString("Name", volume.Name);
-
-            writer.WriteString("Driver", volume.Driver);
-
-            writer.WriteString("Mountpoint", volume.Mountpoint);
-
-            writer.WritePropertyName("Labels");
-            JsonSerializer.Serialize(writer, volume.Labels, jsonSerializerOptions);
-            writer.WritePropertyName("Options");
-            JsonSerializer.Serialize(writer, volume.Options, jsonSerializerOptions);
-            if (volume.CreatedAtOption.IsSet)
-                writer.WriteString("CreatedAt", volume.CreatedAt);
-
-            if (volume.StatusOption.IsSet)
-            {
-                writer.WritePropertyName("Status");
-                JsonSerializer.Serialize(writer, volume.Status, jsonSerializerOptions);
-            }
-            var scopeRawValue = Volume.ScopeEnumToJsonValue(volume.Scope);
-            writer.WriteString("Scope", scopeRawValue);
-            if (volume.ClusterVolumeOption.IsSet)
-            {
-                writer.WritePropertyName("ClusterVolume");
-                JsonSerializer.Serialize(writer, volume.ClusterVolume, jsonSerializerOptions);
-            }
-            if (volume.UsageDataOption.IsSet)
-                if (volume.UsageDataOption.Value != null)
-                {
-                    writer.WritePropertyName("UsageData");
-                    JsonSerializer.Serialize(writer, volume.UsageData, jsonSerializerOptions);
-                }
-                else
-                    writer.WriteNull("UsageData");
         }
     }
 }

@@ -20,37 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// CA configuration.
     /// </summary>
-    public partial class SwarmSpecCAConfig : IValidatableObject
+    public partial class SwarmSpecCAConfig
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SwarmSpecCAConfig" /> class.
-        /// </summary>
-        /// <param name="nodeCertExpiry">The duration node certificates are issued for.</param>
-        /// <param name="externalCAs">Configuration for forwarding signing requests to an external certificate authority. </param>
-        /// <param name="signingCACert">The desired signing CA certificate for all swarm node TLS leaf certificates, in PEM format. </param>
-        /// <param name="signingCAKey">The desired signing CA key for all swarm node TLS leaf certificates, in PEM format. </param>
-        /// <param name="forceRotate">An integer whose purpose is to force swarm to generate a new signing CA certificate and key, if none have been specified in &#x60;SigningCACert&#x60; and &#x60;SigningCAKey&#x60; </param>
-        [JsonConstructor]
-        public SwarmSpecCAConfig(Option<long?> nodeCertExpiry = default, Option<List<SwarmSpecCAConfigExternalCAsInner>?> externalCAs = default, Option<string?> signingCACert = default, Option<string?> signingCAKey = default, Option<int?> forceRotate = default)
-        {
-            NodeCertExpiryOption = nodeCertExpiry;
-            ExternalCAsOption = externalCAs;
-            SigningCACertOption = signingCACert;
-            SigningCAKeyOption = signingCAKey;
-            ForceRotateOption = forceRotate;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Used to track the state of NodeCertExpiry
         /// </summary>
@@ -137,153 +116,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  ForceRotate: ").Append(ForceRotate).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="SwarmSpecCAConfig" />
-    /// </summary>
-    public class SwarmSpecCAConfigJsonConverter : JsonConverter<SwarmSpecCAConfig>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="SwarmSpecCAConfig" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override SwarmSpecCAConfig Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<long?> nodeCertExpiry = default;
-            Option<List<SwarmSpecCAConfigExternalCAsInner>?> externalCAs = default;
-            Option<string?> signingCACert = default;
-            Option<string?> signingCAKey = default;
-            Option<int?> forceRotate = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "NodeCertExpiry":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                nodeCertExpiry = new Option<long?>(utf8JsonReader.GetInt64());
-                            break;
-                        case "ExternalCAs":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                externalCAs = new Option<List<SwarmSpecCAConfigExternalCAsInner>?>(JsonSerializer.Deserialize<List<SwarmSpecCAConfigExternalCAsInner>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "SigningCACert":
-                            signingCACert = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "SigningCAKey":
-                            signingCAKey = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "ForceRotate":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                forceRotate = new Option<int?>(utf8JsonReader.GetInt32());
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (nodeCertExpiry.IsSet && nodeCertExpiry.Value == null)
-                throw new ArgumentNullException(nameof(nodeCertExpiry), "Property is not nullable for class SwarmSpecCAConfig.");
-
-            if (externalCAs.IsSet && externalCAs.Value == null)
-                throw new ArgumentNullException(nameof(externalCAs), "Property is not nullable for class SwarmSpecCAConfig.");
-
-            if (signingCACert.IsSet && signingCACert.Value == null)
-                throw new ArgumentNullException(nameof(signingCACert), "Property is not nullable for class SwarmSpecCAConfig.");
-
-            if (signingCAKey.IsSet && signingCAKey.Value == null)
-                throw new ArgumentNullException(nameof(signingCAKey), "Property is not nullable for class SwarmSpecCAConfig.");
-
-            if (forceRotate.IsSet && forceRotate.Value == null)
-                throw new ArgumentNullException(nameof(forceRotate), "Property is not nullable for class SwarmSpecCAConfig.");
-
-            return new SwarmSpecCAConfig(nodeCertExpiry, externalCAs, signingCACert, signingCAKey, forceRotate);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="SwarmSpecCAConfig" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="swarmSpecCAConfig"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, SwarmSpecCAConfig swarmSpecCAConfig, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, swarmSpecCAConfig, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="SwarmSpecCAConfig" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="swarmSpecCAConfig"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, SwarmSpecCAConfig swarmSpecCAConfig, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (swarmSpecCAConfig.ExternalCAsOption.IsSet && swarmSpecCAConfig.ExternalCAs == null)
-                throw new ArgumentNullException(nameof(swarmSpecCAConfig.ExternalCAs), "Property is required for class SwarmSpecCAConfig.");
-
-            if (swarmSpecCAConfig.SigningCACertOption.IsSet && swarmSpecCAConfig.SigningCACert == null)
-                throw new ArgumentNullException(nameof(swarmSpecCAConfig.SigningCACert), "Property is required for class SwarmSpecCAConfig.");
-
-            if (swarmSpecCAConfig.SigningCAKeyOption.IsSet && swarmSpecCAConfig.SigningCAKey == null)
-                throw new ArgumentNullException(nameof(swarmSpecCAConfig.SigningCAKey), "Property is required for class SwarmSpecCAConfig.");
-
-            if (swarmSpecCAConfig.NodeCertExpiryOption.IsSet)
-                writer.WriteNumber("NodeCertExpiry", swarmSpecCAConfig.NodeCertExpiryOption.Value!.Value);
-
-            if (swarmSpecCAConfig.ExternalCAsOption.IsSet)
-            {
-                writer.WritePropertyName("ExternalCAs");
-                JsonSerializer.Serialize(writer, swarmSpecCAConfig.ExternalCAs, jsonSerializerOptions);
-            }
-            if (swarmSpecCAConfig.SigningCACertOption.IsSet)
-                writer.WriteString("SigningCACert", swarmSpecCAConfig.SigningCACert);
-
-            if (swarmSpecCAConfig.SigningCAKeyOption.IsSet)
-                writer.WriteString("SigningCAKey", swarmSpecCAConfig.SigningCAKey);
-
-            if (swarmSpecCAConfig.ForceRotateOption.IsSet)
-                writer.WriteNumber("ForceRotate", swarmSpecCAConfig.ForceRotateOption.Value!.Value);
         }
     }
 }

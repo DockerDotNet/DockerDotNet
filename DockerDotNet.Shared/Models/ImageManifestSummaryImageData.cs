@@ -20,33 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// The image data for the image manifest. This field is only populated when Kind is \&quot;image\&quot;. 
     /// </summary>
-    public partial class ImageManifestSummaryImageData : IValidatableObject
+    public partial class ImageManifestSummaryImageData
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ImageManifestSummaryImageData" /> class.
-        /// </summary>
-        /// <param name="containers">The IDs of the containers that are using this image. </param>
-        /// <param name="size">size</param>
-        /// <param name="platform">platform</param>
-        [JsonConstructor]
-        public ImageManifestSummaryImageData(List<string> containers, ImageManifestSummaryImageDataSize size, OCIPlatform? platform = default)
-        {
-            Containers = containers;
-            Size = size;
-            Platform = platform;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// The IDs of the containers that are using this image. 
         /// </summary>
@@ -80,137 +63,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  Platform: ").Append(Platform).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="ImageManifestSummaryImageData" />
-    /// </summary>
-    public class ImageManifestSummaryImageDataJsonConverter : JsonConverter<ImageManifestSummaryImageData>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="ImageManifestSummaryImageData" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override ImageManifestSummaryImageData Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<List<string>?> containers = default;
-            Option<ImageManifestSummaryImageDataSize?> size = default;
-            Option<OCIPlatform?> platform = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "Containers":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                containers = new Option<List<string>?>(JsonSerializer.Deserialize<List<string>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "Size":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                size = new Option<ImageManifestSummaryImageDataSize?>(JsonSerializer.Deserialize<ImageManifestSummaryImageDataSize>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "Platform":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                platform = new Option<OCIPlatform?>(JsonSerializer.Deserialize<OCIPlatform>(ref utf8JsonReader, jsonSerializerOptions));
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (!containers.IsSet)
-                throw new ArgumentException("Property is required for class ImageManifestSummaryImageData.", nameof(containers));
-
-            if (!size.IsSet)
-                throw new ArgumentException("Property is required for class ImageManifestSummaryImageData.", nameof(size));
-
-            if (!platform.IsSet)
-                throw new ArgumentException("Property is required for class ImageManifestSummaryImageData.", nameof(platform));
-
-            if (containers.IsSet && containers.Value == null)
-                throw new ArgumentNullException(nameof(containers), "Property is not nullable for class ImageManifestSummaryImageData.");
-
-            if (size.IsSet && size.Value == null)
-                throw new ArgumentNullException(nameof(size), "Property is not nullable for class ImageManifestSummaryImageData.");
-
-            return new ImageManifestSummaryImageData(containers.Value!, size.Value!, platform.Value!);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="ImageManifestSummaryImageData" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="imageManifestSummaryImageData"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, ImageManifestSummaryImageData imageManifestSummaryImageData, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, imageManifestSummaryImageData, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="ImageManifestSummaryImageData" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="imageManifestSummaryImageData"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, ImageManifestSummaryImageData imageManifestSummaryImageData, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (imageManifestSummaryImageData.Containers == null)
-                throw new ArgumentNullException(nameof(imageManifestSummaryImageData.Containers), "Property is required for class ImageManifestSummaryImageData.");
-
-            if (imageManifestSummaryImageData.Size == null)
-                throw new ArgumentNullException(nameof(imageManifestSummaryImageData.Size), "Property is required for class ImageManifestSummaryImageData.");
-
-            writer.WritePropertyName("Containers");
-            JsonSerializer.Serialize(writer, imageManifestSummaryImageData.Containers, jsonSerializerOptions);
-            writer.WritePropertyName("Size");
-            JsonSerializer.Serialize(writer, imageManifestSummaryImageData.Size, jsonSerializerOptions);
-            if (imageManifestSummaryImageData.Platform != null)
-            {
-                writer.WritePropertyName("Platform");
-                JsonSerializer.Serialize(writer, imageManifestSummaryImageData.Platform, jsonSerializerOptions);
-            }
-            else
-                writer.WriteNull("Platform");
         }
     }
 }

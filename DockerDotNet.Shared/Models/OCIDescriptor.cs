@@ -20,43 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// A descriptor struct containing digest, media type, and size, as defined in the [OCI Content Descriptors Specification](https://github.com/opencontainers/image-spec/blob/v1.0.1/descriptor.md). 
     /// </summary>
-    public partial class OCIDescriptor : IValidatableObject
+    public partial class OCIDescriptor
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="OCIDescriptor" /> class.
-        /// </summary>
-        /// <param name="mediaType">The media type of the object this schema refers to. </param>
-        /// <param name="digest">The digest of the targeted content. </param>
-        /// <param name="size">The size in bytes of the blob. </param>
-        /// <param name="urls">List of URLs from which this object MAY be downloaded.</param>
-        /// <param name="annotations">Arbitrary metadata relating to the targeted content.</param>
-        /// <param name="data">Data is an embedding of the targeted content. This is encoded as a base64 string when marshalled to JSON (automatically, by encoding/json). If present, Data can be used directly to avoid fetching the targeted content.</param>
-        /// <param name="platform">platform</param>
-        /// <param name="artifactType">ArtifactType is the IANA media type of this artifact.</param>
-        [JsonConstructor]
-        public OCIDescriptor(Option<string?> mediaType = default, Option<string?> digest = default, Option<long?> size = default, Option<List<string>?> urls = default, Option<Dictionary<string, string>?> annotations = default, Option<string?> data = default, Option<OCIPlatform?> platform = default, Option<string?> artifactType = default)
-        {
-            MediaTypeOption = mediaType;
-            DigestOption = digest;
-            SizeOption = size;
-            UrlsOption = urls;
-            AnnotationsOption = annotations;
-            DataOption = data;
-            PlatformOption = platform;
-            ArtifactTypeOption = artifactType;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Used to track the state of MediaType
         /// </summary>
@@ -190,185 +163,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  ArtifactType: ").Append(ArtifactType).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="OCIDescriptor" />
-    /// </summary>
-    public class OCIDescriptorJsonConverter : JsonConverter<OCIDescriptor>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="OCIDescriptor" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override OCIDescriptor Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<string?> mediaType = default;
-            Option<string?> digest = default;
-            Option<long?> size = default;
-            Option<List<string>?> urls = default;
-            Option<Dictionary<string, string>?> annotations = default;
-            Option<string?> data = default;
-            Option<OCIPlatform?> platform = default;
-            Option<string?> artifactType = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "mediaType":
-                            mediaType = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "digest":
-                            digest = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "size":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                size = new Option<long?>(utf8JsonReader.GetInt64());
-                            break;
-                        case "urls":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                urls = new Option<List<string>?>(JsonSerializer.Deserialize<List<string>>(ref utf8JsonReader, jsonSerializerOptions));
-                            break;
-                        case "annotations":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                annotations = new Option<Dictionary<string, string>?>(JsonSerializer.Deserialize<Dictionary<string, string>>(ref utf8JsonReader, jsonSerializerOptions));
-                            break;
-                        case "data":
-                            data = new Option<string?>(utf8JsonReader.GetString());
-                            break;
-                        case "platform":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                platform = new Option<OCIPlatform?>(JsonSerializer.Deserialize<OCIPlatform>(ref utf8JsonReader, jsonSerializerOptions));
-                            break;
-                        case "artifactType":
-                            artifactType = new Option<string?>(utf8JsonReader.GetString());
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (mediaType.IsSet && mediaType.Value == null)
-                throw new ArgumentNullException(nameof(mediaType), "Property is not nullable for class OCIDescriptor.");
-
-            if (digest.IsSet && digest.Value == null)
-                throw new ArgumentNullException(nameof(digest), "Property is not nullable for class OCIDescriptor.");
-
-            if (size.IsSet && size.Value == null)
-                throw new ArgumentNullException(nameof(size), "Property is not nullable for class OCIDescriptor.");
-
-            return new OCIDescriptor(mediaType, digest, size, urls, annotations, data, platform, artifactType);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="OCIDescriptor" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="oCIDescriptor"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, OCIDescriptor oCIDescriptor, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, oCIDescriptor, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="OCIDescriptor" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="oCIDescriptor"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, OCIDescriptor oCIDescriptor, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (oCIDescriptor.MediaTypeOption.IsSet && oCIDescriptor.MediaType == null)
-                throw new ArgumentNullException(nameof(oCIDescriptor.MediaType), "Property is required for class OCIDescriptor.");
-
-            if (oCIDescriptor.DigestOption.IsSet && oCIDescriptor.Digest == null)
-                throw new ArgumentNullException(nameof(oCIDescriptor.Digest), "Property is required for class OCIDescriptor.");
-
-            if (oCIDescriptor.MediaTypeOption.IsSet)
-                writer.WriteString("mediaType", oCIDescriptor.MediaType);
-
-            if (oCIDescriptor.DigestOption.IsSet)
-                writer.WriteString("digest", oCIDescriptor.Digest);
-
-            if (oCIDescriptor.SizeOption.IsSet)
-                writer.WriteNumber("size", oCIDescriptor.SizeOption.Value!.Value);
-
-            if (oCIDescriptor.UrlsOption.IsSet)
-                if (oCIDescriptor.UrlsOption.Value != null)
-                {
-                    writer.WritePropertyName("urls");
-                    JsonSerializer.Serialize(writer, oCIDescriptor.Urls, jsonSerializerOptions);
-                }
-                else
-                    writer.WriteNull("urls");
-            if (oCIDescriptor.AnnotationsOption.IsSet)
-                if (oCIDescriptor.AnnotationsOption.Value != null)
-                {
-                    writer.WritePropertyName("annotations");
-                    JsonSerializer.Serialize(writer, oCIDescriptor.Annotations, jsonSerializerOptions);
-                }
-                else
-                    writer.WriteNull("annotations");
-            if (oCIDescriptor.DataOption.IsSet)
-                if (oCIDescriptor.DataOption.Value != null)
-                    writer.WriteString("data", oCIDescriptor.Data);
-                else
-                    writer.WriteNull("data");
-
-            if (oCIDescriptor.PlatformOption.IsSet)
-                if (oCIDescriptor.PlatformOption.Value != null)
-                {
-                    writer.WritePropertyName("platform");
-                    JsonSerializer.Serialize(writer, oCIDescriptor.Platform, jsonSerializerOptions);
-                }
-                else
-                    writer.WriteNull("platform");
-            if (oCIDescriptor.ArtifactTypeOption.IsSet)
-                if (oCIDescriptor.ArtifactTypeOption.Value != null)
-                    writer.WriteString("artifactType", oCIDescriptor.ArtifactType);
-                else
-                    writer.WriteNull("artifactType");
         }
     }
 }

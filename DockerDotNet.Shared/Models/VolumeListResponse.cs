@@ -20,31 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// Volume list response
     /// </summary>
-    public partial class VolumeListResponse : IValidatableObject
+    public partial class VolumeListResponse
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="VolumeListResponse" /> class.
-        /// </summary>
-        /// <param name="volumes">List of volumes</param>
-        /// <param name="warnings">Warnings that occurred when fetching the list of volumes. </param>
-        [JsonConstructor]
-        public VolumeListResponse(Option<List<Volume>?> volumes = default, Option<List<string>?> warnings = default)
-        {
-            VolumesOption = volumes;
-            WarningsOption = warnings;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Used to track the state of Volumes
         /// </summary>
@@ -86,122 +71,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  Warnings: ").Append(Warnings).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="VolumeListResponse" />
-    /// </summary>
-    public class VolumeListResponseJsonConverter : JsonConverter<VolumeListResponse>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="VolumeListResponse" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override VolumeListResponse Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<List<Volume>?> volumes = default;
-            Option<List<string>?> warnings = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "Volumes":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                volumes = new Option<List<Volume>?>(JsonSerializer.Deserialize<List<Volume>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "Warnings":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                warnings = new Option<List<string>?>(JsonSerializer.Deserialize<List<string>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (volumes.IsSet && volumes.Value == null)
-                throw new ArgumentNullException(nameof(volumes), "Property is not nullable for class VolumeListResponse.");
-
-            if (warnings.IsSet && warnings.Value == null)
-                throw new ArgumentNullException(nameof(warnings), "Property is not nullable for class VolumeListResponse.");
-
-            return new VolumeListResponse(volumes, warnings);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="VolumeListResponse" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="volumeListResponse"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, VolumeListResponse volumeListResponse, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, volumeListResponse, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="VolumeListResponse" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="volumeListResponse"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, VolumeListResponse volumeListResponse, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (volumeListResponse.VolumesOption.IsSet && volumeListResponse.Volumes == null)
-                throw new ArgumentNullException(nameof(volumeListResponse.Volumes), "Property is required for class VolumeListResponse.");
-
-            if (volumeListResponse.WarningsOption.IsSet && volumeListResponse.Warnings == null)
-                throw new ArgumentNullException(nameof(volumeListResponse.Warnings), "Property is required for class VolumeListResponse.");
-
-            if (volumeListResponse.VolumesOption.IsSet)
-            {
-                writer.WritePropertyName("Volumes");
-                JsonSerializer.Serialize(writer, volumeListResponse.Volumes, jsonSerializerOptions);
-            }
-            if (volumeListResponse.WarningsOption.IsSet)
-            {
-                writer.WritePropertyName("Warnings");
-                JsonSerializer.Serialize(writer, volumeListResponse.Warnings, jsonSerializerOptions);
-            }
         }
     }
 }

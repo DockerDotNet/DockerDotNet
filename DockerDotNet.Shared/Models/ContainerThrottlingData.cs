@@ -20,39 +20,22 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// CPU throttling stats of the container.  This type is Linux-specific and omitted for Windows containers. 
     /// </summary>
-    public partial class ContainerThrottlingData : IValidatableObject
+    public partial class ContainerThrottlingData
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ContainerThrottlingData" /> class.
-        /// </summary>
-        /// <param name="periods">Number of periods with throttling active. </param>
-        /// <param name="throttledPeriods">Number of periods when the container hit its throttling limit. </param>
-        /// <param name="throttledTime">Aggregated time (in nanoseconds) the container was throttled for. </param>
-        [JsonConstructor]
-        public ContainerThrottlingData(Option<ulong?> periods = default, Option<ulong?> throttledPeriods = default, Option<ulong?> throttledTime = default)
-        {
-            PeriodsOption = periods;
-            ThrottledPeriodsOption = throttledPeriods;
-            ThrottledTimeOption = throttledTime;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Used to track the state of Periods
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<ulong?> PeriodsOption { get; private set; }
+        public Option<int?> PeriodsOption { get; private set; }
 
         /// <summary>
         /// Number of periods with throttling active. 
@@ -60,14 +43,14 @@ namespace DockerDotNet.Shared.Models
         /// <value>Number of periods with throttling active. </value>
         /* <example>0</example> */
         [JsonPropertyName("periods")]
-        public ulong? Periods { get { return this.PeriodsOption; } set { this.PeriodsOption = new(value); } }
+        public int? Periods { get { return this.PeriodsOption; } set { this.PeriodsOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of ThrottledPeriods
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<ulong?> ThrottledPeriodsOption { get; private set; }
+        public Option<int?> ThrottledPeriodsOption { get; private set; }
 
         /// <summary>
         /// Number of periods when the container hit its throttling limit. 
@@ -75,14 +58,14 @@ namespace DockerDotNet.Shared.Models
         /// <value>Number of periods when the container hit its throttling limit. </value>
         /* <example>0</example> */
         [JsonPropertyName("throttled_periods")]
-        public ulong? ThrottledPeriods { get { return this.ThrottledPeriodsOption; } set { this.ThrottledPeriodsOption = new(value); } }
+        public int? ThrottledPeriods { get { return this.ThrottledPeriodsOption; } set { this.ThrottledPeriodsOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of ThrottledTime
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<ulong?> ThrottledTimeOption { get; private set; }
+        public Option<int?> ThrottledTimeOption { get; private set; }
 
         /// <summary>
         /// Aggregated time (in nanoseconds) the container was throttled for. 
@@ -90,7 +73,7 @@ namespace DockerDotNet.Shared.Models
         /// <value>Aggregated time (in nanoseconds) the container was throttled for. </value>
         /* <example>0</example> */
         [JsonPropertyName("throttled_time")]
-        public ulong? ThrottledTime { get { return this.ThrottledTimeOption; } set { this.ThrottledTimeOption = new(value); } }
+        public int? ThrottledTime { get { return this.ThrottledTimeOption; } set { this.ThrottledTimeOption = new(value); } }
 
         /// <summary>
         /// Returns the string presentation of the object
@@ -105,122 +88,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  ThrottledTime: ").Append(ThrottledTime).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="ContainerThrottlingData" />
-    /// </summary>
-    public class ContainerThrottlingDataJsonConverter : JsonConverter<ContainerThrottlingData>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="ContainerThrottlingData" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override ContainerThrottlingData Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<ulong?> periods = default;
-            Option<ulong?> throttledPeriods = default;
-            Option<ulong?> throttledTime = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "periods":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                periods = new Option<ulong?>(utf8JsonReader.GetUInt64());
-                            break;
-                        case "throttled_periods":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                throttledPeriods = new Option<ulong?>(utf8JsonReader.GetUInt64());
-                            break;
-                        case "throttled_time":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                throttledTime = new Option<ulong?>(utf8JsonReader.GetUInt64());
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (periods.IsSet && periods.Value == null)
-                throw new ArgumentNullException(nameof(periods), "Property is not nullable for class ContainerThrottlingData.");
-
-            if (throttledPeriods.IsSet && throttledPeriods.Value == null)
-                throw new ArgumentNullException(nameof(throttledPeriods), "Property is not nullable for class ContainerThrottlingData.");
-
-            if (throttledTime.IsSet && throttledTime.Value == null)
-                throw new ArgumentNullException(nameof(throttledTime), "Property is not nullable for class ContainerThrottlingData.");
-
-            return new ContainerThrottlingData(periods, throttledPeriods, throttledTime);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="ContainerThrottlingData" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="containerThrottlingData"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, ContainerThrottlingData containerThrottlingData, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, containerThrottlingData, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="ContainerThrottlingData" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="containerThrottlingData"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, ContainerThrottlingData containerThrottlingData, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (containerThrottlingData.PeriodsOption.IsSet)
-                writer.WriteNumber("periods", containerThrottlingData.PeriodsOption.Value!.Value);
-
-            if (containerThrottlingData.ThrottledPeriodsOption.IsSet)
-                writer.WriteNumber("throttled_periods", containerThrottlingData.ThrottledPeriodsOption.Value!.Value);
-
-            if (containerThrottlingData.ThrottledTimeOption.IsSet)
-                writer.WriteNumber("throttled_time", containerThrottlingData.ThrottledTimeOption.Value!.Value);
         }
     }
 }

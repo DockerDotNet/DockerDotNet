@@ -20,31 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// ProgressDetail
     /// </summary>
-    public partial class ProgressDetail : IValidatableObject
+    public partial class ProgressDetail
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ProgressDetail" /> class.
-        /// </summary>
-        /// <param name="current">current</param>
-        /// <param name="total">total</param>
-        [JsonConstructor]
-        public ProgressDetail(Option<int?> current = default, Option<int?> total = default)
-        {
-            CurrentOption = current;
-            TotalOption = total;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Used to track the state of Current
         /// </summary>
@@ -83,111 +68,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  Total: ").Append(Total).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="ProgressDetail" />
-    /// </summary>
-    public class ProgressDetailJsonConverter : JsonConverter<ProgressDetail>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="ProgressDetail" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override ProgressDetail Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<int?> current = default;
-            Option<int?> total = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "current":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                current = new Option<int?>(utf8JsonReader.GetInt32());
-                            break;
-                        case "total":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                total = new Option<int?>(utf8JsonReader.GetInt32());
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (current.IsSet && current.Value == null)
-                throw new ArgumentNullException(nameof(current), "Property is not nullable for class ProgressDetail.");
-
-            if (total.IsSet && total.Value == null)
-                throw new ArgumentNullException(nameof(total), "Property is not nullable for class ProgressDetail.");
-
-            return new ProgressDetail(current, total);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="ProgressDetail" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="progressDetail"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, ProgressDetail progressDetail, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, progressDetail, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="ProgressDetail" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="progressDetail"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, ProgressDetail progressDetail, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (progressDetail.CurrentOption.IsSet)
-                writer.WriteNumber("current", progressDetail.CurrentOption.Value!.Value);
-
-            if (progressDetail.TotalOption.IsSet)
-                writer.WriteNumber("total", progressDetail.TotalOption.Value!.Value);
         }
     }
 }

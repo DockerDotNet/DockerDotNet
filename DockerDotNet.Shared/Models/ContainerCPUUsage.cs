@@ -20,41 +20,22 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// All CPU stats aggregated since container inception. 
     /// </summary>
-    public partial class ContainerCPUUsage : IValidatableObject
+    public partial class ContainerCPUUsage
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ContainerCPUUsage" /> class.
-        /// </summary>
-        /// <param name="totalUsage">Total CPU time consumed in nanoseconds (Linux) or 100&#39;s of nanoseconds (Windows). </param>
-        /// <param name="percpuUsage">Total CPU time (in nanoseconds) consumed per core (Linux).  This field is Linux-specific when using cgroups v1. It is omitted when using cgroups v2 and Windows containers. </param>
-        /// <param name="usageInKernelmode">Time (in nanoseconds) spent by tasks of the cgroup in kernel mode (Linux), or time spent (in 100&#39;s of nanoseconds) by all container processes in kernel mode (Windows).  Not populated for Windows containers using Hyper-V isolation. </param>
-        /// <param name="usageInUsermode">Time (in nanoseconds) spent by tasks of the cgroup in user mode (Linux), or time spent (in 100&#39;s of nanoseconds) by all container processes in kernel mode (Windows).  Not populated for Windows containers using Hyper-V isolation. </param>
-        [JsonConstructor]
-        public ContainerCPUUsage(Option<ulong?> totalUsage = default, Option<List<ulong>?> percpuUsage = default, Option<ulong?> usageInKernelmode = default, Option<ulong?> usageInUsermode = default)
-        {
-            TotalUsageOption = totalUsage;
-            PercpuUsageOption = percpuUsage;
-            UsageInKernelmodeOption = usageInKernelmode;
-            UsageInUsermodeOption = usageInUsermode;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Used to track the state of TotalUsage
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<ulong?> TotalUsageOption { get; private set; }
+        public Option<int?> TotalUsageOption { get; private set; }
 
         /// <summary>
         /// Total CPU time consumed in nanoseconds (Linux) or 100&#39;s of nanoseconds (Windows). 
@@ -62,28 +43,28 @@ namespace DockerDotNet.Shared.Models
         /// <value>Total CPU time consumed in nanoseconds (Linux) or 100&#39;s of nanoseconds (Windows). </value>
         /* <example>29912000</example> */
         [JsonPropertyName("total_usage")]
-        public ulong? TotalUsage { get { return this.TotalUsageOption; } set { this.TotalUsageOption = new(value); } }
+        public int? TotalUsage { get { return this.TotalUsageOption; } set { this.TotalUsageOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of PercpuUsage
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<List<ulong>?> PercpuUsageOption { get; private set; }
+        public Option<List<int>?> PercpuUsageOption { get; private set; }
 
         /// <summary>
         /// Total CPU time (in nanoseconds) consumed per core (Linux).  This field is Linux-specific when using cgroups v1. It is omitted when using cgroups v2 and Windows containers. 
         /// </summary>
         /// <value>Total CPU time (in nanoseconds) consumed per core (Linux).  This field is Linux-specific when using cgroups v1. It is omitted when using cgroups v2 and Windows containers. </value>
         [JsonPropertyName("percpu_usage")]
-        public List<ulong>? PercpuUsage { get { return this.PercpuUsageOption; } set { this.PercpuUsageOption = new(value); } }
+        public List<int>? PercpuUsage { get { return this.PercpuUsageOption; } set { this.PercpuUsageOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of UsageInKernelmode
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<ulong?> UsageInKernelmodeOption { get; private set; }
+        public Option<int?> UsageInKernelmodeOption { get; private set; }
 
         /// <summary>
         /// Time (in nanoseconds) spent by tasks of the cgroup in kernel mode (Linux), or time spent (in 100&#39;s of nanoseconds) by all container processes in kernel mode (Windows).  Not populated for Windows containers using Hyper-V isolation. 
@@ -91,14 +72,14 @@ namespace DockerDotNet.Shared.Models
         /// <value>Time (in nanoseconds) spent by tasks of the cgroup in kernel mode (Linux), or time spent (in 100&#39;s of nanoseconds) by all container processes in kernel mode (Windows).  Not populated for Windows containers using Hyper-V isolation. </value>
         /* <example>21994000</example> */
         [JsonPropertyName("usage_in_kernelmode")]
-        public ulong? UsageInKernelmode { get { return this.UsageInKernelmodeOption; } set { this.UsageInKernelmodeOption = new(value); } }
+        public int? UsageInKernelmode { get { return this.UsageInKernelmodeOption; } set { this.UsageInKernelmodeOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of UsageInUsermode
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<ulong?> UsageInUsermodeOption { get; private set; }
+        public Option<int?> UsageInUsermodeOption { get; private set; }
 
         /// <summary>
         /// Time (in nanoseconds) spent by tasks of the cgroup in user mode (Linux), or time spent (in 100&#39;s of nanoseconds) by all container processes in kernel mode (Windows).  Not populated for Windows containers using Hyper-V isolation. 
@@ -106,7 +87,7 @@ namespace DockerDotNet.Shared.Models
         /// <value>Time (in nanoseconds) spent by tasks of the cgroup in user mode (Linux), or time spent (in 100&#39;s of nanoseconds) by all container processes in kernel mode (Windows).  Not populated for Windows containers using Hyper-V isolation. </value>
         /* <example>7918000</example> */
         [JsonPropertyName("usage_in_usermode")]
-        public ulong? UsageInUsermode { get { return this.UsageInUsermodeOption; } set { this.UsageInUsermodeOption = new(value); } }
+        public int? UsageInUsermode { get { return this.UsageInUsermodeOption; } set { this.UsageInUsermodeOption = new(value); } }
 
         /// <summary>
         /// Returns the string presentation of the object
@@ -122,135 +103,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  UsageInUsermode: ").Append(UsageInUsermode).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="ContainerCPUUsage" />
-    /// </summary>
-    public class ContainerCPUUsageJsonConverter : JsonConverter<ContainerCPUUsage>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="ContainerCPUUsage" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override ContainerCPUUsage Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<ulong?> totalUsage = default;
-            Option<List<ulong>?> percpuUsage = default;
-            Option<ulong?> usageInKernelmode = default;
-            Option<ulong?> usageInUsermode = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "total_usage":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                totalUsage = new Option<ulong?>(utf8JsonReader.GetUInt64());
-                            break;
-                        case "percpu_usage":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                percpuUsage = new Option<List<ulong>?>(JsonSerializer.Deserialize<List<ulong>>(ref utf8JsonReader, jsonSerializerOptions));
-                            break;
-                        case "usage_in_kernelmode":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                usageInKernelmode = new Option<ulong?>(utf8JsonReader.GetUInt64());
-                            break;
-                        case "usage_in_usermode":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                usageInUsermode = new Option<ulong?>(utf8JsonReader.GetUInt64());
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (totalUsage.IsSet && totalUsage.Value == null)
-                throw new ArgumentNullException(nameof(totalUsage), "Property is not nullable for class ContainerCPUUsage.");
-
-            if (usageInKernelmode.IsSet && usageInKernelmode.Value == null)
-                throw new ArgumentNullException(nameof(usageInKernelmode), "Property is not nullable for class ContainerCPUUsage.");
-
-            if (usageInUsermode.IsSet && usageInUsermode.Value == null)
-                throw new ArgumentNullException(nameof(usageInUsermode), "Property is not nullable for class ContainerCPUUsage.");
-
-            return new ContainerCPUUsage(totalUsage, percpuUsage, usageInKernelmode, usageInUsermode);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="ContainerCPUUsage" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="containerCPUUsage"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, ContainerCPUUsage containerCPUUsage, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, containerCPUUsage, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="ContainerCPUUsage" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="containerCPUUsage"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, ContainerCPUUsage containerCPUUsage, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (containerCPUUsage.TotalUsageOption.IsSet)
-                writer.WriteNumber("total_usage", containerCPUUsage.TotalUsageOption.Value!.Value);
-
-            if (containerCPUUsage.PercpuUsageOption.IsSet)
-                if (containerCPUUsage.PercpuUsageOption.Value != null)
-                {
-                    writer.WritePropertyName("percpu_usage");
-                    JsonSerializer.Serialize(writer, containerCPUUsage.PercpuUsage, jsonSerializerOptions);
-                }
-                else
-                    writer.WriteNull("percpu_usage");
-            if (containerCPUUsage.UsageInKernelmodeOption.IsSet)
-                writer.WriteNumber("usage_in_kernelmode", containerCPUUsage.UsageInKernelmodeOption.Value!.Value);
-
-            if (containerCPUUsage.UsageInUsermodeOption.IsSet)
-                writer.WriteNumber("usage_in_usermode", containerCPUUsage.UsageInUsermodeOption.Value!.Value);
         }
     }
 }

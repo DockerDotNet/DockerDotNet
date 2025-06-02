@@ -20,31 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// NetworkDisconnectRequest
     /// </summary>
-    public partial class NetworkDisconnectRequest : IValidatableObject
+    public partial class NetworkDisconnectRequest
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NetworkDisconnectRequest" /> class.
-        /// </summary>
-        /// <param name="container">The ID or name of the container to disconnect from the network. </param>
-        /// <param name="force">Force the container to disconnect from the network. </param>
-        [JsonConstructor]
-        public NetworkDisconnectRequest(Option<string?> container = default, Option<bool?> force = default)
-        {
-            ContainerOption = container;
-            ForceOption = force;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Used to track the state of Container
         /// </summary>
@@ -85,113 +70,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  Force: ").Append(Force).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="NetworkDisconnectRequest" />
-    /// </summary>
-    public class NetworkDisconnectRequestJsonConverter : JsonConverter<NetworkDisconnectRequest>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="NetworkDisconnectRequest" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override NetworkDisconnectRequest Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<string?> container = default;
-            Option<bool?> force = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "Container":
-                            container = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "Force":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                force = new Option<bool?>(utf8JsonReader.GetBoolean());
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (container.IsSet && container.Value == null)
-                throw new ArgumentNullException(nameof(container), "Property is not nullable for class NetworkDisconnectRequest.");
-
-            if (force.IsSet && force.Value == null)
-                throw new ArgumentNullException(nameof(force), "Property is not nullable for class NetworkDisconnectRequest.");
-
-            return new NetworkDisconnectRequest(container, force);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="NetworkDisconnectRequest" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="networkDisconnectRequest"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, NetworkDisconnectRequest networkDisconnectRequest, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, networkDisconnectRequest, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="NetworkDisconnectRequest" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="networkDisconnectRequest"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, NetworkDisconnectRequest networkDisconnectRequest, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (networkDisconnectRequest.ContainerOption.IsSet && networkDisconnectRequest.Container == null)
-                throw new ArgumentNullException(nameof(networkDisconnectRequest.Container), "Property is required for class NetworkDisconnectRequest.");
-
-            if (networkDisconnectRequest.ContainerOption.IsSet)
-                writer.WriteString("Container", networkDisconnectRequest.Container);
-
-            if (networkDisconnectRequest.ForceOption.IsSet)
-                writer.WriteBoolean("Force", networkDisconnectRequest.ForceOption.Value!.Value);
         }
     }
 }

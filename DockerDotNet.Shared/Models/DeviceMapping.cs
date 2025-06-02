@@ -20,33 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// A device mapping between the host and container
     /// </summary>
-    public partial class DeviceMapping : IValidatableObject
+    public partial class DeviceMapping
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DeviceMapping" /> class.
-        /// </summary>
-        /// <param name="pathOnHost">pathOnHost</param>
-        /// <param name="pathInContainer">pathInContainer</param>
-        /// <param name="cgroupPermissions">cgroupPermissions</param>
-        [JsonConstructor]
-        public DeviceMapping(Option<string?> pathOnHost = default, Option<string?> pathInContainer = default, Option<string?> cgroupPermissions = default)
-        {
-            PathOnHostOption = pathOnHost;
-            PathInContainerOption = pathInContainer;
-            CgroupPermissionsOption = cgroupPermissions;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Used to track the state of PathOnHost
         /// </summary>
@@ -99,128 +82,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  CgroupPermissions: ").Append(CgroupPermissions).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="DeviceMapping" />
-    /// </summary>
-    public class DeviceMappingJsonConverter : JsonConverter<DeviceMapping>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="DeviceMapping" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override DeviceMapping Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<string?> pathOnHost = default;
-            Option<string?> pathInContainer = default;
-            Option<string?> cgroupPermissions = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "PathOnHost":
-                            pathOnHost = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "PathInContainer":
-                            pathInContainer = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "CgroupPermissions":
-                            cgroupPermissions = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (pathOnHost.IsSet && pathOnHost.Value == null)
-                throw new ArgumentNullException(nameof(pathOnHost), "Property is not nullable for class DeviceMapping.");
-
-            if (pathInContainer.IsSet && pathInContainer.Value == null)
-                throw new ArgumentNullException(nameof(pathInContainer), "Property is not nullable for class DeviceMapping.");
-
-            if (cgroupPermissions.IsSet && cgroupPermissions.Value == null)
-                throw new ArgumentNullException(nameof(cgroupPermissions), "Property is not nullable for class DeviceMapping.");
-
-            return new DeviceMapping(pathOnHost, pathInContainer, cgroupPermissions);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="DeviceMapping" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="deviceMapping"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, DeviceMapping deviceMapping, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, deviceMapping, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="DeviceMapping" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="deviceMapping"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, DeviceMapping deviceMapping, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (deviceMapping.PathOnHostOption.IsSet && deviceMapping.PathOnHost == null)
-                throw new ArgumentNullException(nameof(deviceMapping.PathOnHost), "Property is required for class DeviceMapping.");
-
-            if (deviceMapping.PathInContainerOption.IsSet && deviceMapping.PathInContainer == null)
-                throw new ArgumentNullException(nameof(deviceMapping.PathInContainer), "Property is required for class DeviceMapping.");
-
-            if (deviceMapping.CgroupPermissionsOption.IsSet && deviceMapping.CgroupPermissions == null)
-                throw new ArgumentNullException(nameof(deviceMapping.CgroupPermissions), "Property is required for class DeviceMapping.");
-
-            if (deviceMapping.PathOnHostOption.IsSet)
-                writer.WriteString("PathOnHost", deviceMapping.PathOnHost);
-
-            if (deviceMapping.PathInContainerOption.IsSet)
-                writer.WriteString("PathInContainer", deviceMapping.PathInContainer);
-
-            if (deviceMapping.CgroupPermissionsOption.IsSet)
-                writer.WriteString("CgroupPermissions", deviceMapping.CgroupPermissions);
         }
     }
 }

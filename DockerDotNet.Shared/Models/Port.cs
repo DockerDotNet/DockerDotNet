@@ -20,39 +20,20 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// An open port on a container
     /// </summary>
-    public partial class Port : IValidatableObject
+    public partial class Port
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Port" /> class.
-        /// </summary>
-        /// <param name="privatePort">Port on the container</param>
-        /// <param name="type">type</param>
-        /// <param name="iP">Host IP address that the container&#39;s port is mapped to</param>
-        /// <param name="publicPort">Port exposed on the host</param>
-        [JsonConstructor]
-        public Port(int privatePort, PortTypeEnum type, Option<string?> iP = default, Option<int?> publicPort = default)
-        {
-            PrivatePort = privatePort;
-            Type = type;
-            IPOption = iP;
-            PublicPortOption = publicPort;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Defines Type
         /// </summary>
-        public enum PortTypeEnum
+        public enum TypeEnum
         {
             /// <summary>
             /// Enum Tcp for value: tcp
@@ -70,70 +51,82 @@ namespace DockerDotNet.Shared.Models
             Sctp = 3
         }
 
-        /// <summary>
-        /// Returns a <see cref="PortTypeEnum"/>
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public static PortTypeEnum TypeEnumFromString(string value)
+/// <summary>
+/// A Json converter for type <see cref="TypeEnum"/>
+/// </summary>
+public class TypeEnumJsonConverter : JsonConverter<TypeEnum>
+{
+    public override TypeEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        string? enumString = reader.GetString();
+        return enumString switch
         {
-            if (value.Equals("tcp"))
-                return PortTypeEnum.Tcp;
+            "tcp" => TypeEnum.Tcp,
+            "udp" => TypeEnum.Udp,
+            "sctp" => TypeEnum.Sctp,
+            _ => throw new JsonException($"Unknown value: {enumString}")
+        };
+    }
 
-            if (value.Equals("udp"))
-                return PortTypeEnum.Udp;
-
-            if (value.Equals("sctp"))
-                return PortTypeEnum.Sctp;
-
-            throw new NotImplementedException($"Could not convert value to type TypeEnum: '{value}'");
-        }
-
-        /// <summary>
-        /// Returns a <see cref="PortTypeEnum"/>
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public static PortTypeEnum? TypeEnumFromStringOrDefault(string value)
+    public override void Write(Utf8JsonWriter writer, TypeEnum value, JsonSerializerOptions options)
+    {
+        string enumString = value switch
         {
-            if (value.Equals("tcp"))
-                return PortTypeEnum.Tcp;
+            TypeEnum.Tcp => "tcp",
+            TypeEnum.Udp => "udp",
+            TypeEnum.Sctp => "sctp",
+            _ => throw new JsonException($"Unknown value: {value}")
+        };
+        writer.WriteStringValue(enumString);
+    }
+}
 
-            if (value.Equals("udp"))
-                return PortTypeEnum.Udp;
-
-            if (value.Equals("sctp"))
-                return PortTypeEnum.Sctp;
-
+/// <summary>
+/// A Json converter for nullable <see cref="TypeEnum"/>
+/// </summary>
+public class TypeEnumNullableJsonConverter : JsonConverter<TypeEnum?>
+{
+    public override TypeEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        if (reader.TokenType == JsonTokenType.Null)
             return null;
-        }
 
-        /// <summary>
-        /// Converts the <see cref="PortTypeEnum"/> to the json value
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public static string TypeEnumToJsonValue(PortTypeEnum value)
+        string? enumString = reader.GetString();
+
+        return enumString switch
         {
-            if (value == PortTypeEnum.Tcp)
-                return "tcp";
+            "tcp" => TypeEnum.Tcp,
+            "udp" => TypeEnum.Udp,
+            "sctp" => TypeEnum.Sctp,
+            _ => throw new JsonException($"Unknown value: {enumString}")
+        };
+    }
 
-            if (value == PortTypeEnum.Udp)
-                return "udp";
-
-            if (value == PortTypeEnum.Sctp)
-                return "sctp";
-
-            throw new NotImplementedException($"Value could not be handled: '{value}'");
+    public override void Write(Utf8JsonWriter writer, TypeEnum? value, JsonSerializerOptions options)
+    {
+        if (value == null)
+        {
+            writer.WriteNullValue();
+            return;
         }
+
+        string enumString = value.Value switch
+        {
+            TypeEnum.Tcp => "tcp",
+            TypeEnum.Udp => "udp",
+            TypeEnum.Sctp => "sctp",
+            _ => throw new JsonException($"Unknown value: {value}")
+        };
+
+        writer.WriteStringValue(enumString);
+    }
+}
 
         /// <summary>
         /// Gets or Sets Type
         /// </summary>
         [JsonPropertyName("Type")]
-        public PortTypeEnum Type { get; set; }
+        public TypeEnum Type { get; set; }
 
         /// <summary>
         /// Port on the container
@@ -184,140 +177,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  PublicPort: ").Append(PublicPort).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="Port" />
-    /// </summary>
-    public class PortJsonConverter : JsonConverter<Port>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="Port" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override Port Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<int?> privatePort = default;
-            Option<Port.PortTypeEnum?> type = default;
-            Option<string?> iP = default;
-            Option<int?> publicPort = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "PrivatePort":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                privatePort = new Option<int?>(utf8JsonReader.GetInt32());
-                            break;
-                        case "Type":
-                            string? typeRawValue = utf8JsonReader.GetString();
-                            if (typeRawValue != null)
-                                type = new Option<Port.PortTypeEnum?>(Port.TypeEnumFromStringOrDefault(typeRawValue));
-                            break;
-                        case "IP":
-                            iP = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "PublicPort":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                publicPort = new Option<int?>(utf8JsonReader.GetInt32());
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (!privatePort.IsSet)
-                throw new ArgumentException("Property is required for class Port.", nameof(privatePort));
-
-            if (!type.IsSet)
-                throw new ArgumentException("Property is required for class Port.", nameof(type));
-
-            if (privatePort.IsSet && privatePort.Value == null)
-                throw new ArgumentNullException(nameof(privatePort), "Property is not nullable for class Port.");
-
-            if (type.IsSet && type.Value == null)
-                throw new ArgumentNullException(nameof(type), "Property is not nullable for class Port.");
-
-            if (iP.IsSet && iP.Value == null)
-                throw new ArgumentNullException(nameof(iP), "Property is not nullable for class Port.");
-
-            if (publicPort.IsSet && publicPort.Value == null)
-                throw new ArgumentNullException(nameof(publicPort), "Property is not nullable for class Port.");
-
-            return new Port(privatePort.Value!.Value!, type.Value!.Value!, iP, publicPort);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="Port" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="port"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, Port port, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, port, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="Port" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="port"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, Port port, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (port.IPOption.IsSet && port.IP == null)
-                throw new ArgumentNullException(nameof(port.IP), "Property is required for class Port.");
-
-            writer.WriteNumber("PrivatePort", port.PrivatePort);
-
-            var typeRawValue = Port.TypeEnumToJsonValue(port.Type);
-            writer.WriteString("Type", typeRawValue);
-            if (port.IPOption.IsSet)
-                writer.WriteString("IP", port.IP);
-
-            if (port.PublicPortOption.IsSet)
-                writer.WriteNumber("PublicPort", port.PublicPortOption.Value!.Value);
         }
     }
 }

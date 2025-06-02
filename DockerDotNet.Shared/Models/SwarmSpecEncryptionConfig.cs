@@ -20,29 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// Parameters related to encryption-at-rest.
     /// </summary>
-    public partial class SwarmSpecEncryptionConfig : IValidatableObject
+    public partial class SwarmSpecEncryptionConfig
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SwarmSpecEncryptionConfig" /> class.
-        /// </summary>
-        /// <param name="autoLockManagers">If set, generate a key and use it to lock data stored on the managers. </param>
-        [JsonConstructor]
-        public SwarmSpecEncryptionConfig(Option<bool?> autoLockManagers = default)
-        {
-            AutoLockManagersOption = autoLockManagers;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Used to track the state of AutoLockManagers
         /// </summary>
@@ -69,100 +56,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  AutoLockManagers: ").Append(AutoLockManagers).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="SwarmSpecEncryptionConfig" />
-    /// </summary>
-    public class SwarmSpecEncryptionConfigJsonConverter : JsonConverter<SwarmSpecEncryptionConfig>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="SwarmSpecEncryptionConfig" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override SwarmSpecEncryptionConfig Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<bool?> autoLockManagers = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "AutoLockManagers":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                autoLockManagers = new Option<bool?>(utf8JsonReader.GetBoolean());
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (autoLockManagers.IsSet && autoLockManagers.Value == null)
-                throw new ArgumentNullException(nameof(autoLockManagers), "Property is not nullable for class SwarmSpecEncryptionConfig.");
-
-            return new SwarmSpecEncryptionConfig(autoLockManagers);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="SwarmSpecEncryptionConfig" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="swarmSpecEncryptionConfig"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, SwarmSpecEncryptionConfig swarmSpecEncryptionConfig, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, swarmSpecEncryptionConfig, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="SwarmSpecEncryptionConfig" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="swarmSpecEncryptionConfig"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, SwarmSpecEncryptionConfig swarmSpecEncryptionConfig, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (swarmSpecEncryptionConfig.AutoLockManagersOption.IsSet)
-                writer.WriteBoolean("AutoLockManagers", swarmSpecEncryptionConfig.AutoLockManagersOption.Value!.Value);
         }
     }
 }

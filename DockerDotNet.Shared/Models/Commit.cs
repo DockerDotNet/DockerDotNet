@@ -20,31 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// Commit holds the Git-commit (SHA1) that a binary was built from, as reported in the version-string of external tools, such as &#x60;containerd&#x60;, or &#x60;runC&#x60;. 
     /// </summary>
-    public partial class Commit : IValidatableObject
+    public partial class Commit
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Commit" /> class.
-        /// </summary>
-        /// <param name="iD">Actual commit ID of external tool.</param>
-        /// <param name="expected">Commit ID of external tool expected by dockerd as set at build time.  **Deprecated**: This field is deprecated and will be omitted in a API v1.49. </param>
-        [JsonConstructor]
-        public Commit(Option<string?> iD = default, Option<string?> expected = default)
-        {
-            IDOption = iD;
-            ExpectedOption = expected;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Used to track the state of ID
         /// </summary>
@@ -87,115 +72,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  Expected: ").Append(Expected).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="Commit" />
-    /// </summary>
-    public class CommitJsonConverter : JsonConverter<Commit>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="Commit" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override Commit Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<string?> iD = default;
-            Option<string?> expected = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "ID":
-                            iD = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "Expected":
-                            expected = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (iD.IsSet && iD.Value == null)
-                throw new ArgumentNullException(nameof(iD), "Property is not nullable for class Commit.");
-
-            if (expected.IsSet && expected.Value == null)
-                throw new ArgumentNullException(nameof(expected), "Property is not nullable for class Commit.");
-
-            return new Commit(iD, expected);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="Commit" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="commit"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, Commit commit, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, commit, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="Commit" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="commit"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, Commit commit, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (commit.IDOption.IsSet && commit.ID == null)
-                throw new ArgumentNullException(nameof(commit.ID), "Property is required for class Commit.");
-
-            if (commit.ExpectedOption.IsSet && commit.Expected == null)
-                throw new ArgumentNullException(nameof(commit.Expected), "Property is required for class Commit.");
-
-            if (commit.IDOption.IsSet)
-                writer.WriteString("ID", commit.ID);
-
-            if (commit.ExpectedOption.IsSet)
-                writer.WriteString("Expected", commit.Expected);
         }
     }
 }

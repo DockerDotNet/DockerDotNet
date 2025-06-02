@@ -20,31 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// ImageManifestSummarySize
     /// </summary>
-    public partial class ImageManifestSummarySize : IValidatableObject
+    public partial class ImageManifestSummarySize
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ImageManifestSummarySize" /> class.
-        /// </summary>
-        /// <param name="total">Total is the total size (in bytes) of all the locally present data (both distributable and non-distributable) that&#39;s related to this manifest and its children. This equal to the sum of [Content] size AND all the sizes in the [Size] struct present in the Kind-specific data struct. For example, for an image kind (Kind &#x3D;&#x3D; \&quot;image\&quot;) this would include the size of the image content and unpacked image snapshots ([Size.Content] + [ImageData.Size.Unpacked]). </param>
-        /// <param name="content">Content is the size (in bytes) of all the locally present content in the content store (e.g. image config, layers) referenced by this manifest and its children. This only includes blobs in the content store. </param>
-        [JsonConstructor]
-        public ImageManifestSummarySize(long total, long content)
-        {
-            Total = total;
-            Content = content;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Total is the total size (in bytes) of all the locally present data (both distributable and non-distributable) that&#39;s related to this manifest and its children. This equal to the sum of [Content] size AND all the sizes in the [Size] struct present in the Kind-specific data struct. For example, for an image kind (Kind &#x3D;&#x3D; \&quot;image\&quot;) this would include the size of the image content and unpacked image snapshots ([Size.Content] + [ImageData.Size.Unpacked]). 
         /// </summary>
@@ -73,115 +58,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  Content: ").Append(Content).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="ImageManifestSummarySize" />
-    /// </summary>
-    public class ImageManifestSummarySizeJsonConverter : JsonConverter<ImageManifestSummarySize>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="ImageManifestSummarySize" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override ImageManifestSummarySize Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<long?> total = default;
-            Option<long?> content = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "Total":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                total = new Option<long?>(utf8JsonReader.GetInt64());
-                            break;
-                        case "Content":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                content = new Option<long?>(utf8JsonReader.GetInt64());
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (!total.IsSet)
-                throw new ArgumentException("Property is required for class ImageManifestSummarySize.", nameof(total));
-
-            if (!content.IsSet)
-                throw new ArgumentException("Property is required for class ImageManifestSummarySize.", nameof(content));
-
-            if (total.IsSet && total.Value == null)
-                throw new ArgumentNullException(nameof(total), "Property is not nullable for class ImageManifestSummarySize.");
-
-            if (content.IsSet && content.Value == null)
-                throw new ArgumentNullException(nameof(content), "Property is not nullable for class ImageManifestSummarySize.");
-
-            return new ImageManifestSummarySize(total.Value!.Value!, content.Value!.Value!);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="ImageManifestSummarySize" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="imageManifestSummarySize"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, ImageManifestSummarySize imageManifestSummarySize, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, imageManifestSummarySize, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="ImageManifestSummarySize" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="imageManifestSummarySize"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, ImageManifestSummarySize imageManifestSummarySize, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteNumber("Total", imageManifestSummarySize.Total);
-
-            writer.WriteNumber("Content", imageManifestSummarySize.Content);
         }
     }
 }

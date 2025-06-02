@@ -20,37 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// NetworkContainer
     /// </summary>
-    public partial class NetworkContainer : IValidatableObject
+    public partial class NetworkContainer
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NetworkContainer" /> class.
-        /// </summary>
-        /// <param name="name">name</param>
-        /// <param name="endpointID">endpointID</param>
-        /// <param name="macAddress">macAddress</param>
-        /// <param name="iPv4Address">iPv4Address</param>
-        /// <param name="iPv6Address">iPv6Address</param>
-        [JsonConstructor]
-        public NetworkContainer(Option<string?> name = default, Option<string?> endpointID = default, Option<string?> macAddress = default, Option<string?> iPv4Address = default, Option<string?> iPv6Address = default)
-        {
-            NameOption = name;
-            EndpointIDOption = endpointID;
-            MacAddressOption = macAddress;
-            IPv4AddressOption = iPv4Address;
-            IPv6AddressOption = iPv6Address;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Used to track the state of Name
         /// </summary>
@@ -135,154 +114,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  IPv6Address: ").Append(IPv6Address).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="NetworkContainer" />
-    /// </summary>
-    public class NetworkContainerJsonConverter : JsonConverter<NetworkContainer>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="NetworkContainer" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override NetworkContainer Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<string?> name = default;
-            Option<string?> endpointID = default;
-            Option<string?> macAddress = default;
-            Option<string?> iPv4Address = default;
-            Option<string?> iPv6Address = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "Name":
-                            name = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "EndpointID":
-                            endpointID = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "MacAddress":
-                            macAddress = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "IPv4Address":
-                            iPv4Address = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "IPv6Address":
-                            iPv6Address = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (name.IsSet && name.Value == null)
-                throw new ArgumentNullException(nameof(name), "Property is not nullable for class NetworkContainer.");
-
-            if (endpointID.IsSet && endpointID.Value == null)
-                throw new ArgumentNullException(nameof(endpointID), "Property is not nullable for class NetworkContainer.");
-
-            if (macAddress.IsSet && macAddress.Value == null)
-                throw new ArgumentNullException(nameof(macAddress), "Property is not nullable for class NetworkContainer.");
-
-            if (iPv4Address.IsSet && iPv4Address.Value == null)
-                throw new ArgumentNullException(nameof(iPv4Address), "Property is not nullable for class NetworkContainer.");
-
-            if (iPv6Address.IsSet && iPv6Address.Value == null)
-                throw new ArgumentNullException(nameof(iPv6Address), "Property is not nullable for class NetworkContainer.");
-
-            return new NetworkContainer(name, endpointID, macAddress, iPv4Address, iPv6Address);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="NetworkContainer" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="networkContainer"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, NetworkContainer networkContainer, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, networkContainer, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="NetworkContainer" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="networkContainer"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, NetworkContainer networkContainer, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (networkContainer.NameOption.IsSet && networkContainer.Name == null)
-                throw new ArgumentNullException(nameof(networkContainer.Name), "Property is required for class NetworkContainer.");
-
-            if (networkContainer.EndpointIDOption.IsSet && networkContainer.EndpointID == null)
-                throw new ArgumentNullException(nameof(networkContainer.EndpointID), "Property is required for class NetworkContainer.");
-
-            if (networkContainer.MacAddressOption.IsSet && networkContainer.MacAddress == null)
-                throw new ArgumentNullException(nameof(networkContainer.MacAddress), "Property is required for class NetworkContainer.");
-
-            if (networkContainer.IPv4AddressOption.IsSet && networkContainer.IPv4Address == null)
-                throw new ArgumentNullException(nameof(networkContainer.IPv4Address), "Property is required for class NetworkContainer.");
-
-            if (networkContainer.IPv6AddressOption.IsSet && networkContainer.IPv6Address == null)
-                throw new ArgumentNullException(nameof(networkContainer.IPv6Address), "Property is required for class NetworkContainer.");
-
-            if (networkContainer.NameOption.IsSet)
-                writer.WriteString("Name", networkContainer.Name);
-
-            if (networkContainer.EndpointIDOption.IsSet)
-                writer.WriteString("EndpointID", networkContainer.EndpointID);
-
-            if (networkContainer.MacAddressOption.IsSet)
-                writer.WriteString("MacAddress", networkContainer.MacAddress);
-
-            if (networkContainer.IPv4AddressOption.IsSet)
-                writer.WriteString("IPv4Address", networkContainer.IPv4Address);
-
-            if (networkContainer.IPv6AddressOption.IsSet)
-                writer.WriteString("IPv6Address", networkContainer.IPv6Address);
         }
     }
 }

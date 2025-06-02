@@ -20,31 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// Information for connecting to the containerd instance that is used by the daemon. This is included for debugging purposes only. 
     /// </summary>
-    public partial class ContainerdInfo : IValidatableObject
+    public partial class ContainerdInfo
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ContainerdInfo" /> class.
-        /// </summary>
-        /// <param name="address">The address of the containerd socket.</param>
-        /// <param name="namespaces">namespaces</param>
-        [JsonConstructor]
-        public ContainerdInfo(Option<string?> address = default, Option<ContainerdInfoNamespaces?> namespaces = default)
-        {
-            AddressOption = address;
-            NamespacesOption = namespaces;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Used to track the state of Address
         /// </summary>
@@ -85,119 +70,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  Namespaces: ").Append(Namespaces).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="ContainerdInfo" />
-    /// </summary>
-    public class ContainerdInfoJsonConverter : JsonConverter<ContainerdInfo>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="ContainerdInfo" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override ContainerdInfo Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<string?> address = default;
-            Option<ContainerdInfoNamespaces?> namespaces = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "Address":
-                            address = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "Namespaces":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                namespaces = new Option<ContainerdInfoNamespaces?>(JsonSerializer.Deserialize<ContainerdInfoNamespaces>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (address.IsSet && address.Value == null)
-                throw new ArgumentNullException(nameof(address), "Property is not nullable for class ContainerdInfo.");
-
-            if (namespaces.IsSet && namespaces.Value == null)
-                throw new ArgumentNullException(nameof(namespaces), "Property is not nullable for class ContainerdInfo.");
-
-            return new ContainerdInfo(address, namespaces);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="ContainerdInfo" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="containerdInfo"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, ContainerdInfo containerdInfo, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, containerdInfo, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="ContainerdInfo" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="containerdInfo"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, ContainerdInfo containerdInfo, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (containerdInfo.AddressOption.IsSet && containerdInfo.Address == null)
-                throw new ArgumentNullException(nameof(containerdInfo.Address), "Property is required for class ContainerdInfo.");
-
-            if (containerdInfo.NamespacesOption.IsSet && containerdInfo.Namespaces == null)
-                throw new ArgumentNullException(nameof(containerdInfo.Namespaces), "Property is required for class ContainerdInfo.");
-
-            if (containerdInfo.AddressOption.IsSet)
-                writer.WriteString("Address", containerdInfo.Address);
-
-            if (containerdInfo.NamespacesOption.IsSet)
-            {
-                writer.WritePropertyName("Namespaces");
-                JsonSerializer.Serialize(writer, containerdInfo.Namespaces, jsonSerializerOptions);
-            }
         }
     }
 }

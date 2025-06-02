@@ -20,90 +20,71 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// StorageStats is the disk I/O stats for read/write on Windows.  This type is Windows-specific and omitted for Linux containers. 
     /// </summary>
-    public partial class ContainerStorageStats : IValidatableObject
+    public partial class ContainerStorageStats
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ContainerStorageStats" /> class.
-        /// </summary>
-        /// <param name="readCountNormalized">readCountNormalized</param>
-        /// <param name="readSizeBytes">readSizeBytes</param>
-        /// <param name="writeCountNormalized">writeCountNormalized</param>
-        /// <param name="writeSizeBytes">writeSizeBytes</param>
-        [JsonConstructor]
-        public ContainerStorageStats(Option<ulong?> readCountNormalized = default, Option<ulong?> readSizeBytes = default, Option<ulong?> writeCountNormalized = default, Option<ulong?> writeSizeBytes = default)
-        {
-            ReadCountNormalizedOption = readCountNormalized;
-            ReadSizeBytesOption = readSizeBytes;
-            WriteCountNormalizedOption = writeCountNormalized;
-            WriteSizeBytesOption = writeSizeBytes;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Used to track the state of ReadCountNormalized
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<ulong?> ReadCountNormalizedOption { get; private set; }
+        public Option<int?> ReadCountNormalizedOption { get; private set; }
 
         /// <summary>
         /// Gets or Sets ReadCountNormalized
         /// </summary>
         /* <example>7593984</example> */
         [JsonPropertyName("read_count_normalized")]
-        public ulong? ReadCountNormalized { get { return this.ReadCountNormalizedOption; } set { this.ReadCountNormalizedOption = new(value); } }
+        public int? ReadCountNormalized { get { return this.ReadCountNormalizedOption; } set { this.ReadCountNormalizedOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of ReadSizeBytes
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<ulong?> ReadSizeBytesOption { get; private set; }
+        public Option<int?> ReadSizeBytesOption { get; private set; }
 
         /// <summary>
         /// Gets or Sets ReadSizeBytes
         /// </summary>
         /* <example>7593984</example> */
         [JsonPropertyName("read_size_bytes")]
-        public ulong? ReadSizeBytes { get { return this.ReadSizeBytesOption; } set { this.ReadSizeBytesOption = new(value); } }
+        public int? ReadSizeBytes { get { return this.ReadSizeBytesOption; } set { this.ReadSizeBytesOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of WriteCountNormalized
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<ulong?> WriteCountNormalizedOption { get; private set; }
+        public Option<int?> WriteCountNormalizedOption { get; private set; }
 
         /// <summary>
         /// Gets or Sets WriteCountNormalized
         /// </summary>
         /* <example>7593984</example> */
         [JsonPropertyName("write_count_normalized")]
-        public ulong? WriteCountNormalized { get { return this.WriteCountNormalizedOption; } set { this.WriteCountNormalizedOption = new(value); } }
+        public int? WriteCountNormalized { get { return this.WriteCountNormalizedOption; } set { this.WriteCountNormalizedOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of WriteSizeBytes
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<ulong?> WriteSizeBytesOption { get; private set; }
+        public Option<int?> WriteSizeBytesOption { get; private set; }
 
         /// <summary>
         /// Gets or Sets WriteSizeBytes
         /// </summary>
         /* <example>7593984</example> */
         [JsonPropertyName("write_size_bytes")]
-        public ulong? WriteSizeBytes { get { return this.WriteSizeBytesOption; } set { this.WriteSizeBytesOption = new(value); } }
+        public int? WriteSizeBytes { get { return this.WriteSizeBytesOption; } set { this.WriteSizeBytesOption = new(value); } }
 
         /// <summary>
         /// Returns the string presentation of the object
@@ -119,133 +100,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  WriteSizeBytes: ").Append(WriteSizeBytes).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="ContainerStorageStats" />
-    /// </summary>
-    public class ContainerStorageStatsJsonConverter : JsonConverter<ContainerStorageStats>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="ContainerStorageStats" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override ContainerStorageStats Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<ulong?> readCountNormalized = default;
-            Option<ulong?> readSizeBytes = default;
-            Option<ulong?> writeCountNormalized = default;
-            Option<ulong?> writeSizeBytes = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "read_count_normalized":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                readCountNormalized = new Option<ulong?>(utf8JsonReader.GetUInt64());
-                            break;
-                        case "read_size_bytes":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                readSizeBytes = new Option<ulong?>(utf8JsonReader.GetUInt64());
-                            break;
-                        case "write_count_normalized":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                writeCountNormalized = new Option<ulong?>(utf8JsonReader.GetUInt64());
-                            break;
-                        case "write_size_bytes":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                writeSizeBytes = new Option<ulong?>(utf8JsonReader.GetUInt64());
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            return new ContainerStorageStats(readCountNormalized, readSizeBytes, writeCountNormalized, writeSizeBytes);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="ContainerStorageStats" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="containerStorageStats"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, ContainerStorageStats containerStorageStats, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, containerStorageStats, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="ContainerStorageStats" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="containerStorageStats"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, ContainerStorageStats containerStorageStats, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (containerStorageStats.ReadCountNormalizedOption.IsSet)
-                if (containerStorageStats.ReadCountNormalizedOption.Value != null)
-                    writer.WriteNumber("read_count_normalized", containerStorageStats.ReadCountNormalizedOption.Value!.Value);
-                else
-                    writer.WriteNull("read_count_normalized");
-
-            if (containerStorageStats.ReadSizeBytesOption.IsSet)
-                if (containerStorageStats.ReadSizeBytesOption.Value != null)
-                    writer.WriteNumber("read_size_bytes", containerStorageStats.ReadSizeBytesOption.Value!.Value);
-                else
-                    writer.WriteNull("read_size_bytes");
-
-            if (containerStorageStats.WriteCountNormalizedOption.IsSet)
-                if (containerStorageStats.WriteCountNormalizedOption.Value != null)
-                    writer.WriteNumber("write_count_normalized", containerStorageStats.WriteCountNormalizedOption.Value!.Value);
-                else
-                    writer.WriteNull("write_count_normalized");
-
-            if (containerStorageStats.WriteSizeBytesOption.IsSet)
-                if (containerStorageStats.WriteSizeBytesOption.Value != null)
-                    writer.WriteNumber("write_size_bytes", containerStorageStats.WriteSizeBytesOption.Value!.Value);
-                else
-                    writer.WriteNull("write_size_bytes");
         }
     }
 }

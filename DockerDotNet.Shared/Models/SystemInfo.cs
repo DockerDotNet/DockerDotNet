@@ -20,151 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// SystemInfo
     /// </summary>
-    public partial class SystemInfo : IValidatableObject
+    public partial class SystemInfo
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SystemInfo" /> class.
-        /// </summary>
-        /// <param name="iD">Unique identifier of the daemon.  &lt;p&gt;&lt;br /&gt;&lt;/p&gt;  &gt; **Note**: The format of the ID itself is not part of the API, and &gt; should not be considered stable. </param>
-        /// <param name="containers">Total number of containers on the host.</param>
-        /// <param name="containersRunning">Number of containers with status &#x60;\&quot;running\&quot;&#x60;. </param>
-        /// <param name="containersPaused">Number of containers with status &#x60;\&quot;paused\&quot;&#x60;. </param>
-        /// <param name="containersStopped">Number of containers with status &#x60;\&quot;stopped\&quot;&#x60;. </param>
-        /// <param name="images">Total number of images on the host.  Both _tagged_ and _untagged_ (dangling) images are counted. </param>
-        /// <param name="driver">Name of the storage driver in use.</param>
-        /// <param name="driverStatus">Information specific to the storage driver, provided as \&quot;label\&quot; / \&quot;value\&quot; pairs.  This information is provided by the storage driver, and formatted in a way consistent with the output of &#x60;docker info&#x60; on the command line.  &lt;p&gt;&lt;br /&gt;&lt;/p&gt;  &gt; **Note**: The information returned in this field, including the &gt; formatting of values and labels, should not be considered stable, &gt; and may change without notice. </param>
-        /// <param name="dockerRootDir">Root directory of persistent Docker state.  Defaults to &#x60;/var/lib/docker&#x60; on Linux, and &#x60;C:\\ProgramData\\docker&#x60; on Windows. </param>
-        /// <param name="plugins">plugins</param>
-        /// <param name="memoryLimit">Indicates if the host has memory limit support enabled.</param>
-        /// <param name="swapLimit">Indicates if the host has memory swap limit support enabled.</param>
-        /// <param name="kernelMemoryTCP">Indicates if the host has kernel memory TCP limit support enabled. This field is omitted if not supported.  Kernel memory TCP limits are not supported when using cgroups v2, which does not support the corresponding &#x60;memory.kmem.tcp.limit_in_bytes&#x60; cgroup. </param>
-        /// <param name="cpuCfsPeriod">Indicates if CPU CFS(Completely Fair Scheduler) period is supported by the host. </param>
-        /// <param name="cpuCfsQuota">Indicates if CPU CFS(Completely Fair Scheduler) quota is supported by the host. </param>
-        /// <param name="cPUShares">Indicates if CPU Shares limiting is supported by the host. </param>
-        /// <param name="cPUSet">Indicates if CPUsets (cpuset.cpus, cpuset.mems) are supported by the host.  See [cpuset(7)](https://www.kernel.org/doc/Documentation/cgroup-v1/cpusets.txt) </param>
-        /// <param name="pidsLimit">Indicates if the host kernel has PID limit support enabled.</param>
-        /// <param name="oomKillDisable">Indicates if OOM killer disable is supported on the host.</param>
-        /// <param name="iPv4Forwarding">Indicates IPv4 forwarding is enabled.</param>
-        /// <param name="bridgeNfIptables">Indicates if &#x60;bridge-nf-call-iptables&#x60; is available on the host when the daemon was started.  &lt;p&gt;&lt;br /&gt;&lt;/p&gt;  &gt; **Deprecated**: netfilter module is now loaded on-demand and no longer &gt; during daemon startup, making this field obsolete. This field is always &gt; &#x60;false&#x60; and will be removed in a API v1.49. </param>
-        /// <param name="bridgeNfIp6tables">Indicates if &#x60;bridge-nf-call-ip6tables&#x60; is available on the host.  &lt;p&gt;&lt;br /&gt;&lt;/p&gt;  &gt; **Deprecated**: netfilter module is now loaded on-demand, and no longer &gt; during daemon startup, making this field obsolete. This field is always &gt; &#x60;false&#x60; and will be removed in a API v1.49. </param>
-        /// <param name="debug">Indicates if the daemon is running in debug-mode / with debug-level logging enabled. </param>
-        /// <param name="nFd">The total number of file Descriptors in use by the daemon process.  This information is only returned if debug-mode is enabled. </param>
-        /// <param name="nGoroutines">The  number of goroutines that currently exist.  This information is only returned if debug-mode is enabled. </param>
-        /// <param name="systemTime">Current system-time in [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) format with nano-seconds. </param>
-        /// <param name="loggingDriver">The logging driver to use as a default for new containers. </param>
-        /// <param name="cgroupDriver">The driver to use for managing cgroups.  (default to CgroupDriverEnum.Cgroupfs)</param>
-        /// <param name="cgroupVersion">The version of the cgroup.  (default to CgroupVersionEnum._1)</param>
-        /// <param name="nEventsListener">Number of event listeners subscribed.</param>
-        /// <param name="kernelVersion">Kernel version of the host.  On Linux, this information obtained from &#x60;uname&#x60;. On Windows this information is queried from the &lt;kbd&gt;HKEY_LOCAL_MACHINE\\\\SOFTWARE\\\\Microsoft\\\\Windows NT\\\\CurrentVersion\\\\&lt;/kbd&gt; registry value, for example _\&quot;10.0 14393 (14393.1198.amd64fre.rs1_release_sec.170427-1353)\&quot;_. </param>
-        /// <param name="varOperatingSystem">Name of the host&#39;s operating system, for example: \&quot;Ubuntu 24.04 LTS\&quot; or \&quot;Windows Server 2016 Datacenter\&quot; </param>
-        /// <param name="oSVersion">Version of the host&#39;s operating system  &lt;p&gt;&lt;br /&gt;&lt;/p&gt;  &gt; **Note**: The information returned in this field, including its &gt; very existence, and the formatting of values, should not be considered &gt; stable, and may change without notice. </param>
-        /// <param name="oSType">Generic type of the operating system of the host, as returned by the Go runtime (&#x60;GOOS&#x60;).  Currently returned values are \&quot;linux\&quot; and \&quot;windows\&quot;. A full list of possible values can be found in the [Go documentation](https://go.dev/doc/install/source#environment). </param>
-        /// <param name="architecture">Hardware architecture of the host, as returned by the Go runtime (&#x60;GOARCH&#x60;).  A full list of possible values can be found in the [Go documentation](https://go.dev/doc/install/source#environment). </param>
-        /// <param name="nCPU">The number of logical CPUs usable by the daemon.  The number of available CPUs is checked by querying the operating system when the daemon starts. Changes to operating system CPU allocation after the daemon is started are not reflected. </param>
-        /// <param name="memTotal">Total amount of physical memory available on the host, in bytes. </param>
-        /// <param name="indexServerAddress">Address / URL of the index server that is used for image search, and as a default for user authentication for Docker Hub and Docker Cloud.  (default to &quot;https://index.docker.io/v1/&quot;)</param>
-        /// <param name="registryConfig">registryConfig</param>
-        /// <param name="genericResources">User-defined resources can be either Integer resources (e.g, &#x60;SSD&#x3D;3&#x60;) or String resources (e.g, &#x60;GPU&#x3D;UUID1&#x60;). </param>
-        /// <param name="httpProxy">HTTP-proxy configured for the daemon. This value is obtained from the [&#x60;HTTP_PROXY&#x60;](https://www.gnu.org/software/wget/manual/html_node/Proxies.html) environment variable. Credentials ([user info component](https://tools.ietf.org/html/rfc3986#section-3.2.1)) in the proxy URL are masked in the API response.  Containers do not automatically inherit this configuration. </param>
-        /// <param name="httpsProxy">HTTPS-proxy configured for the daemon. This value is obtained from the [&#x60;HTTPS_PROXY&#x60;](https://www.gnu.org/software/wget/manual/html_node/Proxies.html) environment variable. Credentials ([user info component](https://tools.ietf.org/html/rfc3986#section-3.2.1)) in the proxy URL are masked in the API response.  Containers do not automatically inherit this configuration. </param>
-        /// <param name="noProxy">Comma-separated list of domain extensions for which no proxy should be used. This value is obtained from the [&#x60;NO_PROXY&#x60;](https://www.gnu.org/software/wget/manual/html_node/Proxies.html) environment variable.  Containers do not automatically inherit this configuration. </param>
-        /// <param name="name">Hostname of the host.</param>
-        /// <param name="labels">User-defined labels (key/value metadata) as set on the daemon.  &lt;p&gt;&lt;br /&gt;&lt;/p&gt;  &gt; **Note**: When part of a Swarm, nodes can both have _daemon_ labels, &gt; set through the daemon configuration, and _node_ labels, set from a &gt; manager node in the Swarm. Node labels are not included in this &gt; field. Node labels can be retrieved using the &#x60;/nodes/(id)&#x60; endpoint &gt; on a manager node in the Swarm. </param>
-        /// <param name="experimentalBuild">Indicates if experimental features are enabled on the daemon. </param>
-        /// <param name="serverVersion">Version string of the daemon. </param>
-        /// <param name="runtimes">List of [OCI compliant](https://github.com/opencontainers/runtime-spec) runtimes configured on the daemon. Keys hold the \&quot;name\&quot; used to reference the runtime.  The Docker daemon relies on an OCI compliant runtime (invoked via the &#x60;containerd&#x60; daemon) as its interface to the Linux kernel namespaces, cgroups, and SELinux.  The default runtime is &#x60;runc&#x60;, and automatically configured. Additional runtimes can be configured by the user and will be listed here. </param>
-        /// <param name="defaultRuntime">Name of the default OCI runtime that is used when starting containers.  The default can be overridden per-container at create time.  (default to &quot;runc&quot;)</param>
-        /// <param name="swarm">swarm</param>
-        /// <param name="liveRestoreEnabled">Indicates if live restore is enabled.  If enabled, containers are kept running when the daemon is shutdown or upon daemon start if running containers are detected.  (default to false)</param>
-        /// <param name="isolation">Represents the isolation technology to use as a default for containers. The supported values are platform-specific.  If no isolation value is specified on daemon start, on Windows client, the default is &#x60;hyperv&#x60;, and on Windows server, the default is &#x60;process&#x60;.  This option is currently not used on other platforms.  (default to IsolationEnum.Default)</param>
-        /// <param name="initBinary">Name and, optional, path of the &#x60;docker-init&#x60; binary.  If the path is omitted, the daemon searches the host&#39;s &#x60;$PATH&#x60; for the binary and uses the first result. </param>
-        /// <param name="containerdCommit">containerdCommit</param>
-        /// <param name="runcCommit">runcCommit</param>
-        /// <param name="initCommit">initCommit</param>
-        /// <param name="securityOptions">List of security features that are enabled on the daemon, such as apparmor, seccomp, SELinux, user-namespaces (userns), rootless and no-new-privileges.  Additional configuration options for each security feature may be present, and are included as a comma-separated list of key/value pairs. </param>
-        /// <param name="productLicense">Reports a summary of the product license on the daemon.  If a commercial license has been applied to the daemon, information such as number of nodes, and expiration are included. </param>
-        /// <param name="defaultAddressPools">List of custom default address pools for local networks, which can be specified in the daemon.json file or dockerd option.  Example: a Base \&quot;10.10.0.0/16\&quot; with Size 24 will define the set of 256 10.10.[0-255].0/24 address pools. </param>
-        /// <param name="warnings">List of warnings / informational messages about missing features, or issues related to the daemon configuration.  These messages can be printed by the client as information to the user. </param>
-        /// <param name="cDISpecDirs">List of directories where (Container Device Interface) CDI specifications are located.  These specifications define vendor-specific modifications to an OCI runtime specification for a container being created.  An empty list indicates that CDI device injection is disabled.  Note that since using CDI device injection requires the daemon to have experimental enabled. For non-experimental daemons an empty list will always be returned. </param>
-        /// <param name="containerd">containerd</param>
-        [JsonConstructor]
-        public SystemInfo(Option<string?> iD = default, Option<int?> containers = default, Option<int?> containersRunning = default, Option<int?> containersPaused = default, Option<int?> containersStopped = default, Option<int?> images = default, Option<string?> driver = default, Option<List<List<string>>?> driverStatus = default, Option<string?> dockerRootDir = default, Option<PluginsInfo?> plugins = default, Option<bool?> memoryLimit = default, Option<bool?> swapLimit = default, Option<bool?> kernelMemoryTCP = default, Option<bool?> cpuCfsPeriod = default, Option<bool?> cpuCfsQuota = default, Option<bool?> cPUShares = default, Option<bool?> cPUSet = default, Option<bool?> pidsLimit = default, Option<bool?> oomKillDisable = default, Option<bool?> iPv4Forwarding = default, Option<bool?> bridgeNfIptables = default, Option<bool?> bridgeNfIp6tables = default, Option<bool?> debug = default, Option<int?> nFd = default, Option<int?> nGoroutines = default, Option<string?> systemTime = default, Option<string?> loggingDriver = default, Option<CgroupDriverEnum?> cgroupDriver = default, Option<CgroupVersionEnum?> cgroupVersion = default, Option<int?> nEventsListener = default, Option<string?> kernelVersion = default, Option<string?> varOperatingSystem = default, Option<string?> oSVersion = default, Option<string?> oSType = default, Option<string?> architecture = default, Option<int?> nCPU = default, Option<long?> memTotal = default, Option<string?> indexServerAddress = default, Option<RegistryServiceConfig?> registryConfig = default, Option<List<GenericResourcesInner>?> genericResources = default, Option<string?> httpProxy = default, Option<string?> httpsProxy = default, Option<string?> noProxy = default, Option<string?> name = default, Option<List<string>?> labels = default, Option<bool?> experimentalBuild = default, Option<string?> serverVersion = default, Option<Dictionary<string, Runtime>?> runtimes = default, Option<string?> defaultRuntime = default, Option<SwarmInfo?> swarm = default, Option<bool?> liveRestoreEnabled = default, Option<IsolationEnum?> isolation = default, Option<string?> initBinary = default, Option<Commit?> containerdCommit = default, Option<Commit?> runcCommit = default, Option<Commit?> initCommit = default, Option<List<string>?> securityOptions = default, Option<string?> productLicense = default, Option<List<SystemInfoDefaultAddressPoolsInner>?> defaultAddressPools = default, Option<List<string>?> warnings = default, Option<List<string>?> cDISpecDirs = default, Option<ContainerdInfo?> containerd = default)
-        {
-            IDOption = iD;
-            ContainersOption = containers;
-            ContainersRunningOption = containersRunning;
-            ContainersPausedOption = containersPaused;
-            ContainersStoppedOption = containersStopped;
-            ImagesOption = images;
-            DriverOption = driver;
-            DriverStatusOption = driverStatus;
-            DockerRootDirOption = dockerRootDir;
-            PluginsOption = plugins;
-            MemoryLimitOption = memoryLimit;
-            SwapLimitOption = swapLimit;
-            KernelMemoryTCPOption = kernelMemoryTCP;
-            CpuCfsPeriodOption = cpuCfsPeriod;
-            CpuCfsQuotaOption = cpuCfsQuota;
-            CPUSharesOption = cPUShares;
-            CPUSetOption = cPUSet;
-            PidsLimitOption = pidsLimit;
-            OomKillDisableOption = oomKillDisable;
-            IPv4ForwardingOption = iPv4Forwarding;
-            BridgeNfIptablesOption = bridgeNfIptables;
-            BridgeNfIp6tablesOption = bridgeNfIp6tables;
-            DebugOption = debug;
-            NFdOption = nFd;
-            NGoroutinesOption = nGoroutines;
-            SystemTimeOption = systemTime;
-            LoggingDriverOption = loggingDriver;
-            CgroupDriverOption = cgroupDriver;
-            CgroupVersionOption = cgroupVersion;
-            NEventsListenerOption = nEventsListener;
-            KernelVersionOption = kernelVersion;
-            VarOperatingSystemOption = varOperatingSystem;
-            OSVersionOption = oSVersion;
-            OSTypeOption = oSType;
-            ArchitectureOption = architecture;
-            NCPUOption = nCPU;
-            MemTotalOption = memTotal;
-            IndexServerAddressOption = indexServerAddress;
-            RegistryConfigOption = registryConfig;
-            GenericResourcesOption = genericResources;
-            HttpProxyOption = httpProxy;
-            HttpsProxyOption = httpsProxy;
-            NoProxyOption = noProxy;
-            NameOption = name;
-            LabelsOption = labels;
-            ExperimentalBuildOption = experimentalBuild;
-            ServerVersionOption = serverVersion;
-            RuntimesOption = runtimes;
-            DefaultRuntimeOption = defaultRuntime;
-            SwarmOption = swarm;
-            LiveRestoreEnabledOption = liveRestoreEnabled;
-            IsolationOption = isolation;
-            InitBinaryOption = initBinary;
-            ContainerdCommitOption = containerdCommit;
-            RuncCommitOption = runcCommit;
-            InitCommitOption = initCommit;
-            SecurityOptionsOption = securityOptions;
-            ProductLicenseOption = productLicense;
-            DefaultAddressPoolsOption = defaultAddressPools;
-            WarningsOption = warnings;
-            CDISpecDirsOption = cDISpecDirs;
-            ContainerdOption = containerd;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// The driver to use for managing cgroups. 
         /// </summary>
@@ -187,64 +52,76 @@ namespace DockerDotNet.Shared.Models
             None = 3
         }
 
-        /// <summary>
-        /// Returns a <see cref="CgroupDriverEnum"/>
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public static CgroupDriverEnum CgroupDriverEnumFromString(string value)
+/// <summary>
+/// A Json converter for type <see cref="CgroupDriverEnum"/>
+/// </summary>
+public class CgroupDriverEnumJsonConverter : JsonConverter<CgroupDriverEnum>
+{
+    public override CgroupDriverEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        string? enumString = reader.GetString();
+        return enumString switch
         {
-            if (value.Equals("cgroupfs"))
-                return CgroupDriverEnum.Cgroupfs;
+            "cgroupfs" => CgroupDriverEnum.Cgroupfs,
+            "systemd" => CgroupDriverEnum.Systemd,
+            "none" => CgroupDriverEnum.None,
+            _ => throw new JsonException($"Unknown value: {enumString}")
+        };
+    }
 
-            if (value.Equals("systemd"))
-                return CgroupDriverEnum.Systemd;
-
-            if (value.Equals("none"))
-                return CgroupDriverEnum.None;
-
-            throw new NotImplementedException($"Could not convert value to type CgroupDriverEnum: '{value}'");
-        }
-
-        /// <summary>
-        /// Returns a <see cref="CgroupDriverEnum"/>
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public static CgroupDriverEnum? CgroupDriverEnumFromStringOrDefault(string value)
+    public override void Write(Utf8JsonWriter writer, CgroupDriverEnum value, JsonSerializerOptions options)
+    {
+        string enumString = value switch
         {
-            if (value.Equals("cgroupfs"))
-                return CgroupDriverEnum.Cgroupfs;
+            CgroupDriverEnum.Cgroupfs => "cgroupfs",
+            CgroupDriverEnum.Systemd => "systemd",
+            CgroupDriverEnum.None => "none",
+            _ => throw new JsonException($"Unknown value: {value}")
+        };
+        writer.WriteStringValue(enumString);
+    }
+}
 
-            if (value.Equals("systemd"))
-                return CgroupDriverEnum.Systemd;
-
-            if (value.Equals("none"))
-                return CgroupDriverEnum.None;
-
+/// <summary>
+/// A Json converter for nullable <see cref="CgroupDriverEnum"/>
+/// </summary>
+public class CgroupDriverEnumNullableJsonConverter : JsonConverter<CgroupDriverEnum?>
+{
+    public override CgroupDriverEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        if (reader.TokenType == JsonTokenType.Null)
             return null;
-        }
 
-        /// <summary>
-        /// Converts the <see cref="CgroupDriverEnum"/> to the json value
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public static string CgroupDriverEnumToJsonValue(CgroupDriverEnum? value)
+        string? enumString = reader.GetString();
+
+        return enumString switch
         {
-            if (value == CgroupDriverEnum.Cgroupfs)
-                return "cgroupfs";
+            "cgroupfs" => CgroupDriverEnum.Cgroupfs,
+            "systemd" => CgroupDriverEnum.Systemd,
+            "none" => CgroupDriverEnum.None,
+            _ => throw new JsonException($"Unknown value: {enumString}")
+        };
+    }
 
-            if (value == CgroupDriverEnum.Systemd)
-                return "systemd";
-
-            if (value == CgroupDriverEnum.None)
-                return "none";
-
-            throw new NotImplementedException($"Value could not be handled: '{value}'");
+    public override void Write(Utf8JsonWriter writer, CgroupDriverEnum? value, JsonSerializerOptions options)
+    {
+        if (value == null)
+        {
+            writer.WriteNullValue();
+            return;
         }
+
+        string enumString = value.Value switch
+        {
+            CgroupDriverEnum.Cgroupfs => "cgroupfs",
+            CgroupDriverEnum.Systemd => "systemd",
+            CgroupDriverEnum.None => "none",
+            _ => throw new JsonException($"Unknown value: {value}")
+        };
+
+        writer.WriteStringValue(enumString);
+    }
+}
 
         /// <summary>
         /// Used to track the state of CgroupDriver
@@ -278,55 +155,72 @@ namespace DockerDotNet.Shared.Models
             _2 = 2
         }
 
-        /// <summary>
-        /// Returns a <see cref="CgroupVersionEnum"/>
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public static CgroupVersionEnum CgroupVersionEnumFromString(string value)
+/// <summary>
+/// A Json converter for type <see cref="CgroupVersionEnum"/>
+/// </summary>
+public class CgroupVersionEnumJsonConverter : JsonConverter<CgroupVersionEnum>
+{
+    public override CgroupVersionEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        string? enumString = reader.GetString();
+        return enumString switch
         {
-            if (value.Equals("1"))
-                return CgroupVersionEnum._1;
+            "1" => CgroupVersionEnum._1,
+            "2" => CgroupVersionEnum._2,
+            _ => throw new JsonException($"Unknown value: {enumString}")
+        };
+    }
 
-            if (value.Equals("2"))
-                return CgroupVersionEnum._2;
-
-            throw new NotImplementedException($"Could not convert value to type CgroupVersionEnum: '{value}'");
-        }
-
-        /// <summary>
-        /// Returns a <see cref="CgroupVersionEnum"/>
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public static CgroupVersionEnum? CgroupVersionEnumFromStringOrDefault(string value)
+    public override void Write(Utf8JsonWriter writer, CgroupVersionEnum value, JsonSerializerOptions options)
+    {
+        string enumString = value switch
         {
-            if (value.Equals("1"))
-                return CgroupVersionEnum._1;
+            CgroupVersionEnum._1 => "1",
+            CgroupVersionEnum._2 => "2",
+            _ => throw new JsonException($"Unknown value: {value}")
+        };
+        writer.WriteStringValue(enumString);
+    }
+}
 
-            if (value.Equals("2"))
-                return CgroupVersionEnum._2;
-
+/// <summary>
+/// A Json converter for nullable <see cref="CgroupVersionEnum"/>
+/// </summary>
+public class CgroupVersionEnumNullableJsonConverter : JsonConverter<CgroupVersionEnum?>
+{
+    public override CgroupVersionEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        if (reader.TokenType == JsonTokenType.Null)
             return null;
-        }
 
-        /// <summary>
-        /// Converts the <see cref="CgroupVersionEnum"/> to the json value
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public static string CgroupVersionEnumToJsonValue(CgroupVersionEnum? value)
+        string? enumString = reader.GetString();
+
+        return enumString switch
         {
-            if (value == CgroupVersionEnum._1)
-                return "1";
+            "1" => CgroupVersionEnum._1,
+            "2" => CgroupVersionEnum._2,
+            _ => throw new JsonException($"Unknown value: {enumString}")
+        };
+    }
 
-            if (value == CgroupVersionEnum._2)
-                return "2";
-
-            throw new NotImplementedException($"Value could not be handled: '{value}'");
+    public override void Write(Utf8JsonWriter writer, CgroupVersionEnum? value, JsonSerializerOptions options)
+    {
+        if (value == null)
+        {
+            writer.WriteNullValue();
+            return;
         }
+
+        string enumString = value.Value switch
+        {
+            CgroupVersionEnum._1 => "1",
+            CgroupVersionEnum._2 => "2",
+            _ => throw new JsonException($"Unknown value: {value}")
+        };
+
+        writer.WriteStringValue(enumString);
+    }
+}
 
         /// <summary>
         /// Used to track the state of CgroupVersion
@@ -370,73 +264,80 @@ namespace DockerDotNet.Shared.Models
             Empty = 4
         }
 
-        /// <summary>
-        /// Returns a <see cref="IsolationEnum"/>
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public static IsolationEnum IsolationEnumFromString(string value)
+/// <summary>
+/// A Json converter for type <see cref="IsolationEnum"/>
+/// </summary>
+public class IsolationEnumJsonConverter : JsonConverter<IsolationEnum>
+{
+    public override IsolationEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        string? enumString = reader.GetString();
+        return enumString switch
         {
-            if (value.Equals("default"))
-                return IsolationEnum.Default;
+            "default" => IsolationEnum.Default,
+            "hyperv" => IsolationEnum.Hyperv,
+            "process" => IsolationEnum.Process,
+            "" => IsolationEnum.Empty,
+            _ => throw new JsonException($"Unknown value: {enumString}")
+        };
+    }
 
-            if (value.Equals("hyperv"))
-                return IsolationEnum.Hyperv;
-
-            if (value.Equals("process"))
-                return IsolationEnum.Process;
-
-            if (value.Equals(""))
-                return IsolationEnum.Empty;
-
-            throw new NotImplementedException($"Could not convert value to type IsolationEnum: '{value}'");
-        }
-
-        /// <summary>
-        /// Returns a <see cref="IsolationEnum"/>
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public static IsolationEnum? IsolationEnumFromStringOrDefault(string value)
+    public override void Write(Utf8JsonWriter writer, IsolationEnum value, JsonSerializerOptions options)
+    {
+        string enumString = value switch
         {
-            if (value.Equals("default"))
-                return IsolationEnum.Default;
+            IsolationEnum.Default => "default",
+            IsolationEnum.Hyperv => "hyperv",
+            IsolationEnum.Process => "process",
+            IsolationEnum.Empty => "",
+            _ => throw new JsonException($"Unknown value: {value}")
+        };
+        writer.WriteStringValue(enumString);
+    }
+}
 
-            if (value.Equals("hyperv"))
-                return IsolationEnum.Hyperv;
-
-            if (value.Equals("process"))
-                return IsolationEnum.Process;
-
-            if (value.Equals(""))
-                return IsolationEnum.Empty;
-
+/// <summary>
+/// A Json converter for nullable <see cref="IsolationEnum"/>
+/// </summary>
+public class IsolationEnumNullableJsonConverter : JsonConverter<IsolationEnum?>
+{
+    public override IsolationEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        if (reader.TokenType == JsonTokenType.Null)
             return null;
-        }
 
-        /// <summary>
-        /// Converts the <see cref="IsolationEnum"/> to the json value
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public static string IsolationEnumToJsonValue(IsolationEnum? value)
+        string? enumString = reader.GetString();
+
+        return enumString switch
         {
-            if (value == IsolationEnum.Default)
-                return "default";
+            "default" => IsolationEnum.Default,
+            "hyperv" => IsolationEnum.Hyperv,
+            "process" => IsolationEnum.Process,
+            "" => IsolationEnum.Empty,
+            _ => throw new JsonException($"Unknown value: {enumString}")
+        };
+    }
 
-            if (value == IsolationEnum.Hyperv)
-                return "hyperv";
-
-            if (value == IsolationEnum.Process)
-                return "process";
-
-            if (value == IsolationEnum.Empty)
-                return "";
-
-            throw new NotImplementedException($"Value could not be handled: '{value}'");
+    public override void Write(Utf8JsonWriter writer, IsolationEnum? value, JsonSerializerOptions options)
+    {
+        if (value == null)
+        {
+            writer.WriteNullValue();
+            return;
         }
+
+        string enumString = value.Value switch
+        {
+            IsolationEnum.Default => "default",
+            IsolationEnum.Hyperv => "hyperv",
+            IsolationEnum.Process => "process",
+            IsolationEnum.Empty => "",
+            _ => throw new JsonException($"Unknown value: {value}")
+        };
+
+        writer.WriteStringValue(enumString);
+    }
+}
 
         /// <summary>
         /// Used to track the state of Isolation
@@ -1392,879 +1293,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  Containerd: ").Append(Containerd).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="SystemInfo" />
-    /// </summary>
-    public class SystemInfoJsonConverter : JsonConverter<SystemInfo>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="SystemInfo" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override SystemInfo Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<string?> iD = default;
-            Option<int?> containers = default;
-            Option<int?> containersRunning = default;
-            Option<int?> containersPaused = default;
-            Option<int?> containersStopped = default;
-            Option<int?> images = default;
-            Option<string?> driver = default;
-            Option<List<List<string>>?> driverStatus = default;
-            Option<string?> dockerRootDir = default;
-            Option<PluginsInfo?> plugins = default;
-            Option<bool?> memoryLimit = default;
-            Option<bool?> swapLimit = default;
-            Option<bool?> kernelMemoryTCP = default;
-            Option<bool?> cpuCfsPeriod = default;
-            Option<bool?> cpuCfsQuota = default;
-            Option<bool?> cPUShares = default;
-            Option<bool?> cPUSet = default;
-            Option<bool?> pidsLimit = default;
-            Option<bool?> oomKillDisable = default;
-            Option<bool?> iPv4Forwarding = default;
-            Option<bool?> bridgeNfIptables = default;
-            Option<bool?> bridgeNfIp6tables = default;
-            Option<bool?> debug = default;
-            Option<int?> nFd = default;
-            Option<int?> nGoroutines = default;
-            Option<string?> systemTime = default;
-            Option<string?> loggingDriver = default;
-            Option<SystemInfo.CgroupDriverEnum?> cgroupDriver = default;
-            Option<SystemInfo.CgroupVersionEnum?> cgroupVersion = default;
-            Option<int?> nEventsListener = default;
-            Option<string?> kernelVersion = default;
-            Option<string?> varOperatingSystem = default;
-            Option<string?> oSVersion = default;
-            Option<string?> oSType = default;
-            Option<string?> architecture = default;
-            Option<int?> nCPU = default;
-            Option<long?> memTotal = default;
-            Option<string?> indexServerAddress = default;
-            Option<RegistryServiceConfig?> registryConfig = default;
-            Option<List<GenericResourcesInner>?> genericResources = default;
-            Option<string?> httpProxy = default;
-            Option<string?> httpsProxy = default;
-            Option<string?> noProxy = default;
-            Option<string?> name = default;
-            Option<List<string>?> labels = default;
-            Option<bool?> experimentalBuild = default;
-            Option<string?> serverVersion = default;
-            Option<Dictionary<string, Runtime>?> runtimes = default;
-            Option<string?> defaultRuntime = default;
-            Option<SwarmInfo?> swarm = default;
-            Option<bool?> liveRestoreEnabled = default;
-            Option<SystemInfo.IsolationEnum?> isolation = default;
-            Option<string?> initBinary = default;
-            Option<Commit?> containerdCommit = default;
-            Option<Commit?> runcCommit = default;
-            Option<Commit?> initCommit = default;
-            Option<List<string>?> securityOptions = default;
-            Option<string?> productLicense = default;
-            Option<List<SystemInfoDefaultAddressPoolsInner>?> defaultAddressPools = default;
-            Option<List<string>?> warnings = default;
-            Option<List<string>?> cDISpecDirs = default;
-            Option<ContainerdInfo?> containerd = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "ID":
-                            iD = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "Containers":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                containers = new Option<int?>(utf8JsonReader.GetInt32());
-                            break;
-                        case "ContainersRunning":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                containersRunning = new Option<int?>(utf8JsonReader.GetInt32());
-                            break;
-                        case "ContainersPaused":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                containersPaused = new Option<int?>(utf8JsonReader.GetInt32());
-                            break;
-                        case "ContainersStopped":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                containersStopped = new Option<int?>(utf8JsonReader.GetInt32());
-                            break;
-                        case "Images":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                images = new Option<int?>(utf8JsonReader.GetInt32());
-                            break;
-                        case "Driver":
-                            driver = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "DriverStatus":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                driverStatus = new Option<List<List<string>>?>(JsonSerializer.Deserialize<List<List<string>>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "DockerRootDir":
-                            dockerRootDir = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "Plugins":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                plugins = new Option<PluginsInfo?>(JsonSerializer.Deserialize<PluginsInfo>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "MemoryLimit":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                memoryLimit = new Option<bool?>(utf8JsonReader.GetBoolean());
-                            break;
-                        case "SwapLimit":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                swapLimit = new Option<bool?>(utf8JsonReader.GetBoolean());
-                            break;
-                        case "KernelMemoryTCP":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                kernelMemoryTCP = new Option<bool?>(utf8JsonReader.GetBoolean());
-                            break;
-                        case "CpuCfsPeriod":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                cpuCfsPeriod = new Option<bool?>(utf8JsonReader.GetBoolean());
-                            break;
-                        case "CpuCfsQuota":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                cpuCfsQuota = new Option<bool?>(utf8JsonReader.GetBoolean());
-                            break;
-                        case "CPUShares":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                cPUShares = new Option<bool?>(utf8JsonReader.GetBoolean());
-                            break;
-                        case "CPUSet":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                cPUSet = new Option<bool?>(utf8JsonReader.GetBoolean());
-                            break;
-                        case "PidsLimit":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                pidsLimit = new Option<bool?>(utf8JsonReader.GetBoolean());
-                            break;
-                        case "OomKillDisable":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                oomKillDisable = new Option<bool?>(utf8JsonReader.GetBoolean());
-                            break;
-                        case "IPv4Forwarding":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                iPv4Forwarding = new Option<bool?>(utf8JsonReader.GetBoolean());
-                            break;
-                        case "BridgeNfIptables":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                bridgeNfIptables = new Option<bool?>(utf8JsonReader.GetBoolean());
-                            break;
-                        case "BridgeNfIp6tables":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                bridgeNfIp6tables = new Option<bool?>(utf8JsonReader.GetBoolean());
-                            break;
-                        case "Debug":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                debug = new Option<bool?>(utf8JsonReader.GetBoolean());
-                            break;
-                        case "NFd":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                nFd = new Option<int?>(utf8JsonReader.GetInt32());
-                            break;
-                        case "NGoroutines":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                nGoroutines = new Option<int?>(utf8JsonReader.GetInt32());
-                            break;
-                        case "SystemTime":
-                            systemTime = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "LoggingDriver":
-                            loggingDriver = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "CgroupDriver":
-                            string? cgroupDriverRawValue = utf8JsonReader.GetString();
-                            if (cgroupDriverRawValue != null)
-                                cgroupDriver = new Option<SystemInfo.CgroupDriverEnum?>(SystemInfo.CgroupDriverEnumFromStringOrDefault(cgroupDriverRawValue));
-                            break;
-                        case "CgroupVersion":
-                            string? cgroupVersionRawValue = utf8JsonReader.GetString();
-                            if (cgroupVersionRawValue != null)
-                                cgroupVersion = new Option<SystemInfo.CgroupVersionEnum?>(SystemInfo.CgroupVersionEnumFromStringOrDefault(cgroupVersionRawValue));
-                            break;
-                        case "NEventsListener":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                nEventsListener = new Option<int?>(utf8JsonReader.GetInt32());
-                            break;
-                        case "KernelVersion":
-                            kernelVersion = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "OperatingSystem":
-                            varOperatingSystem = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "OSVersion":
-                            oSVersion = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "OSType":
-                            oSType = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "Architecture":
-                            architecture = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "NCPU":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                nCPU = new Option<int?>(utf8JsonReader.GetInt32());
-                            break;
-                        case "MemTotal":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                memTotal = new Option<long?>(utf8JsonReader.GetInt64());
-                            break;
-                        case "IndexServerAddress":
-                            indexServerAddress = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "RegistryConfig":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                registryConfig = new Option<RegistryServiceConfig?>(JsonSerializer.Deserialize<RegistryServiceConfig>(ref utf8JsonReader, jsonSerializerOptions));
-                            break;
-                        case "GenericResources":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                genericResources = new Option<List<GenericResourcesInner>?>(JsonSerializer.Deserialize<List<GenericResourcesInner>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "HttpProxy":
-                            httpProxy = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "HttpsProxy":
-                            httpsProxy = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "NoProxy":
-                            noProxy = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "Name":
-                            name = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "Labels":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                labels = new Option<List<string>?>(JsonSerializer.Deserialize<List<string>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "ExperimentalBuild":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                experimentalBuild = new Option<bool?>(utf8JsonReader.GetBoolean());
-                            break;
-                        case "ServerVersion":
-                            serverVersion = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "Runtimes":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                runtimes = new Option<Dictionary<string, Runtime>?>(JsonSerializer.Deserialize<Dictionary<string, Runtime>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "DefaultRuntime":
-                            defaultRuntime = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "Swarm":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                swarm = new Option<SwarmInfo?>(JsonSerializer.Deserialize<SwarmInfo>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "LiveRestoreEnabled":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                liveRestoreEnabled = new Option<bool?>(utf8JsonReader.GetBoolean());
-                            break;
-                        case "Isolation":
-                            string? isolationRawValue = utf8JsonReader.GetString();
-                            if (isolationRawValue != null)
-                                isolation = new Option<SystemInfo.IsolationEnum?>(SystemInfo.IsolationEnumFromStringOrDefault(isolationRawValue));
-                            break;
-                        case "InitBinary":
-                            initBinary = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "ContainerdCommit":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                containerdCommit = new Option<Commit?>(JsonSerializer.Deserialize<Commit>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "RuncCommit":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                runcCommit = new Option<Commit?>(JsonSerializer.Deserialize<Commit>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "InitCommit":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                initCommit = new Option<Commit?>(JsonSerializer.Deserialize<Commit>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "SecurityOptions":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                securityOptions = new Option<List<string>?>(JsonSerializer.Deserialize<List<string>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "ProductLicense":
-                            productLicense = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "DefaultAddressPools":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                defaultAddressPools = new Option<List<SystemInfoDefaultAddressPoolsInner>?>(JsonSerializer.Deserialize<List<SystemInfoDefaultAddressPoolsInner>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "Warnings":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                warnings = new Option<List<string>?>(JsonSerializer.Deserialize<List<string>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "CDISpecDirs":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                cDISpecDirs = new Option<List<string>?>(JsonSerializer.Deserialize<List<string>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "Containerd":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                containerd = new Option<ContainerdInfo?>(JsonSerializer.Deserialize<ContainerdInfo>(ref utf8JsonReader, jsonSerializerOptions));
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (iD.IsSet && iD.Value == null)
-                throw new ArgumentNullException(nameof(iD), "Property is not nullable for class SystemInfo.");
-
-            if (containers.IsSet && containers.Value == null)
-                throw new ArgumentNullException(nameof(containers), "Property is not nullable for class SystemInfo.");
-
-            if (containersRunning.IsSet && containersRunning.Value == null)
-                throw new ArgumentNullException(nameof(containersRunning), "Property is not nullable for class SystemInfo.");
-
-            if (containersPaused.IsSet && containersPaused.Value == null)
-                throw new ArgumentNullException(nameof(containersPaused), "Property is not nullable for class SystemInfo.");
-
-            if (containersStopped.IsSet && containersStopped.Value == null)
-                throw new ArgumentNullException(nameof(containersStopped), "Property is not nullable for class SystemInfo.");
-
-            if (images.IsSet && images.Value == null)
-                throw new ArgumentNullException(nameof(images), "Property is not nullable for class SystemInfo.");
-
-            if (driver.IsSet && driver.Value == null)
-                throw new ArgumentNullException(nameof(driver), "Property is not nullable for class SystemInfo.");
-
-            if (driverStatus.IsSet && driverStatus.Value == null)
-                throw new ArgumentNullException(nameof(driverStatus), "Property is not nullable for class SystemInfo.");
-
-            if (dockerRootDir.IsSet && dockerRootDir.Value == null)
-                throw new ArgumentNullException(nameof(dockerRootDir), "Property is not nullable for class SystemInfo.");
-
-            if (plugins.IsSet && plugins.Value == null)
-                throw new ArgumentNullException(nameof(plugins), "Property is not nullable for class SystemInfo.");
-
-            if (memoryLimit.IsSet && memoryLimit.Value == null)
-                throw new ArgumentNullException(nameof(memoryLimit), "Property is not nullable for class SystemInfo.");
-
-            if (swapLimit.IsSet && swapLimit.Value == null)
-                throw new ArgumentNullException(nameof(swapLimit), "Property is not nullable for class SystemInfo.");
-
-            if (kernelMemoryTCP.IsSet && kernelMemoryTCP.Value == null)
-                throw new ArgumentNullException(nameof(kernelMemoryTCP), "Property is not nullable for class SystemInfo.");
-
-            if (cpuCfsPeriod.IsSet && cpuCfsPeriod.Value == null)
-                throw new ArgumentNullException(nameof(cpuCfsPeriod), "Property is not nullable for class SystemInfo.");
-
-            if (cpuCfsQuota.IsSet && cpuCfsQuota.Value == null)
-                throw new ArgumentNullException(nameof(cpuCfsQuota), "Property is not nullable for class SystemInfo.");
-
-            if (cPUShares.IsSet && cPUShares.Value == null)
-                throw new ArgumentNullException(nameof(cPUShares), "Property is not nullable for class SystemInfo.");
-
-            if (cPUSet.IsSet && cPUSet.Value == null)
-                throw new ArgumentNullException(nameof(cPUSet), "Property is not nullable for class SystemInfo.");
-
-            if (pidsLimit.IsSet && pidsLimit.Value == null)
-                throw new ArgumentNullException(nameof(pidsLimit), "Property is not nullable for class SystemInfo.");
-
-            if (oomKillDisable.IsSet && oomKillDisable.Value == null)
-                throw new ArgumentNullException(nameof(oomKillDisable), "Property is not nullable for class SystemInfo.");
-
-            if (iPv4Forwarding.IsSet && iPv4Forwarding.Value == null)
-                throw new ArgumentNullException(nameof(iPv4Forwarding), "Property is not nullable for class SystemInfo.");
-
-            if (bridgeNfIptables.IsSet && bridgeNfIptables.Value == null)
-                throw new ArgumentNullException(nameof(bridgeNfIptables), "Property is not nullable for class SystemInfo.");
-
-            if (bridgeNfIp6tables.IsSet && bridgeNfIp6tables.Value == null)
-                throw new ArgumentNullException(nameof(bridgeNfIp6tables), "Property is not nullable for class SystemInfo.");
-
-            if (debug.IsSet && debug.Value == null)
-                throw new ArgumentNullException(nameof(debug), "Property is not nullable for class SystemInfo.");
-
-            if (nFd.IsSet && nFd.Value == null)
-                throw new ArgumentNullException(nameof(nFd), "Property is not nullable for class SystemInfo.");
-
-            if (nGoroutines.IsSet && nGoroutines.Value == null)
-                throw new ArgumentNullException(nameof(nGoroutines), "Property is not nullable for class SystemInfo.");
-
-            if (systemTime.IsSet && systemTime.Value == null)
-                throw new ArgumentNullException(nameof(systemTime), "Property is not nullable for class SystemInfo.");
-
-            if (loggingDriver.IsSet && loggingDriver.Value == null)
-                throw new ArgumentNullException(nameof(loggingDriver), "Property is not nullable for class SystemInfo.");
-
-            if (cgroupDriver.IsSet && cgroupDriver.Value == null)
-                throw new ArgumentNullException(nameof(cgroupDriver), "Property is not nullable for class SystemInfo.");
-
-            if (cgroupVersion.IsSet && cgroupVersion.Value == null)
-                throw new ArgumentNullException(nameof(cgroupVersion), "Property is not nullable for class SystemInfo.");
-
-            if (nEventsListener.IsSet && nEventsListener.Value == null)
-                throw new ArgumentNullException(nameof(nEventsListener), "Property is not nullable for class SystemInfo.");
-
-            if (kernelVersion.IsSet && kernelVersion.Value == null)
-                throw new ArgumentNullException(nameof(kernelVersion), "Property is not nullable for class SystemInfo.");
-
-            if (varOperatingSystem.IsSet && varOperatingSystem.Value == null)
-                throw new ArgumentNullException(nameof(varOperatingSystem), "Property is not nullable for class SystemInfo.");
-
-            if (oSVersion.IsSet && oSVersion.Value == null)
-                throw new ArgumentNullException(nameof(oSVersion), "Property is not nullable for class SystemInfo.");
-
-            if (oSType.IsSet && oSType.Value == null)
-                throw new ArgumentNullException(nameof(oSType), "Property is not nullable for class SystemInfo.");
-
-            if (architecture.IsSet && architecture.Value == null)
-                throw new ArgumentNullException(nameof(architecture), "Property is not nullable for class SystemInfo.");
-
-            if (nCPU.IsSet && nCPU.Value == null)
-                throw new ArgumentNullException(nameof(nCPU), "Property is not nullable for class SystemInfo.");
-
-            if (memTotal.IsSet && memTotal.Value == null)
-                throw new ArgumentNullException(nameof(memTotal), "Property is not nullable for class SystemInfo.");
-
-            if (indexServerAddress.IsSet && indexServerAddress.Value == null)
-                throw new ArgumentNullException(nameof(indexServerAddress), "Property is not nullable for class SystemInfo.");
-
-            if (genericResources.IsSet && genericResources.Value == null)
-                throw new ArgumentNullException(nameof(genericResources), "Property is not nullable for class SystemInfo.");
-
-            if (httpProxy.IsSet && httpProxy.Value == null)
-                throw new ArgumentNullException(nameof(httpProxy), "Property is not nullable for class SystemInfo.");
-
-            if (httpsProxy.IsSet && httpsProxy.Value == null)
-                throw new ArgumentNullException(nameof(httpsProxy), "Property is not nullable for class SystemInfo.");
-
-            if (noProxy.IsSet && noProxy.Value == null)
-                throw new ArgumentNullException(nameof(noProxy), "Property is not nullable for class SystemInfo.");
-
-            if (name.IsSet && name.Value == null)
-                throw new ArgumentNullException(nameof(name), "Property is not nullable for class SystemInfo.");
-
-            if (labels.IsSet && labels.Value == null)
-                throw new ArgumentNullException(nameof(labels), "Property is not nullable for class SystemInfo.");
-
-            if (experimentalBuild.IsSet && experimentalBuild.Value == null)
-                throw new ArgumentNullException(nameof(experimentalBuild), "Property is not nullable for class SystemInfo.");
-
-            if (serverVersion.IsSet && serverVersion.Value == null)
-                throw new ArgumentNullException(nameof(serverVersion), "Property is not nullable for class SystemInfo.");
-
-            if (runtimes.IsSet && runtimes.Value == null)
-                throw new ArgumentNullException(nameof(runtimes), "Property is not nullable for class SystemInfo.");
-
-            if (defaultRuntime.IsSet && defaultRuntime.Value == null)
-                throw new ArgumentNullException(nameof(defaultRuntime), "Property is not nullable for class SystemInfo.");
-
-            if (swarm.IsSet && swarm.Value == null)
-                throw new ArgumentNullException(nameof(swarm), "Property is not nullable for class SystemInfo.");
-
-            if (liveRestoreEnabled.IsSet && liveRestoreEnabled.Value == null)
-                throw new ArgumentNullException(nameof(liveRestoreEnabled), "Property is not nullable for class SystemInfo.");
-
-            if (isolation.IsSet && isolation.Value == null)
-                throw new ArgumentNullException(nameof(isolation), "Property is not nullable for class SystemInfo.");
-
-            if (initBinary.IsSet && initBinary.Value == null)
-                throw new ArgumentNullException(nameof(initBinary), "Property is not nullable for class SystemInfo.");
-
-            if (containerdCommit.IsSet && containerdCommit.Value == null)
-                throw new ArgumentNullException(nameof(containerdCommit), "Property is not nullable for class SystemInfo.");
-
-            if (runcCommit.IsSet && runcCommit.Value == null)
-                throw new ArgumentNullException(nameof(runcCommit), "Property is not nullable for class SystemInfo.");
-
-            if (initCommit.IsSet && initCommit.Value == null)
-                throw new ArgumentNullException(nameof(initCommit), "Property is not nullable for class SystemInfo.");
-
-            if (securityOptions.IsSet && securityOptions.Value == null)
-                throw new ArgumentNullException(nameof(securityOptions), "Property is not nullable for class SystemInfo.");
-
-            if (productLicense.IsSet && productLicense.Value == null)
-                throw new ArgumentNullException(nameof(productLicense), "Property is not nullable for class SystemInfo.");
-
-            if (defaultAddressPools.IsSet && defaultAddressPools.Value == null)
-                throw new ArgumentNullException(nameof(defaultAddressPools), "Property is not nullable for class SystemInfo.");
-
-            if (warnings.IsSet && warnings.Value == null)
-                throw new ArgumentNullException(nameof(warnings), "Property is not nullable for class SystemInfo.");
-
-            if (cDISpecDirs.IsSet && cDISpecDirs.Value == null)
-                throw new ArgumentNullException(nameof(cDISpecDirs), "Property is not nullable for class SystemInfo.");
-
-            return new SystemInfo(iD, containers, containersRunning, containersPaused, containersStopped, images, driver, driverStatus, dockerRootDir, plugins, memoryLimit, swapLimit, kernelMemoryTCP, cpuCfsPeriod, cpuCfsQuota, cPUShares, cPUSet, pidsLimit, oomKillDisable, iPv4Forwarding, bridgeNfIptables, bridgeNfIp6tables, debug, nFd, nGoroutines, systemTime, loggingDriver, cgroupDriver, cgroupVersion, nEventsListener, kernelVersion, varOperatingSystem, oSVersion, oSType, architecture, nCPU, memTotal, indexServerAddress, registryConfig, genericResources, httpProxy, httpsProxy, noProxy, name, labels, experimentalBuild, serverVersion, runtimes, defaultRuntime, swarm, liveRestoreEnabled, isolation, initBinary, containerdCommit, runcCommit, initCommit, securityOptions, productLicense, defaultAddressPools, warnings, cDISpecDirs, containerd);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="SystemInfo" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="systemInfo"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, SystemInfo systemInfo, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, systemInfo, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="SystemInfo" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="systemInfo"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, SystemInfo systemInfo, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (systemInfo.IDOption.IsSet && systemInfo.ID == null)
-                throw new ArgumentNullException(nameof(systemInfo.ID), "Property is required for class SystemInfo.");
-
-            if (systemInfo.DriverOption.IsSet && systemInfo.Driver == null)
-                throw new ArgumentNullException(nameof(systemInfo.Driver), "Property is required for class SystemInfo.");
-
-            if (systemInfo.DriverStatusOption.IsSet && systemInfo.DriverStatus == null)
-                throw new ArgumentNullException(nameof(systemInfo.DriverStatus), "Property is required for class SystemInfo.");
-
-            if (systemInfo.DockerRootDirOption.IsSet && systemInfo.DockerRootDir == null)
-                throw new ArgumentNullException(nameof(systemInfo.DockerRootDir), "Property is required for class SystemInfo.");
-
-            if (systemInfo.PluginsOption.IsSet && systemInfo.Plugins == null)
-                throw new ArgumentNullException(nameof(systemInfo.Plugins), "Property is required for class SystemInfo.");
-
-            if (systemInfo.SystemTimeOption.IsSet && systemInfo.SystemTime == null)
-                throw new ArgumentNullException(nameof(systemInfo.SystemTime), "Property is required for class SystemInfo.");
-
-            if (systemInfo.LoggingDriverOption.IsSet && systemInfo.LoggingDriver == null)
-                throw new ArgumentNullException(nameof(systemInfo.LoggingDriver), "Property is required for class SystemInfo.");
-
-            if (systemInfo.KernelVersionOption.IsSet && systemInfo.KernelVersion == null)
-                throw new ArgumentNullException(nameof(systemInfo.KernelVersion), "Property is required for class SystemInfo.");
-
-            if (systemInfo.VarOperatingSystemOption.IsSet && systemInfo.VarOperatingSystem == null)
-                throw new ArgumentNullException(nameof(systemInfo.VarOperatingSystem), "Property is required for class SystemInfo.");
-
-            if (systemInfo.OSVersionOption.IsSet && systemInfo.OSVersion == null)
-                throw new ArgumentNullException(nameof(systemInfo.OSVersion), "Property is required for class SystemInfo.");
-
-            if (systemInfo.OSTypeOption.IsSet && systemInfo.OSType == null)
-                throw new ArgumentNullException(nameof(systemInfo.OSType), "Property is required for class SystemInfo.");
-
-            if (systemInfo.ArchitectureOption.IsSet && systemInfo.Architecture == null)
-                throw new ArgumentNullException(nameof(systemInfo.Architecture), "Property is required for class SystemInfo.");
-
-            if (systemInfo.IndexServerAddressOption.IsSet && systemInfo.IndexServerAddress == null)
-                throw new ArgumentNullException(nameof(systemInfo.IndexServerAddress), "Property is required for class SystemInfo.");
-
-            if (systemInfo.GenericResourcesOption.IsSet && systemInfo.GenericResources == null)
-                throw new ArgumentNullException(nameof(systemInfo.GenericResources), "Property is required for class SystemInfo.");
-
-            if (systemInfo.HttpProxyOption.IsSet && systemInfo.HttpProxy == null)
-                throw new ArgumentNullException(nameof(systemInfo.HttpProxy), "Property is required for class SystemInfo.");
-
-            if (systemInfo.HttpsProxyOption.IsSet && systemInfo.HttpsProxy == null)
-                throw new ArgumentNullException(nameof(systemInfo.HttpsProxy), "Property is required for class SystemInfo.");
-
-            if (systemInfo.NoProxyOption.IsSet && systemInfo.NoProxy == null)
-                throw new ArgumentNullException(nameof(systemInfo.NoProxy), "Property is required for class SystemInfo.");
-
-            if (systemInfo.NameOption.IsSet && systemInfo.Name == null)
-                throw new ArgumentNullException(nameof(systemInfo.Name), "Property is required for class SystemInfo.");
-
-            if (systemInfo.LabelsOption.IsSet && systemInfo.Labels == null)
-                throw new ArgumentNullException(nameof(systemInfo.Labels), "Property is required for class SystemInfo.");
-
-            if (systemInfo.ServerVersionOption.IsSet && systemInfo.ServerVersion == null)
-                throw new ArgumentNullException(nameof(systemInfo.ServerVersion), "Property is required for class SystemInfo.");
-
-            if (systemInfo.RuntimesOption.IsSet && systemInfo.Runtimes == null)
-                throw new ArgumentNullException(nameof(systemInfo.Runtimes), "Property is required for class SystemInfo.");
-
-            if (systemInfo.DefaultRuntimeOption.IsSet && systemInfo.DefaultRuntime == null)
-                throw new ArgumentNullException(nameof(systemInfo.DefaultRuntime), "Property is required for class SystemInfo.");
-
-            if (systemInfo.SwarmOption.IsSet && systemInfo.Swarm == null)
-                throw new ArgumentNullException(nameof(systemInfo.Swarm), "Property is required for class SystemInfo.");
-
-            if (systemInfo.InitBinaryOption.IsSet && systemInfo.InitBinary == null)
-                throw new ArgumentNullException(nameof(systemInfo.InitBinary), "Property is required for class SystemInfo.");
-
-            if (systemInfo.ContainerdCommitOption.IsSet && systemInfo.ContainerdCommit == null)
-                throw new ArgumentNullException(nameof(systemInfo.ContainerdCommit), "Property is required for class SystemInfo.");
-
-            if (systemInfo.RuncCommitOption.IsSet && systemInfo.RuncCommit == null)
-                throw new ArgumentNullException(nameof(systemInfo.RuncCommit), "Property is required for class SystemInfo.");
-
-            if (systemInfo.InitCommitOption.IsSet && systemInfo.InitCommit == null)
-                throw new ArgumentNullException(nameof(systemInfo.InitCommit), "Property is required for class SystemInfo.");
-
-            if (systemInfo.SecurityOptionsOption.IsSet && systemInfo.SecurityOptions == null)
-                throw new ArgumentNullException(nameof(systemInfo.SecurityOptions), "Property is required for class SystemInfo.");
-
-            if (systemInfo.ProductLicenseOption.IsSet && systemInfo.ProductLicense == null)
-                throw new ArgumentNullException(nameof(systemInfo.ProductLicense), "Property is required for class SystemInfo.");
-
-            if (systemInfo.DefaultAddressPoolsOption.IsSet && systemInfo.DefaultAddressPools == null)
-                throw new ArgumentNullException(nameof(systemInfo.DefaultAddressPools), "Property is required for class SystemInfo.");
-
-            if (systemInfo.WarningsOption.IsSet && systemInfo.Warnings == null)
-                throw new ArgumentNullException(nameof(systemInfo.Warnings), "Property is required for class SystemInfo.");
-
-            if (systemInfo.CDISpecDirsOption.IsSet && systemInfo.CDISpecDirs == null)
-                throw new ArgumentNullException(nameof(systemInfo.CDISpecDirs), "Property is required for class SystemInfo.");
-
-            if (systemInfo.IDOption.IsSet)
-                writer.WriteString("ID", systemInfo.ID);
-
-            if (systemInfo.ContainersOption.IsSet)
-                writer.WriteNumber("Containers", systemInfo.ContainersOption.Value!.Value);
-
-            if (systemInfo.ContainersRunningOption.IsSet)
-                writer.WriteNumber("ContainersRunning", systemInfo.ContainersRunningOption.Value!.Value);
-
-            if (systemInfo.ContainersPausedOption.IsSet)
-                writer.WriteNumber("ContainersPaused", systemInfo.ContainersPausedOption.Value!.Value);
-
-            if (systemInfo.ContainersStoppedOption.IsSet)
-                writer.WriteNumber("ContainersStopped", systemInfo.ContainersStoppedOption.Value!.Value);
-
-            if (systemInfo.ImagesOption.IsSet)
-                writer.WriteNumber("Images", systemInfo.ImagesOption.Value!.Value);
-
-            if (systemInfo.DriverOption.IsSet)
-                writer.WriteString("Driver", systemInfo.Driver);
-
-            if (systemInfo.DriverStatusOption.IsSet)
-            {
-                writer.WritePropertyName("DriverStatus");
-                JsonSerializer.Serialize(writer, systemInfo.DriverStatus, jsonSerializerOptions);
-            }
-            if (systemInfo.DockerRootDirOption.IsSet)
-                writer.WriteString("DockerRootDir", systemInfo.DockerRootDir);
-
-            if (systemInfo.PluginsOption.IsSet)
-            {
-                writer.WritePropertyName("Plugins");
-                JsonSerializer.Serialize(writer, systemInfo.Plugins, jsonSerializerOptions);
-            }
-            if (systemInfo.MemoryLimitOption.IsSet)
-                writer.WriteBoolean("MemoryLimit", systemInfo.MemoryLimitOption.Value!.Value);
-
-            if (systemInfo.SwapLimitOption.IsSet)
-                writer.WriteBoolean("SwapLimit", systemInfo.SwapLimitOption.Value!.Value);
-
-            if (systemInfo.KernelMemoryTCPOption.IsSet)
-                writer.WriteBoolean("KernelMemoryTCP", systemInfo.KernelMemoryTCPOption.Value!.Value);
-
-            if (systemInfo.CpuCfsPeriodOption.IsSet)
-                writer.WriteBoolean("CpuCfsPeriod", systemInfo.CpuCfsPeriodOption.Value!.Value);
-
-            if (systemInfo.CpuCfsQuotaOption.IsSet)
-                writer.WriteBoolean("CpuCfsQuota", systemInfo.CpuCfsQuotaOption.Value!.Value);
-
-            if (systemInfo.CPUSharesOption.IsSet)
-                writer.WriteBoolean("CPUShares", systemInfo.CPUSharesOption.Value!.Value);
-
-            if (systemInfo.CPUSetOption.IsSet)
-                writer.WriteBoolean("CPUSet", systemInfo.CPUSetOption.Value!.Value);
-
-            if (systemInfo.PidsLimitOption.IsSet)
-                writer.WriteBoolean("PidsLimit", systemInfo.PidsLimitOption.Value!.Value);
-
-            if (systemInfo.OomKillDisableOption.IsSet)
-                writer.WriteBoolean("OomKillDisable", systemInfo.OomKillDisableOption.Value!.Value);
-
-            if (systemInfo.IPv4ForwardingOption.IsSet)
-                writer.WriteBoolean("IPv4Forwarding", systemInfo.IPv4ForwardingOption.Value!.Value);
-
-            if (systemInfo.BridgeNfIptablesOption.IsSet)
-                writer.WriteBoolean("BridgeNfIptables", systemInfo.BridgeNfIptablesOption.Value!.Value);
-
-            if (systemInfo.BridgeNfIp6tablesOption.IsSet)
-                writer.WriteBoolean("BridgeNfIp6tables", systemInfo.BridgeNfIp6tablesOption.Value!.Value);
-
-            if (systemInfo.DebugOption.IsSet)
-                writer.WriteBoolean("Debug", systemInfo.DebugOption.Value!.Value);
-
-            if (systemInfo.NFdOption.IsSet)
-                writer.WriteNumber("NFd", systemInfo.NFdOption.Value!.Value);
-
-            if (systemInfo.NGoroutinesOption.IsSet)
-                writer.WriteNumber("NGoroutines", systemInfo.NGoroutinesOption.Value!.Value);
-
-            if (systemInfo.SystemTimeOption.IsSet)
-                writer.WriteString("SystemTime", systemInfo.SystemTime);
-
-            if (systemInfo.LoggingDriverOption.IsSet)
-                writer.WriteString("LoggingDriver", systemInfo.LoggingDriver);
-
-            var cgroupDriverRawValue = SystemInfo.CgroupDriverEnumToJsonValue(systemInfo.CgroupDriverOption.Value!.Value);
-            writer.WriteString("CgroupDriver", cgroupDriverRawValue);
-            var cgroupVersionRawValue = SystemInfo.CgroupVersionEnumToJsonValue(systemInfo.CgroupVersionOption.Value!.Value);
-            writer.WriteString("CgroupVersion", cgroupVersionRawValue);
-            if (systemInfo.NEventsListenerOption.IsSet)
-                writer.WriteNumber("NEventsListener", systemInfo.NEventsListenerOption.Value!.Value);
-
-            if (systemInfo.KernelVersionOption.IsSet)
-                writer.WriteString("KernelVersion", systemInfo.KernelVersion);
-
-            if (systemInfo.VarOperatingSystemOption.IsSet)
-                writer.WriteString("OperatingSystem", systemInfo.VarOperatingSystem);
-
-            if (systemInfo.OSVersionOption.IsSet)
-                writer.WriteString("OSVersion", systemInfo.OSVersion);
-
-            if (systemInfo.OSTypeOption.IsSet)
-                writer.WriteString("OSType", systemInfo.OSType);
-
-            if (systemInfo.ArchitectureOption.IsSet)
-                writer.WriteString("Architecture", systemInfo.Architecture);
-
-            if (systemInfo.NCPUOption.IsSet)
-                writer.WriteNumber("NCPU", systemInfo.NCPUOption.Value!.Value);
-
-            if (systemInfo.MemTotalOption.IsSet)
-                writer.WriteNumber("MemTotal", systemInfo.MemTotalOption.Value!.Value);
-
-            if (systemInfo.IndexServerAddressOption.IsSet)
-                writer.WriteString("IndexServerAddress", systemInfo.IndexServerAddress);
-
-            if (systemInfo.RegistryConfigOption.IsSet)
-                if (systemInfo.RegistryConfigOption.Value != null)
-                {
-                    writer.WritePropertyName("RegistryConfig");
-                    JsonSerializer.Serialize(writer, systemInfo.RegistryConfig, jsonSerializerOptions);
-                }
-                else
-                    writer.WriteNull("RegistryConfig");
-            if (systemInfo.GenericResourcesOption.IsSet)
-            {
-                writer.WritePropertyName("GenericResources");
-                JsonSerializer.Serialize(writer, systemInfo.GenericResources, jsonSerializerOptions);
-            }
-            if (systemInfo.HttpProxyOption.IsSet)
-                writer.WriteString("HttpProxy", systemInfo.HttpProxy);
-
-            if (systemInfo.HttpsProxyOption.IsSet)
-                writer.WriteString("HttpsProxy", systemInfo.HttpsProxy);
-
-            if (systemInfo.NoProxyOption.IsSet)
-                writer.WriteString("NoProxy", systemInfo.NoProxy);
-
-            if (systemInfo.NameOption.IsSet)
-                writer.WriteString("Name", systemInfo.Name);
-
-            if (systemInfo.LabelsOption.IsSet)
-            {
-                writer.WritePropertyName("Labels");
-                JsonSerializer.Serialize(writer, systemInfo.Labels, jsonSerializerOptions);
-            }
-            if (systemInfo.ExperimentalBuildOption.IsSet)
-                writer.WriteBoolean("ExperimentalBuild", systemInfo.ExperimentalBuildOption.Value!.Value);
-
-            if (systemInfo.ServerVersionOption.IsSet)
-                writer.WriteString("ServerVersion", systemInfo.ServerVersion);
-
-            if (systemInfo.RuntimesOption.IsSet)
-            {
-                writer.WritePropertyName("Runtimes");
-                JsonSerializer.Serialize(writer, systemInfo.Runtimes, jsonSerializerOptions);
-            }
-            if (systemInfo.DefaultRuntimeOption.IsSet)
-                writer.WriteString("DefaultRuntime", systemInfo.DefaultRuntime);
-
-            if (systemInfo.SwarmOption.IsSet)
-            {
-                writer.WritePropertyName("Swarm");
-                JsonSerializer.Serialize(writer, systemInfo.Swarm, jsonSerializerOptions);
-            }
-            if (systemInfo.LiveRestoreEnabledOption.IsSet)
-                writer.WriteBoolean("LiveRestoreEnabled", systemInfo.LiveRestoreEnabledOption.Value!.Value);
-
-            var isolationRawValue = SystemInfo.IsolationEnumToJsonValue(systemInfo.IsolationOption.Value!.Value);
-            writer.WriteString("Isolation", isolationRawValue);
-            if (systemInfo.InitBinaryOption.IsSet)
-                writer.WriteString("InitBinary", systemInfo.InitBinary);
-
-            if (systemInfo.ContainerdCommitOption.IsSet)
-            {
-                writer.WritePropertyName("ContainerdCommit");
-                JsonSerializer.Serialize(writer, systemInfo.ContainerdCommit, jsonSerializerOptions);
-            }
-            if (systemInfo.RuncCommitOption.IsSet)
-            {
-                writer.WritePropertyName("RuncCommit");
-                JsonSerializer.Serialize(writer, systemInfo.RuncCommit, jsonSerializerOptions);
-            }
-            if (systemInfo.InitCommitOption.IsSet)
-            {
-                writer.WritePropertyName("InitCommit");
-                JsonSerializer.Serialize(writer, systemInfo.InitCommit, jsonSerializerOptions);
-            }
-            if (systemInfo.SecurityOptionsOption.IsSet)
-            {
-                writer.WritePropertyName("SecurityOptions");
-                JsonSerializer.Serialize(writer, systemInfo.SecurityOptions, jsonSerializerOptions);
-            }
-            if (systemInfo.ProductLicenseOption.IsSet)
-                writer.WriteString("ProductLicense", systemInfo.ProductLicense);
-
-            if (systemInfo.DefaultAddressPoolsOption.IsSet)
-            {
-                writer.WritePropertyName("DefaultAddressPools");
-                JsonSerializer.Serialize(writer, systemInfo.DefaultAddressPools, jsonSerializerOptions);
-            }
-            if (systemInfo.WarningsOption.IsSet)
-            {
-                writer.WritePropertyName("Warnings");
-                JsonSerializer.Serialize(writer, systemInfo.Warnings, jsonSerializerOptions);
-            }
-            if (systemInfo.CDISpecDirsOption.IsSet)
-            {
-                writer.WritePropertyName("CDISpecDirs");
-                JsonSerializer.Serialize(writer, systemInfo.CDISpecDirs, jsonSerializerOptions);
-            }
-            if (systemInfo.ContainerdOption.IsSet)
-                if (systemInfo.ContainerdOption.Value != null)
-                {
-                    writer.WritePropertyName("Containerd");
-                    JsonSerializer.Serialize(writer, systemInfo.Containerd, jsonSerializerOptions);
-                }
-                else
-                    writer.WriteNull("Containerd");
         }
     }
 }

@@ -20,37 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// SystemDataUsageResponse
     /// </summary>
-    public partial class SystemDataUsageResponse : IValidatableObject
+    public partial class SystemDataUsageResponse
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SystemDataUsageResponse" /> class.
-        /// </summary>
-        /// <param name="layersSize">layersSize</param>
-        /// <param name="images">images</param>
-        /// <param name="containers">containers</param>
-        /// <param name="volumes">volumes</param>
-        /// <param name="buildCache">buildCache</param>
-        [JsonConstructor]
-        public SystemDataUsageResponse(Option<long?> layersSize = default, Option<List<ImageSummary>?> images = default, Option<List<ContainerSummary>?> containers = default, Option<List<Volume>?> volumes = default, Option<List<BuildCache>?> buildCache = default)
-        {
-            LayersSizeOption = layersSize;
-            ImagesOption = images;
-            ContainersOption = containers;
-            VolumesOption = volumes;
-            BuildCacheOption = buildCache;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Used to track the state of LayersSize
         /// </summary>
@@ -131,165 +110,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  BuildCache: ").Append(BuildCache).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="SystemDataUsageResponse" />
-    /// </summary>
-    public class SystemDataUsageResponseJsonConverter : JsonConverter<SystemDataUsageResponse>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="SystemDataUsageResponse" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override SystemDataUsageResponse Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<long?> layersSize = default;
-            Option<List<ImageSummary>?> images = default;
-            Option<List<ContainerSummary>?> containers = default;
-            Option<List<Volume>?> volumes = default;
-            Option<List<BuildCache>?> buildCache = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "LayersSize":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                layersSize = new Option<long?>(utf8JsonReader.GetInt64());
-                            break;
-                        case "Images":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                images = new Option<List<ImageSummary>?>(JsonSerializer.Deserialize<List<ImageSummary>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "Containers":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                containers = new Option<List<ContainerSummary>?>(JsonSerializer.Deserialize<List<ContainerSummary>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "Volumes":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                volumes = new Option<List<Volume>?>(JsonSerializer.Deserialize<List<Volume>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "BuildCache":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                buildCache = new Option<List<BuildCache>?>(JsonSerializer.Deserialize<List<BuildCache>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (layersSize.IsSet && layersSize.Value == null)
-                throw new ArgumentNullException(nameof(layersSize), "Property is not nullable for class SystemDataUsageResponse.");
-
-            if (images.IsSet && images.Value == null)
-                throw new ArgumentNullException(nameof(images), "Property is not nullable for class SystemDataUsageResponse.");
-
-            if (containers.IsSet && containers.Value == null)
-                throw new ArgumentNullException(nameof(containers), "Property is not nullable for class SystemDataUsageResponse.");
-
-            if (volumes.IsSet && volumes.Value == null)
-                throw new ArgumentNullException(nameof(volumes), "Property is not nullable for class SystemDataUsageResponse.");
-
-            if (buildCache.IsSet && buildCache.Value == null)
-                throw new ArgumentNullException(nameof(buildCache), "Property is not nullable for class SystemDataUsageResponse.");
-
-            return new SystemDataUsageResponse(layersSize, images, containers, volumes, buildCache);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="SystemDataUsageResponse" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="systemDataUsageResponse"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, SystemDataUsageResponse systemDataUsageResponse, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, systemDataUsageResponse, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="SystemDataUsageResponse" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="systemDataUsageResponse"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, SystemDataUsageResponse systemDataUsageResponse, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (systemDataUsageResponse.ImagesOption.IsSet && systemDataUsageResponse.Images == null)
-                throw new ArgumentNullException(nameof(systemDataUsageResponse.Images), "Property is required for class SystemDataUsageResponse.");
-
-            if (systemDataUsageResponse.ContainersOption.IsSet && systemDataUsageResponse.Containers == null)
-                throw new ArgumentNullException(nameof(systemDataUsageResponse.Containers), "Property is required for class SystemDataUsageResponse.");
-
-            if (systemDataUsageResponse.VolumesOption.IsSet && systemDataUsageResponse.Volumes == null)
-                throw new ArgumentNullException(nameof(systemDataUsageResponse.Volumes), "Property is required for class SystemDataUsageResponse.");
-
-            if (systemDataUsageResponse.BuildCacheOption.IsSet && systemDataUsageResponse.BuildCache == null)
-                throw new ArgumentNullException(nameof(systemDataUsageResponse.BuildCache), "Property is required for class SystemDataUsageResponse.");
-
-            if (systemDataUsageResponse.LayersSizeOption.IsSet)
-                writer.WriteNumber("LayersSize", systemDataUsageResponse.LayersSizeOption.Value!.Value);
-
-            if (systemDataUsageResponse.ImagesOption.IsSet)
-            {
-                writer.WritePropertyName("Images");
-                JsonSerializer.Serialize(writer, systemDataUsageResponse.Images, jsonSerializerOptions);
-            }
-            if (systemDataUsageResponse.ContainersOption.IsSet)
-            {
-                writer.WritePropertyName("Containers");
-                JsonSerializer.Serialize(writer, systemDataUsageResponse.Containers, jsonSerializerOptions);
-            }
-            if (systemDataUsageResponse.VolumesOption.IsSet)
-            {
-                writer.WritePropertyName("Volumes");
-                JsonSerializer.Serialize(writer, systemDataUsageResponse.Volumes, jsonSerializerOptions);
-            }
-            if (systemDataUsageResponse.BuildCacheOption.IsSet)
-            {
-                writer.WritePropertyName("BuildCache");
-                JsonSerializer.Serialize(writer, systemDataUsageResponse.BuildCache, jsonSerializerOptions);
-            }
         }
     }
 }

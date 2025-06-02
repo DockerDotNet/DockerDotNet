@@ -20,37 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// Optional configuration for the &#x60;bind&#x60; type.
     /// </summary>
-    public partial class MountBindOptions : IValidatableObject
+    public partial class MountBindOptions
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MountBindOptions" /> class.
-        /// </summary>
-        /// <param name="propagation">A propagation mode with the value &#x60;[r]private&#x60;, &#x60;[r]shared&#x60;, or &#x60;[r]slave&#x60;.</param>
-        /// <param name="nonRecursive">Disable recursive bind mount. (default to false)</param>
-        /// <param name="createMountpoint">Create mount point on host if missing (default to false)</param>
-        /// <param name="readOnlyNonRecursive">Make the mount non-recursively read-only, but still leave the mount recursive (unless NonRecursive is set to &#x60;true&#x60; in conjunction).  Added in v1.44, before that version all read-only mounts were non-recursive by default. To match the previous behaviour this will default to &#x60;true&#x60; for clients on versions prior to v1.44.  (default to false)</param>
-        /// <param name="readOnlyForceRecursive">Raise an error if the mount cannot be made recursively read-only. (default to false)</param>
-        [JsonConstructor]
-        public MountBindOptions(Option<PropagationEnum?> propagation = default, Option<bool?> nonRecursive = default, Option<bool?> createMountpoint = default, Option<bool?> readOnlyNonRecursive = default, Option<bool?> readOnlyForceRecursive = default)
-        {
-            PropagationOption = propagation;
-            NonRecursiveOption = nonRecursive;
-            CreateMountpointOption = createMountpoint;
-            ReadOnlyNonRecursiveOption = readOnlyNonRecursive;
-            ReadOnlyForceRecursiveOption = readOnlyForceRecursive;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// A propagation mode with the value &#x60;[r]private&#x60;, &#x60;[r]shared&#x60;, or &#x60;[r]slave&#x60;.
         /// </summary>
@@ -88,91 +67,88 @@ namespace DockerDotNet.Shared.Models
             Rslave = 6
         }
 
-        /// <summary>
-        /// Returns a <see cref="PropagationEnum"/>
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public static PropagationEnum PropagationEnumFromString(string value)
+/// <summary>
+/// A Json converter for type <see cref="PropagationEnum"/>
+/// </summary>
+public class PropagationEnumJsonConverter : JsonConverter<PropagationEnum>
+{
+    public override PropagationEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        string? enumString = reader.GetString();
+        return enumString switch
         {
-            if (value.Equals("private"))
-                return PropagationEnum.Private;
+            "private" => PropagationEnum.Private,
+            "rprivate" => PropagationEnum.Rprivate,
+            "shared" => PropagationEnum.Shared,
+            "rshared" => PropagationEnum.Rshared,
+            "slave" => PropagationEnum.Slave,
+            "rslave" => PropagationEnum.Rslave,
+            _ => throw new JsonException($"Unknown value: {enumString}")
+        };
+    }
 
-            if (value.Equals("rprivate"))
-                return PropagationEnum.Rprivate;
-
-            if (value.Equals("shared"))
-                return PropagationEnum.Shared;
-
-            if (value.Equals("rshared"))
-                return PropagationEnum.Rshared;
-
-            if (value.Equals("slave"))
-                return PropagationEnum.Slave;
-
-            if (value.Equals("rslave"))
-                return PropagationEnum.Rslave;
-
-            throw new NotImplementedException($"Could not convert value to type PropagationEnum: '{value}'");
-        }
-
-        /// <summary>
-        /// Returns a <see cref="PropagationEnum"/>
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public static PropagationEnum? PropagationEnumFromStringOrDefault(string value)
+    public override void Write(Utf8JsonWriter writer, PropagationEnum value, JsonSerializerOptions options)
+    {
+        string enumString = value switch
         {
-            if (value.Equals("private"))
-                return PropagationEnum.Private;
+            PropagationEnum.Private => "private",
+            PropagationEnum.Rprivate => "rprivate",
+            PropagationEnum.Shared => "shared",
+            PropagationEnum.Rshared => "rshared",
+            PropagationEnum.Slave => "slave",
+            PropagationEnum.Rslave => "rslave",
+            _ => throw new JsonException($"Unknown value: {value}")
+        };
+        writer.WriteStringValue(enumString);
+    }
+}
 
-            if (value.Equals("rprivate"))
-                return PropagationEnum.Rprivate;
-
-            if (value.Equals("shared"))
-                return PropagationEnum.Shared;
-
-            if (value.Equals("rshared"))
-                return PropagationEnum.Rshared;
-
-            if (value.Equals("slave"))
-                return PropagationEnum.Slave;
-
-            if (value.Equals("rslave"))
-                return PropagationEnum.Rslave;
-
+/// <summary>
+/// A Json converter for nullable <see cref="PropagationEnum"/>
+/// </summary>
+public class PropagationEnumNullableJsonConverter : JsonConverter<PropagationEnum?>
+{
+    public override PropagationEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        if (reader.TokenType == JsonTokenType.Null)
             return null;
-        }
 
-        /// <summary>
-        /// Converts the <see cref="PropagationEnum"/> to the json value
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public static string PropagationEnumToJsonValue(PropagationEnum? value)
+        string? enumString = reader.GetString();
+
+        return enumString switch
         {
-            if (value == PropagationEnum.Private)
-                return "private";
+            "private" => PropagationEnum.Private,
+            "rprivate" => PropagationEnum.Rprivate,
+            "shared" => PropagationEnum.Shared,
+            "rshared" => PropagationEnum.Rshared,
+            "slave" => PropagationEnum.Slave,
+            "rslave" => PropagationEnum.Rslave,
+            _ => throw new JsonException($"Unknown value: {enumString}")
+        };
+    }
 
-            if (value == PropagationEnum.Rprivate)
-                return "rprivate";
-
-            if (value == PropagationEnum.Shared)
-                return "shared";
-
-            if (value == PropagationEnum.Rshared)
-                return "rshared";
-
-            if (value == PropagationEnum.Slave)
-                return "slave";
-
-            if (value == PropagationEnum.Rslave)
-                return "rslave";
-
-            throw new NotImplementedException($"Value could not be handled: '{value}'");
+    public override void Write(Utf8JsonWriter writer, PropagationEnum? value, JsonSerializerOptions options)
+    {
+        if (value == null)
+        {
+            writer.WriteNullValue();
+            return;
         }
+
+        string enumString = value.Value switch
+        {
+            PropagationEnum.Private => "private",
+            PropagationEnum.Rprivate => "rprivate",
+            PropagationEnum.Shared => "shared",
+            PropagationEnum.Rshared => "rshared",
+            PropagationEnum.Slave => "slave",
+            PropagationEnum.Rslave => "rslave",
+            _ => throw new JsonException($"Unknown value: {value}")
+        };
+
+        writer.WriteStringValue(enumString);
+    }
+}
 
         /// <summary>
         /// Used to track the state of Propagation
@@ -259,144 +235,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  ReadOnlyForceRecursive: ").Append(ReadOnlyForceRecursive).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="MountBindOptions" />
-    /// </summary>
-    public class MountBindOptionsJsonConverter : JsonConverter<MountBindOptions>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="MountBindOptions" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override MountBindOptions Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<MountBindOptions.PropagationEnum?> propagation = default;
-            Option<bool?> nonRecursive = default;
-            Option<bool?> createMountpoint = default;
-            Option<bool?> readOnlyNonRecursive = default;
-            Option<bool?> readOnlyForceRecursive = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "Propagation":
-                            string? propagationRawValue = utf8JsonReader.GetString();
-                            if (propagationRawValue != null)
-                                propagation = new Option<MountBindOptions.PropagationEnum?>(MountBindOptions.PropagationEnumFromStringOrDefault(propagationRawValue));
-                            break;
-                        case "NonRecursive":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                nonRecursive = new Option<bool?>(utf8JsonReader.GetBoolean());
-                            break;
-                        case "CreateMountpoint":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                createMountpoint = new Option<bool?>(utf8JsonReader.GetBoolean());
-                            break;
-                        case "ReadOnlyNonRecursive":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                readOnlyNonRecursive = new Option<bool?>(utf8JsonReader.GetBoolean());
-                            break;
-                        case "ReadOnlyForceRecursive":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                readOnlyForceRecursive = new Option<bool?>(utf8JsonReader.GetBoolean());
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (propagation.IsSet && propagation.Value == null)
-                throw new ArgumentNullException(nameof(propagation), "Property is not nullable for class MountBindOptions.");
-
-            if (nonRecursive.IsSet && nonRecursive.Value == null)
-                throw new ArgumentNullException(nameof(nonRecursive), "Property is not nullable for class MountBindOptions.");
-
-            if (createMountpoint.IsSet && createMountpoint.Value == null)
-                throw new ArgumentNullException(nameof(createMountpoint), "Property is not nullable for class MountBindOptions.");
-
-            if (readOnlyNonRecursive.IsSet && readOnlyNonRecursive.Value == null)
-                throw new ArgumentNullException(nameof(readOnlyNonRecursive), "Property is not nullable for class MountBindOptions.");
-
-            if (readOnlyForceRecursive.IsSet && readOnlyForceRecursive.Value == null)
-                throw new ArgumentNullException(nameof(readOnlyForceRecursive), "Property is not nullable for class MountBindOptions.");
-
-            return new MountBindOptions(propagation, nonRecursive, createMountpoint, readOnlyNonRecursive, readOnlyForceRecursive);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="MountBindOptions" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="mountBindOptions"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, MountBindOptions mountBindOptions, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, mountBindOptions, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="MountBindOptions" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="mountBindOptions"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, MountBindOptions mountBindOptions, JsonSerializerOptions jsonSerializerOptions)
-        {
-            var propagationRawValue = MountBindOptions.PropagationEnumToJsonValue(mountBindOptions.PropagationOption.Value!.Value);
-            writer.WriteString("Propagation", propagationRawValue);
-            if (mountBindOptions.NonRecursiveOption.IsSet)
-                writer.WriteBoolean("NonRecursive", mountBindOptions.NonRecursiveOption.Value!.Value);
-
-            if (mountBindOptions.CreateMountpointOption.IsSet)
-                writer.WriteBoolean("CreateMountpoint", mountBindOptions.CreateMountpointOption.Value!.Value);
-
-            if (mountBindOptions.ReadOnlyNonRecursiveOption.IsSet)
-                writer.WriteBoolean("ReadOnlyNonRecursive", mountBindOptions.ReadOnlyNonRecursiveOption.Value!.Value);
-
-            if (mountBindOptions.ReadOnlyForceRecursiveOption.IsSet)
-                writer.WriteBoolean("ReadOnlyForceRecursive", mountBindOptions.ReadOnlyForceRecursiveOption.Value!.Value);
         }
     }
 }

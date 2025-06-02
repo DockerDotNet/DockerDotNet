@@ -20,37 +20,22 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// PidsStats contains Linux-specific stats of a container&#39;s process-IDs (PIDs).  This type is Linux-specific and omitted for Windows containers. 
     /// </summary>
-    public partial class ContainerPidsStats : IValidatableObject
+    public partial class ContainerPidsStats
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ContainerPidsStats" /> class.
-        /// </summary>
-        /// <param name="current">Current is the number of PIDs in the cgroup. </param>
-        /// <param name="limit">Limit is the hard limit on the number of pids in the cgroup. A \&quot;Limit\&quot; of 0 means that there is no limit. </param>
-        [JsonConstructor]
-        public ContainerPidsStats(Option<ulong?> current = default, Option<ulong?> limit = default)
-        {
-            CurrentOption = current;
-            LimitOption = limit;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Used to track the state of Current
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<ulong?> CurrentOption { get; private set; }
+        public Option<int?> CurrentOption { get; private set; }
 
         /// <summary>
         /// Current is the number of PIDs in the cgroup. 
@@ -58,21 +43,21 @@ namespace DockerDotNet.Shared.Models
         /// <value>Current is the number of PIDs in the cgroup. </value>
         /* <example>5</example> */
         [JsonPropertyName("current")]
-        public ulong? Current { get { return this.CurrentOption; } set { this.CurrentOption = new(value); } }
+        public int? Current { get { return this.CurrentOption; } set { this.CurrentOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of Limit
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<ulong?> LimitOption { get; private set; }
+        public Option<int?> LimitOption { get; private set; }
 
         /// <summary>
         /// Limit is the hard limit on the number of pids in the cgroup. A \&quot;Limit\&quot; of 0 means that there is no limit. 
         /// </summary>
         /// <value>Limit is the hard limit on the number of pids in the cgroup. A \&quot;Limit\&quot; of 0 means that there is no limit. </value>
         [JsonPropertyName("limit")]
-        public ulong? Limit { get { return this.LimitOption; } set { this.LimitOption = new(value); } }
+        public int? Limit { get { return this.LimitOption; } set { this.LimitOption = new(value); } }
 
         /// <summary>
         /// Returns the string presentation of the object
@@ -86,111 +71,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  Limit: ").Append(Limit).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="ContainerPidsStats" />
-    /// </summary>
-    public class ContainerPidsStatsJsonConverter : JsonConverter<ContainerPidsStats>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="ContainerPidsStats" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override ContainerPidsStats Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<ulong?> current = default;
-            Option<ulong?> limit = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "current":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                current = new Option<ulong?>(utf8JsonReader.GetUInt64());
-                            break;
-                        case "limit":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                limit = new Option<ulong?>(utf8JsonReader.GetUInt64());
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            return new ContainerPidsStats(current, limit);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="ContainerPidsStats" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="containerPidsStats"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, ContainerPidsStats containerPidsStats, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, containerPidsStats, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="ContainerPidsStats" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="containerPidsStats"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, ContainerPidsStats containerPidsStats, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (containerPidsStats.CurrentOption.IsSet)
-                if (containerPidsStats.CurrentOption.Value != null)
-                    writer.WriteNumber("current", containerPidsStats.CurrentOption.Value!.Value);
-                else
-                    writer.WriteNull("current");
-
-            if (containerPidsStats.LimitOption.IsSet)
-                if (containerPidsStats.LimitOption.Value != null)
-                    writer.WriteNumber("limit", containerPidsStats.LimitOption.Value!.Value);
-                else
-                    writer.WriteNull("limit");
         }
     }
 }

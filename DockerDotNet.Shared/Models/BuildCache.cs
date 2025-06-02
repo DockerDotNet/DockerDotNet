@@ -20,49 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// BuildCache contains information about a build cache record. 
     /// </summary>
-    public partial class BuildCache : IValidatableObject
+    public partial class BuildCache
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BuildCache" /> class.
-        /// </summary>
-        /// <param name="iD">Unique ID of the build cache record. </param>
-        /// <param name="parent">ID of the parent build cache record.  &gt; **Deprecated**: This field is deprecated, and omitted if empty. </param>
-        /// <param name="parents">List of parent build cache record IDs. </param>
-        /// <param name="type">Cache record type. </param>
-        /// <param name="description">Description of the build-step that produced the build cache. </param>
-        /// <param name="inUse">Indicates if the build cache is in use. </param>
-        /// <param name="shared">Indicates if the build cache is shared. </param>
-        /// <param name="size">Amount of disk space used by the build cache (in bytes). </param>
-        /// <param name="createdAt">Date and time at which the build cache was created in [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) format with nano-seconds. </param>
-        /// <param name="lastUsedAt">Date and time at which the build cache was last used in [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) format with nano-seconds. </param>
-        /// <param name="usageCount">usageCount</param>
-        [JsonConstructor]
-        public BuildCache(Option<string?> iD = default, Option<string?> parent = default, Option<List<string>?> parents = default, Option<TypeEnum?> type = default, Option<string?> description = default, Option<bool?> inUse = default, Option<bool?> shared = default, Option<int?> size = default, Option<string?> createdAt = default, Option<string?> lastUsedAt = default, Option<int?> usageCount = default)
-        {
-            IDOption = iD;
-            ParentOption = parent;
-            ParentsOption = parents;
-            TypeOption = type;
-            DescriptionOption = description;
-            InUseOption = inUse;
-            SharedOption = shared;
-            SizeOption = size;
-            CreatedAtOption = createdAt;
-            LastUsedAtOption = lastUsedAt;
-            UsageCountOption = usageCount;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Cache record type. 
         /// </summary>
@@ -100,91 +67,88 @@ namespace DockerDotNet.Shared.Models
             Regular = 6
         }
 
-        /// <summary>
-        /// Returns a <see cref="TypeEnum"/>
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public static TypeEnum TypeEnumFromString(string value)
+/// <summary>
+/// A Json converter for type <see cref="TypeEnum"/>
+/// </summary>
+public class TypeEnumJsonConverter : JsonConverter<TypeEnum>
+{
+    public override TypeEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        string? enumString = reader.GetString();
+        return enumString switch
         {
-            if (value.Equals("internal"))
-                return TypeEnum.Internal;
+            "internal" => TypeEnum.Internal,
+            "frontend" => TypeEnum.Frontend,
+            "source.local" => TypeEnum.SourceLocal,
+            "source.git.checkout" => TypeEnum.SourceGitCheckout,
+            "exec.cachemount" => TypeEnum.ExecCachemount,
+            "regular" => TypeEnum.Regular,
+            _ => throw new JsonException($"Unknown value: {enumString}")
+        };
+    }
 
-            if (value.Equals("frontend"))
-                return TypeEnum.Frontend;
-
-            if (value.Equals("source.local"))
-                return TypeEnum.SourceLocal;
-
-            if (value.Equals("source.git.checkout"))
-                return TypeEnum.SourceGitCheckout;
-
-            if (value.Equals("exec.cachemount"))
-                return TypeEnum.ExecCachemount;
-
-            if (value.Equals("regular"))
-                return TypeEnum.Regular;
-
-            throw new NotImplementedException($"Could not convert value to type TypeEnum: '{value}'");
-        }
-
-        /// <summary>
-        /// Returns a <see cref="TypeEnum"/>
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public static TypeEnum? TypeEnumFromStringOrDefault(string value)
+    public override void Write(Utf8JsonWriter writer, TypeEnum value, JsonSerializerOptions options)
+    {
+        string enumString = value switch
         {
-            if (value.Equals("internal"))
-                return TypeEnum.Internal;
+            TypeEnum.Internal => "internal",
+            TypeEnum.Frontend => "frontend",
+            TypeEnum.SourceLocal => "source.local",
+            TypeEnum.SourceGitCheckout => "source.git.checkout",
+            TypeEnum.ExecCachemount => "exec.cachemount",
+            TypeEnum.Regular => "regular",
+            _ => throw new JsonException($"Unknown value: {value}")
+        };
+        writer.WriteStringValue(enumString);
+    }
+}
 
-            if (value.Equals("frontend"))
-                return TypeEnum.Frontend;
-
-            if (value.Equals("source.local"))
-                return TypeEnum.SourceLocal;
-
-            if (value.Equals("source.git.checkout"))
-                return TypeEnum.SourceGitCheckout;
-
-            if (value.Equals("exec.cachemount"))
-                return TypeEnum.ExecCachemount;
-
-            if (value.Equals("regular"))
-                return TypeEnum.Regular;
-
+/// <summary>
+/// A Json converter for nullable <see cref="TypeEnum"/>
+/// </summary>
+public class TypeEnumNullableJsonConverter : JsonConverter<TypeEnum?>
+{
+    public override TypeEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        if (reader.TokenType == JsonTokenType.Null)
             return null;
-        }
 
-        /// <summary>
-        /// Converts the <see cref="TypeEnum"/> to the json value
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public static string TypeEnumToJsonValue(TypeEnum? value)
+        string? enumString = reader.GetString();
+
+        return enumString switch
         {
-            if (value == TypeEnum.Internal)
-                return "internal";
+            "internal" => TypeEnum.Internal,
+            "frontend" => TypeEnum.Frontend,
+            "source.local" => TypeEnum.SourceLocal,
+            "source.git.checkout" => TypeEnum.SourceGitCheckout,
+            "exec.cachemount" => TypeEnum.ExecCachemount,
+            "regular" => TypeEnum.Regular,
+            _ => throw new JsonException($"Unknown value: {enumString}")
+        };
+    }
 
-            if (value == TypeEnum.Frontend)
-                return "frontend";
-
-            if (value == TypeEnum.SourceLocal)
-                return "source.local";
-
-            if (value == TypeEnum.SourceGitCheckout)
-                return "source.git.checkout";
-
-            if (value == TypeEnum.ExecCachemount)
-                return "exec.cachemount";
-
-            if (value == TypeEnum.Regular)
-                return "regular";
-
-            throw new NotImplementedException($"Value could not be handled: '{value}'");
+    public override void Write(Utf8JsonWriter writer, TypeEnum? value, JsonSerializerOptions options)
+    {
+        if (value == null)
+        {
+            writer.WriteNullValue();
+            return;
         }
+
+        string enumString = value.Value switch
+        {
+            TypeEnum.Internal => "internal",
+            TypeEnum.Frontend => "frontend",
+            TypeEnum.SourceLocal => "source.local",
+            TypeEnum.SourceGitCheckout => "source.git.checkout",
+            TypeEnum.ExecCachemount => "exec.cachemount",
+            TypeEnum.Regular => "regular",
+            _ => throw new JsonException($"Unknown value: {value}")
+        };
+
+        writer.WriteStringValue(enumString);
+    }
+}
 
         /// <summary>
         /// Used to track the state of Type
@@ -370,216 +334,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  UsageCount: ").Append(UsageCount).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="BuildCache" />
-    /// </summary>
-    public class BuildCacheJsonConverter : JsonConverter<BuildCache>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="BuildCache" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override BuildCache Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<string?> iD = default;
-            Option<string?> parent = default;
-            Option<List<string>?> parents = default;
-            Option<BuildCache.TypeEnum?> type = default;
-            Option<string?> description = default;
-            Option<bool?> inUse = default;
-            Option<bool?> shared = default;
-            Option<int?> size = default;
-            Option<string?> createdAt = default;
-            Option<string?> lastUsedAt = default;
-            Option<int?> usageCount = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "ID":
-                            iD = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "Parent":
-                            parent = new Option<string?>(utf8JsonReader.GetString());
-                            break;
-                        case "Parents":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                parents = new Option<List<string>?>(JsonSerializer.Deserialize<List<string>>(ref utf8JsonReader, jsonSerializerOptions));
-                            break;
-                        case "Type":
-                            string? typeRawValue = utf8JsonReader.GetString();
-                            if (typeRawValue != null)
-                                type = new Option<BuildCache.TypeEnum?>(BuildCache.TypeEnumFromStringOrDefault(typeRawValue));
-                            break;
-                        case "Description":
-                            description = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "InUse":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                inUse = new Option<bool?>(utf8JsonReader.GetBoolean());
-                            break;
-                        case "Shared":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                shared = new Option<bool?>(utf8JsonReader.GetBoolean());
-                            break;
-                        case "Size":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                size = new Option<int?>(utf8JsonReader.GetInt32());
-                            break;
-                        case "CreatedAt":
-                            createdAt = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "LastUsedAt":
-                            lastUsedAt = new Option<string?>(utf8JsonReader.GetString());
-                            break;
-                        case "UsageCount":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                usageCount = new Option<int?>(utf8JsonReader.GetInt32());
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (iD.IsSet && iD.Value == null)
-                throw new ArgumentNullException(nameof(iD), "Property is not nullable for class BuildCache.");
-
-            if (type.IsSet && type.Value == null)
-                throw new ArgumentNullException(nameof(type), "Property is not nullable for class BuildCache.");
-
-            if (description.IsSet && description.Value == null)
-                throw new ArgumentNullException(nameof(description), "Property is not nullable for class BuildCache.");
-
-            if (inUse.IsSet && inUse.Value == null)
-                throw new ArgumentNullException(nameof(inUse), "Property is not nullable for class BuildCache.");
-
-            if (shared.IsSet && shared.Value == null)
-                throw new ArgumentNullException(nameof(shared), "Property is not nullable for class BuildCache.");
-
-            if (size.IsSet && size.Value == null)
-                throw new ArgumentNullException(nameof(size), "Property is not nullable for class BuildCache.");
-
-            if (createdAt.IsSet && createdAt.Value == null)
-                throw new ArgumentNullException(nameof(createdAt), "Property is not nullable for class BuildCache.");
-
-            if (usageCount.IsSet && usageCount.Value == null)
-                throw new ArgumentNullException(nameof(usageCount), "Property is not nullable for class BuildCache.");
-
-            return new BuildCache(iD, parent, parents, type, description, inUse, shared, size, createdAt, lastUsedAt, usageCount);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="BuildCache" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="buildCache"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, BuildCache buildCache, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, buildCache, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="BuildCache" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="buildCache"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, BuildCache buildCache, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (buildCache.IDOption.IsSet && buildCache.ID == null)
-                throw new ArgumentNullException(nameof(buildCache.ID), "Property is required for class BuildCache.");
-
-            if (buildCache.DescriptionOption.IsSet && buildCache.Description == null)
-                throw new ArgumentNullException(nameof(buildCache.Description), "Property is required for class BuildCache.");
-
-            if (buildCache.CreatedAtOption.IsSet && buildCache.CreatedAt == null)
-                throw new ArgumentNullException(nameof(buildCache.CreatedAt), "Property is required for class BuildCache.");
-
-            if (buildCache.IDOption.IsSet)
-                writer.WriteString("ID", buildCache.ID);
-
-            if (buildCache.ParentOption.IsSet)
-                if (buildCache.ParentOption.Value != null)
-                    writer.WriteString("Parent", buildCache.Parent);
-                else
-                    writer.WriteNull("Parent");
-
-            if (buildCache.ParentsOption.IsSet)
-                if (buildCache.ParentsOption.Value != null)
-                {
-                    writer.WritePropertyName("Parents");
-                    JsonSerializer.Serialize(writer, buildCache.Parents, jsonSerializerOptions);
-                }
-                else
-                    writer.WriteNull("Parents");
-            var typeRawValue = BuildCache.TypeEnumToJsonValue(buildCache.TypeOption.Value!.Value);
-            writer.WriteString("Type", typeRawValue);
-            if (buildCache.DescriptionOption.IsSet)
-                writer.WriteString("Description", buildCache.Description);
-
-            if (buildCache.InUseOption.IsSet)
-                writer.WriteBoolean("InUse", buildCache.InUseOption.Value!.Value);
-
-            if (buildCache.SharedOption.IsSet)
-                writer.WriteBoolean("Shared", buildCache.SharedOption.Value!.Value);
-
-            if (buildCache.SizeOption.IsSet)
-                writer.WriteNumber("Size", buildCache.SizeOption.Value!.Value);
-
-            if (buildCache.CreatedAtOption.IsSet)
-                writer.WriteString("CreatedAt", buildCache.CreatedAt);
-
-            if (buildCache.LastUsedAtOption.IsSet)
-                if (buildCache.LastUsedAtOption.Value != null)
-                    writer.WriteString("LastUsedAt", buildCache.LastUsedAt);
-                else
-                    writer.WriteNull("LastUsedAt");
-
-            if (buildCache.UsageCountOption.IsSet)
-                writer.WriteNumber("UsageCount", buildCache.UsageCountOption.Value!.Value);
         }
     }
 }

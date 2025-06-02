@@ -20,29 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// Orchestration configuration.
     /// </summary>
-    public partial class SwarmSpecOrchestration : IValidatableObject
+    public partial class SwarmSpecOrchestration
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SwarmSpecOrchestration" /> class.
-        /// </summary>
-        /// <param name="taskHistoryRetentionLimit">The number of historic tasks to keep per instance or node. If negative, never remove completed or failed tasks. </param>
-        [JsonConstructor]
-        public SwarmSpecOrchestration(Option<long?> taskHistoryRetentionLimit = default)
-        {
-            TaskHistoryRetentionLimitOption = taskHistoryRetentionLimit;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Used to track the state of TaskHistoryRetentionLimit
         /// </summary>
@@ -69,100 +56,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  TaskHistoryRetentionLimit: ").Append(TaskHistoryRetentionLimit).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="SwarmSpecOrchestration" />
-    /// </summary>
-    public class SwarmSpecOrchestrationJsonConverter : JsonConverter<SwarmSpecOrchestration>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="SwarmSpecOrchestration" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override SwarmSpecOrchestration Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<long?> taskHistoryRetentionLimit = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "TaskHistoryRetentionLimit":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                taskHistoryRetentionLimit = new Option<long?>(utf8JsonReader.GetInt64());
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (taskHistoryRetentionLimit.IsSet && taskHistoryRetentionLimit.Value == null)
-                throw new ArgumentNullException(nameof(taskHistoryRetentionLimit), "Property is not nullable for class SwarmSpecOrchestration.");
-
-            return new SwarmSpecOrchestration(taskHistoryRetentionLimit);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="SwarmSpecOrchestration" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="swarmSpecOrchestration"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, SwarmSpecOrchestration swarmSpecOrchestration, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, swarmSpecOrchestration, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="SwarmSpecOrchestration" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="swarmSpecOrchestration"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, SwarmSpecOrchestration swarmSpecOrchestration, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (swarmSpecOrchestration.TaskHistoryRetentionLimitOption.IsSet)
-                writer.WriteNumber("TaskHistoryRetentionLimit", swarmSpecOrchestration.TaskHistoryRetentionLimitOption.Value!.Value);
         }
     }
 }

@@ -20,33 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// Runtime describes an [OCI compliant](https://github.com/opencontainers/runtime-spec) runtime.  The runtime is invoked by the daemon via the &#x60;containerd&#x60; daemon. OCI runtimes act as an interface to the Linux kernel namespaces, cgroups, and SELinux. 
     /// </summary>
-    public partial class Runtime : IValidatableObject
+    public partial class Runtime
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Runtime" /> class.
-        /// </summary>
-        /// <param name="path">Name and, optional, path, of the OCI executable binary.  If the path is omitted, the daemon searches the host&#39;s &#x60;$PATH&#x60; for the binary and uses the first result. </param>
-        /// <param name="runtimeArgs">List of command-line arguments to pass to the runtime when invoked. </param>
-        /// <param name="status">Information specific to the runtime.  While this API specification does not define data provided by runtimes, the following well-known properties may be provided by runtimes:  &#x60;org.opencontainers.runtime-spec.features&#x60;: features structure as defined in the [OCI Runtime Specification](https://github.com/opencontainers/runtime-spec/blob/main/features.md), in a JSON string representation.  &lt;p&gt;&lt;br /&gt;&lt;/p&gt;  &gt; **Note**: The information returned in this field, including the &gt; formatting of values and labels, should not be considered stable, &gt; and may change without notice. </param>
-        [JsonConstructor]
-        public Runtime(Option<string?> path = default, Option<List<string>?> runtimeArgs = default, Option<Dictionary<string, string>?> status = default)
-        {
-            PathOption = path;
-            RuntimeArgsOption = runtimeArgs;
-            StatusOption = status;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Used to track the state of Path
         /// </summary>
@@ -105,129 +88,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  Status: ").Append(Status).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="Runtime" />
-    /// </summary>
-    public class RuntimeJsonConverter : JsonConverter<Runtime>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="Runtime" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override Runtime Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<string?> path = default;
-            Option<List<string>?> runtimeArgs = default;
-            Option<Dictionary<string, string>?> status = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "path":
-                            path = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "runtimeArgs":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                runtimeArgs = new Option<List<string>?>(JsonSerializer.Deserialize<List<string>>(ref utf8JsonReader, jsonSerializerOptions));
-                            break;
-                        case "status":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                status = new Option<Dictionary<string, string>?>(JsonSerializer.Deserialize<Dictionary<string, string>>(ref utf8JsonReader, jsonSerializerOptions));
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (path.IsSet && path.Value == null)
-                throw new ArgumentNullException(nameof(path), "Property is not nullable for class Runtime.");
-
-            return new Runtime(path, runtimeArgs, status);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="Runtime" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="runtime"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, Runtime runtime, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, runtime, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="Runtime" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="runtime"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, Runtime runtime, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (runtime.PathOption.IsSet && runtime.Path == null)
-                throw new ArgumentNullException(nameof(runtime.Path), "Property is required for class Runtime.");
-
-            if (runtime.PathOption.IsSet)
-                writer.WriteString("path", runtime.Path);
-
-            if (runtime.RuntimeArgsOption.IsSet)
-                if (runtime.RuntimeArgsOption.Value != null)
-                {
-                    writer.WritePropertyName("runtimeArgs");
-                    JsonSerializer.Serialize(writer, runtime.RuntimeArgs, jsonSerializerOptions);
-                }
-                else
-                    writer.WriteNull("runtimeArgs");
-            if (runtime.StatusOption.IsSet)
-                if (runtime.StatusOption.Value != null)
-                {
-                    writer.WritePropertyName("status");
-                    JsonSerializer.Serialize(writer, runtime.Status, jsonSerializerOptions);
-                }
-                else
-                    writer.WriteNull("status");
         }
     }
 }

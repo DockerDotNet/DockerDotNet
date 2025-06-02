@@ -20,35 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// IPAMConfig
     /// </summary>
-    public partial class IPAMConfig : IValidatableObject
+    public partial class IPAMConfig
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="IPAMConfig" /> class.
-        /// </summary>
-        /// <param name="subnet">subnet</param>
-        /// <param name="iPRange">iPRange</param>
-        /// <param name="gateway">gateway</param>
-        /// <param name="auxiliaryAddresses">auxiliaryAddresses</param>
-        [JsonConstructor]
-        public IPAMConfig(Option<string?> subnet = default, Option<string?> iPRange = default, Option<string?> gateway = default, Option<Dictionary<string, string>?> auxiliaryAddresses = default)
-        {
-            SubnetOption = subnet;
-            IPRangeOption = iPRange;
-            GatewayOption = gateway;
-            AuxiliaryAddressesOption = auxiliaryAddresses;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Used to track the state of Subnet
         /// </summary>
@@ -118,145 +99,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  AuxiliaryAddresses: ").Append(AuxiliaryAddresses).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="IPAMConfig" />
-    /// </summary>
-    public class IPAMConfigJsonConverter : JsonConverter<IPAMConfig>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="IPAMConfig" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override IPAMConfig Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<string?> subnet = default;
-            Option<string?> iPRange = default;
-            Option<string?> gateway = default;
-            Option<Dictionary<string, string>?> auxiliaryAddresses = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "Subnet":
-                            subnet = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "IPRange":
-                            iPRange = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "Gateway":
-                            gateway = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "AuxiliaryAddresses":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                auxiliaryAddresses = new Option<Dictionary<string, string>?>(JsonSerializer.Deserialize<Dictionary<string, string>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (subnet.IsSet && subnet.Value == null)
-                throw new ArgumentNullException(nameof(subnet), "Property is not nullable for class IPAMConfig.");
-
-            if (iPRange.IsSet && iPRange.Value == null)
-                throw new ArgumentNullException(nameof(iPRange), "Property is not nullable for class IPAMConfig.");
-
-            if (gateway.IsSet && gateway.Value == null)
-                throw new ArgumentNullException(nameof(gateway), "Property is not nullable for class IPAMConfig.");
-
-            if (auxiliaryAddresses.IsSet && auxiliaryAddresses.Value == null)
-                throw new ArgumentNullException(nameof(auxiliaryAddresses), "Property is not nullable for class IPAMConfig.");
-
-            return new IPAMConfig(subnet, iPRange, gateway, auxiliaryAddresses);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="IPAMConfig" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="iPAMConfig"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, IPAMConfig iPAMConfig, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, iPAMConfig, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="IPAMConfig" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="iPAMConfig"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, IPAMConfig iPAMConfig, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (iPAMConfig.SubnetOption.IsSet && iPAMConfig.Subnet == null)
-                throw new ArgumentNullException(nameof(iPAMConfig.Subnet), "Property is required for class IPAMConfig.");
-
-            if (iPAMConfig.IPRangeOption.IsSet && iPAMConfig.IPRange == null)
-                throw new ArgumentNullException(nameof(iPAMConfig.IPRange), "Property is required for class IPAMConfig.");
-
-            if (iPAMConfig.GatewayOption.IsSet && iPAMConfig.Gateway == null)
-                throw new ArgumentNullException(nameof(iPAMConfig.Gateway), "Property is required for class IPAMConfig.");
-
-            if (iPAMConfig.AuxiliaryAddressesOption.IsSet && iPAMConfig.AuxiliaryAddresses == null)
-                throw new ArgumentNullException(nameof(iPAMConfig.AuxiliaryAddresses), "Property is required for class IPAMConfig.");
-
-            if (iPAMConfig.SubnetOption.IsSet)
-                writer.WriteString("Subnet", iPAMConfig.Subnet);
-
-            if (iPAMConfig.IPRangeOption.IsSet)
-                writer.WriteString("IPRange", iPAMConfig.IPRange);
-
-            if (iPAMConfig.GatewayOption.IsSet)
-                writer.WriteString("Gateway", iPAMConfig.Gateway);
-
-            if (iPAMConfig.AuxiliaryAddressesOption.IsSet)
-            {
-                writer.WritePropertyName("AuxiliaryAddresses");
-                JsonSerializer.Serialize(writer, iPAMConfig.AuxiliaryAddresses, jsonSerializerOptions);
-            }
         }
     }
 }

@@ -20,31 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// The namespaces that the daemon uses for running containers and plugins in containerd. These namespaces can be configured in the daemon configuration, and are considered to be used exclusively by the daemon, Tampering with the containerd instance may cause unexpected behavior.  As these namespaces are considered to be exclusively accessed by the daemon, it is not recommended to change these values, or to change them to a value that is used by other systems, such as cri-containerd. 
     /// </summary>
-    public partial class ContainerdInfoNamespaces : IValidatableObject
+    public partial class ContainerdInfoNamespaces
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ContainerdInfoNamespaces" /> class.
-        /// </summary>
-        /// <param name="containers">The default containerd namespace used for containers managed by the daemon.  The default namespace for containers is \&quot;moby\&quot;, but will be suffixed with the &#x60;&lt;uid&gt;.&lt;gid&gt;&#x60; of the remapped &#x60;root&#x60; if user-namespaces are enabled and the containerd image-store is used.  (default to &quot;moby&quot;)</param>
-        /// <param name="plugins">The default containerd namespace used for plugins managed by the daemon.  The default namespace for plugins is \&quot;plugins.moby\&quot;, but will be suffixed with the &#x60;&lt;uid&gt;.&lt;gid&gt;&#x60; of the remapped &#x60;root&#x60; if user-namespaces are enabled and the containerd image-store is used.  (default to &quot;plugins.moby&quot;)</param>
-        [JsonConstructor]
-        public ContainerdInfoNamespaces(Option<string?> containers = default, Option<string?> plugins = default)
-        {
-            ContainersOption = containers;
-            PluginsOption = plugins;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Used to track the state of Containers
         /// </summary>
@@ -87,115 +72,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  Plugins: ").Append(Plugins).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="ContainerdInfoNamespaces" />
-    /// </summary>
-    public class ContainerdInfoNamespacesJsonConverter : JsonConverter<ContainerdInfoNamespaces>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="ContainerdInfoNamespaces" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override ContainerdInfoNamespaces Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<string?> containers = default;
-            Option<string?> plugins = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "Containers":
-                            containers = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "Plugins":
-                            plugins = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (containers.IsSet && containers.Value == null)
-                throw new ArgumentNullException(nameof(containers), "Property is not nullable for class ContainerdInfoNamespaces.");
-
-            if (plugins.IsSet && plugins.Value == null)
-                throw new ArgumentNullException(nameof(plugins), "Property is not nullable for class ContainerdInfoNamespaces.");
-
-            return new ContainerdInfoNamespaces(containers, plugins);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="ContainerdInfoNamespaces" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="containerdInfoNamespaces"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, ContainerdInfoNamespaces containerdInfoNamespaces, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, containerdInfoNamespaces, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="ContainerdInfoNamespaces" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="containerdInfoNamespaces"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, ContainerdInfoNamespaces containerdInfoNamespaces, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (containerdInfoNamespaces.ContainersOption.IsSet && containerdInfoNamespaces.Containers == null)
-                throw new ArgumentNullException(nameof(containerdInfoNamespaces.Containers), "Property is required for class ContainerdInfoNamespaces.");
-
-            if (containerdInfoNamespaces.PluginsOption.IsSet && containerdInfoNamespaces.Plugins == null)
-                throw new ArgumentNullException(nameof(containerdInfoNamespaces.Plugins), "Property is required for class ContainerdInfoNamespaces.");
-
-            if (containerdInfoNamespaces.ContainersOption.IsSet)
-                writer.WriteString("Containers", containerdInfoNamespaces.Containers);
-
-            if (containerdInfoNamespaces.PluginsOption.IsSet)
-                writer.WriteString("Plugins", containerdInfoNamespaces.Plugins);
         }
     }
 }

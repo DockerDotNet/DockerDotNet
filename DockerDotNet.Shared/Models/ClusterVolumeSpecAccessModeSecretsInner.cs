@@ -20,31 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// One cluster volume secret entry. Defines a key-value pair that is passed to the plugin. 
     /// </summary>
-    public partial class ClusterVolumeSpecAccessModeSecretsInner : IValidatableObject
+    public partial class ClusterVolumeSpecAccessModeSecretsInner
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ClusterVolumeSpecAccessModeSecretsInner" /> class.
-        /// </summary>
-        /// <param name="key">Key is the name of the key of the key-value pair passed to the plugin. </param>
-        /// <param name="secret">Secret is the swarm Secret object from which to read data. This can be a Secret name or ID. The Secret data is retrieved by swarm and used as the value of the key-value pair passed to the plugin. </param>
-        [JsonConstructor]
-        public ClusterVolumeSpecAccessModeSecretsInner(Option<string?> key = default, Option<string?> secret = default)
-        {
-            KeyOption = key;
-            SecretOption = secret;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Used to track the state of Key
         /// </summary>
@@ -85,115 +70,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  Secret: ").Append(Secret).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="ClusterVolumeSpecAccessModeSecretsInner" />
-    /// </summary>
-    public class ClusterVolumeSpecAccessModeSecretsInnerJsonConverter : JsonConverter<ClusterVolumeSpecAccessModeSecretsInner>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="ClusterVolumeSpecAccessModeSecretsInner" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override ClusterVolumeSpecAccessModeSecretsInner Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<string?> key = default;
-            Option<string?> secret = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "Key":
-                            key = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "Secret":
-                            secret = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (key.IsSet && key.Value == null)
-                throw new ArgumentNullException(nameof(key), "Property is not nullable for class ClusterVolumeSpecAccessModeSecretsInner.");
-
-            if (secret.IsSet && secret.Value == null)
-                throw new ArgumentNullException(nameof(secret), "Property is not nullable for class ClusterVolumeSpecAccessModeSecretsInner.");
-
-            return new ClusterVolumeSpecAccessModeSecretsInner(key, secret);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="ClusterVolumeSpecAccessModeSecretsInner" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="clusterVolumeSpecAccessModeSecretsInner"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, ClusterVolumeSpecAccessModeSecretsInner clusterVolumeSpecAccessModeSecretsInner, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, clusterVolumeSpecAccessModeSecretsInner, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="ClusterVolumeSpecAccessModeSecretsInner" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="clusterVolumeSpecAccessModeSecretsInner"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, ClusterVolumeSpecAccessModeSecretsInner clusterVolumeSpecAccessModeSecretsInner, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (clusterVolumeSpecAccessModeSecretsInner.KeyOption.IsSet && clusterVolumeSpecAccessModeSecretsInner.Key == null)
-                throw new ArgumentNullException(nameof(clusterVolumeSpecAccessModeSecretsInner.Key), "Property is required for class ClusterVolumeSpecAccessModeSecretsInner.");
-
-            if (clusterVolumeSpecAccessModeSecretsInner.SecretOption.IsSet && clusterVolumeSpecAccessModeSecretsInner.Secret == null)
-                throw new ArgumentNullException(nameof(clusterVolumeSpecAccessModeSecretsInner.Secret), "Property is required for class ClusterVolumeSpecAccessModeSecretsInner.");
-
-            if (clusterVolumeSpecAccessModeSecretsInner.KeyOption.IsSet)
-                writer.WriteString("Key", clusterVolumeSpecAccessModeSecretsInner.Key);
-
-            if (clusterVolumeSpecAccessModeSecretsInner.SecretOption.IsSet)
-                writer.WriteString("Secret", clusterVolumeSpecAccessModeSecretsInner.Secret);
         }
     }
 }

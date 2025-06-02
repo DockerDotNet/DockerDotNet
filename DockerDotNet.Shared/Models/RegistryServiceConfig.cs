@@ -20,37 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// RegistryServiceConfig stores daemon registry services configuration. 
     /// </summary>
-    public partial class RegistryServiceConfig : IValidatableObject
+    public partial class RegistryServiceConfig
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RegistryServiceConfig" /> class.
-        /// </summary>
-        /// <param name="allowNondistributableArtifactsCIDRs">List of IP ranges to which nondistributable artifacts can be pushed, using the CIDR syntax [RFC 4632](https://tools.ietf.org/html/4632).  &lt;p&gt;&lt;br /&gt;&lt;/p&gt;  &gt; **Deprecated**: Pushing nondistributable artifacts is now always enabled &gt; and this field is always &#x60;null&#x60;. This field will be removed in a API v1.49. </param>
-        /// <param name="allowNondistributableArtifactsHostnames">List of registry hostnames to which nondistributable artifacts can be pushed, using the format &#x60;&lt;hostname&gt;[:&lt;port&gt;]&#x60; or &#x60;&lt;IP address&gt;[:&lt;port&gt;]&#x60;.  &lt;p&gt;&lt;br /&gt;&lt;/p&gt;  &gt; **Deprecated**: Pushing nondistributable artifacts is now always enabled &gt; and this field is always &#x60;null&#x60;. This field will be removed in a API v1.49. </param>
-        /// <param name="insecureRegistryCIDRs">List of IP ranges of insecure registries, using the CIDR syntax ([RFC 4632](https://tools.ietf.org/html/4632)). Insecure registries accept un-encrypted (HTTP) and/or untrusted (HTTPS with certificates from unknown CAs) communication.  By default, local registries (&#x60;::1/128&#x60; and &#x60;127.0.0.0/8&#x60;) are configured as insecure. All other registries are secure. Communicating with an insecure registry is not possible if the daemon assumes that registry is secure.  This configuration override this behavior, insecure communication with registries whose resolved IP address is within the subnet described by the CIDR syntax.  Registries can also be marked insecure by hostname. Those registries are listed under &#x60;IndexConfigs&#x60; and have their &#x60;Secure&#x60; field set to &#x60;false&#x60;.  &gt; **Warning**: Using this option can be useful when running a local &gt; registry, but introduces security vulnerabilities. This option &gt; should therefore ONLY be used for testing purposes. For increased &gt; security, users should add their CA to their system&#39;s list of trusted &gt; CAs instead of enabling this option. </param>
-        /// <param name="indexConfigs">indexConfigs</param>
-        /// <param name="mirrors">List of registry URLs that act as a mirror for the official (&#x60;docker.io&#x60;) registry. </param>
-        [JsonConstructor]
-        public RegistryServiceConfig(Option<List<string>?> allowNondistributableArtifactsCIDRs = default, Option<List<string>?> allowNondistributableArtifactsHostnames = default, Option<List<string>?> insecureRegistryCIDRs = default, Option<Dictionary<string, IndexInfo>?> indexConfigs = default, Option<List<string>?> mirrors = default)
-        {
-            AllowNondistributableArtifactsCIDRsOption = allowNondistributableArtifactsCIDRs;
-            AllowNondistributableArtifactsHostnamesOption = allowNondistributableArtifactsHostnames;
-            InsecureRegistryCIDRsOption = insecureRegistryCIDRs;
-            IndexConfigsOption = indexConfigs;
-            MirrorsOption = mirrors;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Used to track the state of AllowNondistributableArtifactsCIDRs
         /// </summary>
@@ -140,170 +119,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  Mirrors: ").Append(Mirrors).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="RegistryServiceConfig" />
-    /// </summary>
-    public class RegistryServiceConfigJsonConverter : JsonConverter<RegistryServiceConfig>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="RegistryServiceConfig" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override RegistryServiceConfig Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<List<string>?> allowNondistributableArtifactsCIDRs = default;
-            Option<List<string>?> allowNondistributableArtifactsHostnames = default;
-            Option<List<string>?> insecureRegistryCIDRs = default;
-            Option<Dictionary<string, IndexInfo>?> indexConfigs = default;
-            Option<List<string>?> mirrors = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "AllowNondistributableArtifactsCIDRs":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                allowNondistributableArtifactsCIDRs = new Option<List<string>?>(JsonSerializer.Deserialize<List<string>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "AllowNondistributableArtifactsHostnames":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                allowNondistributableArtifactsHostnames = new Option<List<string>?>(JsonSerializer.Deserialize<List<string>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "InsecureRegistryCIDRs":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                insecureRegistryCIDRs = new Option<List<string>?>(JsonSerializer.Deserialize<List<string>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "IndexConfigs":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                indexConfigs = new Option<Dictionary<string, IndexInfo>?>(JsonSerializer.Deserialize<Dictionary<string, IndexInfo>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "Mirrors":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                mirrors = new Option<List<string>?>(JsonSerializer.Deserialize<List<string>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (allowNondistributableArtifactsCIDRs.IsSet && allowNondistributableArtifactsCIDRs.Value == null)
-                throw new ArgumentNullException(nameof(allowNondistributableArtifactsCIDRs), "Property is not nullable for class RegistryServiceConfig.");
-
-            if (allowNondistributableArtifactsHostnames.IsSet && allowNondistributableArtifactsHostnames.Value == null)
-                throw new ArgumentNullException(nameof(allowNondistributableArtifactsHostnames), "Property is not nullable for class RegistryServiceConfig.");
-
-            if (insecureRegistryCIDRs.IsSet && insecureRegistryCIDRs.Value == null)
-                throw new ArgumentNullException(nameof(insecureRegistryCIDRs), "Property is not nullable for class RegistryServiceConfig.");
-
-            if (indexConfigs.IsSet && indexConfigs.Value == null)
-                throw new ArgumentNullException(nameof(indexConfigs), "Property is not nullable for class RegistryServiceConfig.");
-
-            if (mirrors.IsSet && mirrors.Value == null)
-                throw new ArgumentNullException(nameof(mirrors), "Property is not nullable for class RegistryServiceConfig.");
-
-            return new RegistryServiceConfig(allowNondistributableArtifactsCIDRs, allowNondistributableArtifactsHostnames, insecureRegistryCIDRs, indexConfigs, mirrors);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="RegistryServiceConfig" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="registryServiceConfig"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, RegistryServiceConfig registryServiceConfig, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, registryServiceConfig, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="RegistryServiceConfig" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="registryServiceConfig"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, RegistryServiceConfig registryServiceConfig, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (registryServiceConfig.AllowNondistributableArtifactsCIDRsOption.IsSet && registryServiceConfig.AllowNondistributableArtifactsCIDRs == null)
-                throw new ArgumentNullException(nameof(registryServiceConfig.AllowNondistributableArtifactsCIDRs), "Property is required for class RegistryServiceConfig.");
-
-            if (registryServiceConfig.AllowNondistributableArtifactsHostnamesOption.IsSet && registryServiceConfig.AllowNondistributableArtifactsHostnames == null)
-                throw new ArgumentNullException(nameof(registryServiceConfig.AllowNondistributableArtifactsHostnames), "Property is required for class RegistryServiceConfig.");
-
-            if (registryServiceConfig.InsecureRegistryCIDRsOption.IsSet && registryServiceConfig.InsecureRegistryCIDRs == null)
-                throw new ArgumentNullException(nameof(registryServiceConfig.InsecureRegistryCIDRs), "Property is required for class RegistryServiceConfig.");
-
-            if (registryServiceConfig.IndexConfigsOption.IsSet && registryServiceConfig.IndexConfigs == null)
-                throw new ArgumentNullException(nameof(registryServiceConfig.IndexConfigs), "Property is required for class RegistryServiceConfig.");
-
-            if (registryServiceConfig.MirrorsOption.IsSet && registryServiceConfig.Mirrors == null)
-                throw new ArgumentNullException(nameof(registryServiceConfig.Mirrors), "Property is required for class RegistryServiceConfig.");
-
-            if (registryServiceConfig.AllowNondistributableArtifactsCIDRsOption.IsSet)
-            {
-                writer.WritePropertyName("AllowNondistributableArtifactsCIDRs");
-                JsonSerializer.Serialize(writer, registryServiceConfig.AllowNondistributableArtifactsCIDRs, jsonSerializerOptions);
-            }
-            if (registryServiceConfig.AllowNondistributableArtifactsHostnamesOption.IsSet)
-            {
-                writer.WritePropertyName("AllowNondistributableArtifactsHostnames");
-                JsonSerializer.Serialize(writer, registryServiceConfig.AllowNondistributableArtifactsHostnames, jsonSerializerOptions);
-            }
-            if (registryServiceConfig.InsecureRegistryCIDRsOption.IsSet)
-            {
-                writer.WritePropertyName("InsecureRegistryCIDRs");
-                JsonSerializer.Serialize(writer, registryServiceConfig.InsecureRegistryCIDRs, jsonSerializerOptions);
-            }
-            if (registryServiceConfig.IndexConfigsOption.IsSet)
-            {
-                writer.WritePropertyName("IndexConfigs");
-                JsonSerializer.Serialize(writer, registryServiceConfig.IndexConfigs, jsonSerializerOptions);
-            }
-            if (registryServiceConfig.MirrorsOption.IsSet)
-            {
-                writer.WritePropertyName("Mirrors");
-                JsonSerializer.Serialize(writer, registryServiceConfig.Mirrors, jsonSerializerOptions);
-            }
         }
     }
 }

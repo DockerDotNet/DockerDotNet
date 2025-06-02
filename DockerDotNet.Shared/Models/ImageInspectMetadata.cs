@@ -20,29 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// Additional metadata of the image in the local cache. This information is local to the daemon, and not part of the image itself. 
     /// </summary>
-    public partial class ImageInspectMetadata : IValidatableObject
+    public partial class ImageInspectMetadata
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ImageInspectMetadata" /> class.
-        /// </summary>
-        /// <param name="lastTagTime">Date and time at which the image was last tagged in [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) format with nano-seconds.  This information is only available if the image was tagged locally, and omitted otherwise. </param>
-        [JsonConstructor]
-        public ImageInspectMetadata(Option<string?> lastTagTime = default)
-        {
-            LastTagTimeOption = lastTagTime;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Used to track the state of LastTagTime
         /// </summary>
@@ -69,99 +56,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  LastTagTime: ").Append(LastTagTime).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="ImageInspectMetadata" />
-    /// </summary>
-    public class ImageInspectMetadataJsonConverter : JsonConverter<ImageInspectMetadata>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="ImageInspectMetadata" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override ImageInspectMetadata Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<string?> lastTagTime = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "LastTagTime":
-                            lastTagTime = new Option<string?>(utf8JsonReader.GetString());
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            return new ImageInspectMetadata(lastTagTime);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="ImageInspectMetadata" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="imageInspectMetadata"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, ImageInspectMetadata imageInspectMetadata, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, imageInspectMetadata, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="ImageInspectMetadata" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="imageInspectMetadata"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, ImageInspectMetadata imageInspectMetadata, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (imageInspectMetadata.LastTagTimeOption.IsSet)
-                if (imageInspectMetadata.LastTagTimeOption.Value != null)
-                    writer.WriteString("LastTagTime", imageInspectMetadata.LastTagTime);
-                else
-                    writer.WriteNull("LastTagTime");
         }
     }
 }

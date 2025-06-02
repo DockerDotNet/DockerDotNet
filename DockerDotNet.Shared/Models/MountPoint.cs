@@ -20,48 +20,21 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// MountPoint represents a mount point configuration inside the container. This is used for reporting the mountpoints in use by a container. 
     /// </summary>
-    public partial class MountPoint : IValidatableObject
+    public partial class MountPoint
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MountPoint" /> class.
-        /// </summary>
-        /// <param name="type">The mount type:  - &#x60;bind&#x60; a mount of a file or directory from the host into the container. - &#x60;volume&#x60; a docker volume with the given &#x60;Name&#x60;. - &#x60;image&#x60; a docker image - &#x60;tmpfs&#x60; a &#x60;tmpfs&#x60;. - &#x60;npipe&#x60; a named pipe from the host into the container. - &#x60;cluster&#x60; a Swarm cluster volume </param>
-        /// <param name="name">Name is the name reference to the underlying data defined by &#x60;Source&#x60; e.g., the volume name. </param>
-        /// <param name="source">Source location of the mount.  For volumes, this contains the storage location of the volume (within &#x60;/var/lib/docker/volumes/&#x60;). For bind-mounts, and &#x60;npipe&#x60;, this contains the source (host) part of the bind-mount. For &#x60;tmpfs&#x60; mount points, this field is empty. </param>
-        /// <param name="destination">Destination is the path relative to the container root (&#x60;/&#x60;) where the &#x60;Source&#x60; is mounted inside the container. </param>
-        /// <param name="driver">Driver is the volume driver used to create the volume (if it is a volume). </param>
-        /// <param name="mode">Mode is a comma separated list of options supplied by the user when creating the bind/volume mount.  The default is platform-specific (&#x60;\&quot;z\&quot;&#x60; on Linux, empty on Windows). </param>
-        /// <param name="rW">Whether the mount is mounted writable (read-write). </param>
-        /// <param name="propagation">Propagation describes how mounts are propagated from the host into the mount point, and vice-versa. Refer to the [Linux kernel documentation](https://www.kernel.org/doc/Documentation/filesystems/sharedsubtree.txt) for details. This field is not used on Windows. </param>
-        [JsonConstructor]
-        public MountPoint(Option<MountPointTypeEnum?> type = default, Option<string?> name = default, Option<string?> source = default, Option<string?> destination = default, Option<string?> driver = default, Option<string?> mode = default, Option<bool?> rW = default, Option<string?> propagation = default)
-        {
-            TypeOption = type;
-            NameOption = name;
-            SourceOption = source;
-            DestinationOption = destination;
-            DriverOption = driver;
-            ModeOption = mode;
-            RWOption = rW;
-            PropagationOption = propagation;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// The mount type:  - &#x60;bind&#x60; a mount of a file or directory from the host into the container. - &#x60;volume&#x60; a docker volume with the given &#x60;Name&#x60;. - &#x60;image&#x60; a docker image - &#x60;tmpfs&#x60; a &#x60;tmpfs&#x60;. - &#x60;npipe&#x60; a named pipe from the host into the container. - &#x60;cluster&#x60; a Swarm cluster volume 
         /// </summary>
         /// <value>The mount type:  - &#x60;bind&#x60; a mount of a file or directory from the host into the container. - &#x60;volume&#x60; a docker volume with the given &#x60;Name&#x60;. - &#x60;image&#x60; a docker image - &#x60;tmpfs&#x60; a &#x60;tmpfs&#x60;. - &#x60;npipe&#x60; a named pipe from the host into the container. - &#x60;cluster&#x60; a Swarm cluster volume </value>
-        public enum MountPointTypeEnum
+        public enum TypeEnum
         {
             /// <summary>
             /// Enum Bind for value: bind
@@ -94,98 +67,95 @@ namespace DockerDotNet.Shared.Models
             Cluster = 6
         }
 
-        /// <summary>
-        /// Returns a <see cref="MountPointTypeEnum"/>
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public static MountPointTypeEnum TypeEnumFromString(string value)
+/// <summary>
+/// A Json converter for type <see cref="TypeEnum"/>
+/// </summary>
+public class TypeEnumJsonConverter : JsonConverter<TypeEnum>
+{
+    public override TypeEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        string? enumString = reader.GetString();
+        return enumString switch
         {
-            if (value.Equals("bind"))
-                return MountPointTypeEnum.Bind;
+            "bind" => TypeEnum.Bind,
+            "volume" => TypeEnum.Volume,
+            "image" => TypeEnum.Image,
+            "tmpfs" => TypeEnum.Tmpfs,
+            "npipe" => TypeEnum.Npipe,
+            "cluster" => TypeEnum.Cluster,
+            _ => throw new JsonException($"Unknown value: {enumString}")
+        };
+    }
 
-            if (value.Equals("volume"))
-                return MountPointTypeEnum.Volume;
-
-            if (value.Equals("image"))
-                return MountPointTypeEnum.Image;
-
-            if (value.Equals("tmpfs"))
-                return MountPointTypeEnum.Tmpfs;
-
-            if (value.Equals("npipe"))
-                return MountPointTypeEnum.Npipe;
-
-            if (value.Equals("cluster"))
-                return MountPointTypeEnum.Cluster;
-
-            throw new NotImplementedException($"Could not convert value to type TypeEnum: '{value}'");
-        }
-
-        /// <summary>
-        /// Returns a <see cref="MountPointTypeEnum"/>
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public static MountPointTypeEnum? TypeEnumFromStringOrDefault(string value)
+    public override void Write(Utf8JsonWriter writer, TypeEnum value, JsonSerializerOptions options)
+    {
+        string enumString = value switch
         {
-            if (value.Equals("bind"))
-                return MountPointTypeEnum.Bind;
+            TypeEnum.Bind => "bind",
+            TypeEnum.Volume => "volume",
+            TypeEnum.Image => "image",
+            TypeEnum.Tmpfs => "tmpfs",
+            TypeEnum.Npipe => "npipe",
+            TypeEnum.Cluster => "cluster",
+            _ => throw new JsonException($"Unknown value: {value}")
+        };
+        writer.WriteStringValue(enumString);
+    }
+}
 
-            if (value.Equals("volume"))
-                return MountPointTypeEnum.Volume;
-
-            if (value.Equals("image"))
-                return MountPointTypeEnum.Image;
-
-            if (value.Equals("tmpfs"))
-                return MountPointTypeEnum.Tmpfs;
-
-            if (value.Equals("npipe"))
-                return MountPointTypeEnum.Npipe;
-
-            if (value.Equals("cluster"))
-                return MountPointTypeEnum.Cluster;
-
+/// <summary>
+/// A Json converter for nullable <see cref="TypeEnum"/>
+/// </summary>
+public class TypeEnumNullableJsonConverter : JsonConverter<TypeEnum?>
+{
+    public override TypeEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        if (reader.TokenType == JsonTokenType.Null)
             return null;
-        }
 
-        /// <summary>
-        /// Converts the <see cref="MountPointTypeEnum"/> to the json value
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public static string TypeEnumToJsonValue(MountPointTypeEnum? value)
+        string? enumString = reader.GetString();
+
+        return enumString switch
         {
-            if (value == MountPointTypeEnum.Bind)
-                return "bind";
+            "bind" => TypeEnum.Bind,
+            "volume" => TypeEnum.Volume,
+            "image" => TypeEnum.Image,
+            "tmpfs" => TypeEnum.Tmpfs,
+            "npipe" => TypeEnum.Npipe,
+            "cluster" => TypeEnum.Cluster,
+            _ => throw new JsonException($"Unknown value: {enumString}")
+        };
+    }
 
-            if (value == MountPointTypeEnum.Volume)
-                return "volume";
-
-            if (value == MountPointTypeEnum.Image)
-                return "image";
-
-            if (value == MountPointTypeEnum.Tmpfs)
-                return "tmpfs";
-
-            if (value == MountPointTypeEnum.Npipe)
-                return "npipe";
-
-            if (value == MountPointTypeEnum.Cluster)
-                return "cluster";
-
-            throw new NotImplementedException($"Value could not be handled: '{value}'");
+    public override void Write(Utf8JsonWriter writer, TypeEnum? value, JsonSerializerOptions options)
+    {
+        if (value == null)
+        {
+            writer.WriteNullValue();
+            return;
         }
+
+        string enumString = value.Value switch
+        {
+            TypeEnum.Bind => "bind",
+            TypeEnum.Volume => "volume",
+            TypeEnum.Image => "image",
+            TypeEnum.Tmpfs => "tmpfs",
+            TypeEnum.Npipe => "npipe",
+            TypeEnum.Cluster => "cluster",
+            _ => throw new JsonException($"Unknown value: {value}")
+        };
+
+        writer.WriteStringValue(enumString);
+    }
+}
 
         /// <summary>
         /// Used to track the state of Type
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<MountPointTypeEnum?> TypeOption { get; private set; }
+        public Option<TypeEnum?> TypeOption { get; private set; }
 
         /// <summary>
         /// The mount type:  - &#x60;bind&#x60; a mount of a file or directory from the host into the container. - &#x60;volume&#x60; a docker volume with the given &#x60;Name&#x60;. - &#x60;image&#x60; a docker image - &#x60;tmpfs&#x60; a &#x60;tmpfs&#x60;. - &#x60;npipe&#x60; a named pipe from the host into the container. - &#x60;cluster&#x60; a Swarm cluster volume 
@@ -193,7 +163,7 @@ namespace DockerDotNet.Shared.Models
         /// <value>The mount type:  - &#x60;bind&#x60; a mount of a file or directory from the host into the container. - &#x60;volume&#x60; a docker volume with the given &#x60;Name&#x60;. - &#x60;image&#x60; a docker image - &#x60;tmpfs&#x60; a &#x60;tmpfs&#x60;. - &#x60;npipe&#x60; a named pipe from the host into the container. - &#x60;cluster&#x60; a Swarm cluster volume </value>
         /* <example>volume</example> */
         [JsonPropertyName("Type")]
-        public MountPointTypeEnum? Type { get { return this.TypeOption; } set { this.TypeOption = new(value); } }
+        public TypeEnum? Type { get { return this.TypeOption; } set { this.TypeOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of Name
@@ -317,189 +287,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  Propagation: ").Append(Propagation).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="MountPoint" />
-    /// </summary>
-    public class MountPointJsonConverter : JsonConverter<MountPoint>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="MountPoint" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override MountPoint Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<MountPoint.MountPointTypeEnum?> type = default;
-            Option<string?> name = default;
-            Option<string?> source = default;
-            Option<string?> destination = default;
-            Option<string?> driver = default;
-            Option<string?> mode = default;
-            Option<bool?> rW = default;
-            Option<string?> propagation = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "Type":
-                            string? typeRawValue = utf8JsonReader.GetString();
-                            if (typeRawValue != null)
-                                type = new Option<MountPoint.MountPointTypeEnum?>(MountPoint.TypeEnumFromStringOrDefault(typeRawValue));
-                            break;
-                        case "Name":
-                            name = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "Source":
-                            source = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "Destination":
-                            destination = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "Driver":
-                            driver = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "Mode":
-                            mode = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "RW":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                rW = new Option<bool?>(utf8JsonReader.GetBoolean());
-                            break;
-                        case "Propagation":
-                            propagation = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (type.IsSet && type.Value == null)
-                throw new ArgumentNullException(nameof(type), "Property is not nullable for class MountPoint.");
-
-            if (name.IsSet && name.Value == null)
-                throw new ArgumentNullException(nameof(name), "Property is not nullable for class MountPoint.");
-
-            if (source.IsSet && source.Value == null)
-                throw new ArgumentNullException(nameof(source), "Property is not nullable for class MountPoint.");
-
-            if (destination.IsSet && destination.Value == null)
-                throw new ArgumentNullException(nameof(destination), "Property is not nullable for class MountPoint.");
-
-            if (driver.IsSet && driver.Value == null)
-                throw new ArgumentNullException(nameof(driver), "Property is not nullable for class MountPoint.");
-
-            if (mode.IsSet && mode.Value == null)
-                throw new ArgumentNullException(nameof(mode), "Property is not nullable for class MountPoint.");
-
-            if (rW.IsSet && rW.Value == null)
-                throw new ArgumentNullException(nameof(rW), "Property is not nullable for class MountPoint.");
-
-            if (propagation.IsSet && propagation.Value == null)
-                throw new ArgumentNullException(nameof(propagation), "Property is not nullable for class MountPoint.");
-
-            return new MountPoint(type, name, source, destination, driver, mode, rW, propagation);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="MountPoint" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="mountPoint"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, MountPoint mountPoint, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, mountPoint, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="MountPoint" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="mountPoint"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, MountPoint mountPoint, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (mountPoint.NameOption.IsSet && mountPoint.Name == null)
-                throw new ArgumentNullException(nameof(mountPoint.Name), "Property is required for class MountPoint.");
-
-            if (mountPoint.SourceOption.IsSet && mountPoint.Source == null)
-                throw new ArgumentNullException(nameof(mountPoint.Source), "Property is required for class MountPoint.");
-
-            if (mountPoint.DestinationOption.IsSet && mountPoint.Destination == null)
-                throw new ArgumentNullException(nameof(mountPoint.Destination), "Property is required for class MountPoint.");
-
-            if (mountPoint.DriverOption.IsSet && mountPoint.Driver == null)
-                throw new ArgumentNullException(nameof(mountPoint.Driver), "Property is required for class MountPoint.");
-
-            if (mountPoint.ModeOption.IsSet && mountPoint.Mode == null)
-                throw new ArgumentNullException(nameof(mountPoint.Mode), "Property is required for class MountPoint.");
-
-            if (mountPoint.PropagationOption.IsSet && mountPoint.Propagation == null)
-                throw new ArgumentNullException(nameof(mountPoint.Propagation), "Property is required for class MountPoint.");
-
-            var typeRawValue = MountPoint.TypeEnumToJsonValue(mountPoint.TypeOption.Value!.Value);
-            writer.WriteString("Type", typeRawValue);
-            if (mountPoint.NameOption.IsSet)
-                writer.WriteString("Name", mountPoint.Name);
-
-            if (mountPoint.SourceOption.IsSet)
-                writer.WriteString("Source", mountPoint.Source);
-
-            if (mountPoint.DestinationOption.IsSet)
-                writer.WriteString("Destination", mountPoint.Destination);
-
-            if (mountPoint.DriverOption.IsSet)
-                writer.WriteString("Driver", mountPoint.Driver);
-
-            if (mountPoint.ModeOption.IsSet)
-                writer.WriteString("Mode", mountPoint.Mode);
-
-            if (mountPoint.RWOption.IsSet)
-                writer.WriteBoolean("RW", mountPoint.RWOption.Value!.Value);
-
-            if (mountPoint.PropagationOption.IsSet)
-                writer.WriteString("Propagation", mountPoint.Propagation);
         }
     }
 }

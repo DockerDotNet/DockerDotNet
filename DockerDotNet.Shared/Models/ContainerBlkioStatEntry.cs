@@ -20,62 +20,43 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// Blkio stats entry.  This type is Linux-specific and omitted for Windows containers. 
     /// </summary>
-    public partial class ContainerBlkioStatEntry : IValidatableObject
+    public partial class ContainerBlkioStatEntry
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ContainerBlkioStatEntry" /> class.
-        /// </summary>
-        /// <param name="major">major</param>
-        /// <param name="minor">minor</param>
-        /// <param name="op">op</param>
-        /// <param name="value">value</param>
-        [JsonConstructor]
-        public ContainerBlkioStatEntry(Option<ulong?> major = default, Option<ulong?> minor = default, Option<string?> op = default, Option<ulong?> value = default)
-        {
-            MajorOption = major;
-            MinorOption = minor;
-            OpOption = op;
-            ValueOption = value;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Used to track the state of Major
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<ulong?> MajorOption { get; private set; }
+        public Option<int?> MajorOption { get; private set; }
 
         /// <summary>
         /// Gets or Sets Major
         /// </summary>
         /* <example>254</example> */
         [JsonPropertyName("major")]
-        public ulong? Major { get { return this.MajorOption; } set { this.MajorOption = new(value); } }
+        public int? Major { get { return this.MajorOption; } set { this.MajorOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of Minor
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<ulong?> MinorOption { get; private set; }
+        public Option<int?> MinorOption { get; private set; }
 
         /// <summary>
         /// Gets or Sets Minor
         /// </summary>
         /* <example>0</example> */
         [JsonPropertyName("minor")]
-        public ulong? Minor { get { return this.MinorOption; } set { this.MinorOption = new(value); } }
+        public int? Minor { get { return this.MinorOption; } set { this.MinorOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of Op
@@ -96,14 +77,14 @@ namespace DockerDotNet.Shared.Models
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<ulong?> ValueOption { get; private set; }
+        public Option<int?> ValueOption { get; private set; }
 
         /// <summary>
         /// Gets or Sets Value
         /// </summary>
         /* <example>7593984</example> */
         [JsonPropertyName("value")]
-        public ulong? Value { get { return this.ValueOption; } set { this.ValueOption = new(value); } }
+        public int? Value { get { return this.ValueOption; } set { this.ValueOption = new(value); } }
 
         /// <summary>
         /// Returns the string presentation of the object
@@ -119,135 +100,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  Value: ").Append(Value).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="ContainerBlkioStatEntry" />
-    /// </summary>
-    public class ContainerBlkioStatEntryJsonConverter : JsonConverter<ContainerBlkioStatEntry>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="ContainerBlkioStatEntry" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override ContainerBlkioStatEntry Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<ulong?> major = default;
-            Option<ulong?> minor = default;
-            Option<string?> op = default;
-            Option<ulong?> value = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "major":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                major = new Option<ulong?>(utf8JsonReader.GetUInt64());
-                            break;
-                        case "minor":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                minor = new Option<ulong?>(utf8JsonReader.GetUInt64());
-                            break;
-                        case "op":
-                            op = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "value":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                value = new Option<ulong?>(utf8JsonReader.GetUInt64());
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (major.IsSet && major.Value == null)
-                throw new ArgumentNullException(nameof(major), "Property is not nullable for class ContainerBlkioStatEntry.");
-
-            if (minor.IsSet && minor.Value == null)
-                throw new ArgumentNullException(nameof(minor), "Property is not nullable for class ContainerBlkioStatEntry.");
-
-            if (op.IsSet && op.Value == null)
-                throw new ArgumentNullException(nameof(op), "Property is not nullable for class ContainerBlkioStatEntry.");
-
-            if (value.IsSet && value.Value == null)
-                throw new ArgumentNullException(nameof(value), "Property is not nullable for class ContainerBlkioStatEntry.");
-
-            return new ContainerBlkioStatEntry(major, minor, op, value);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="ContainerBlkioStatEntry" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="containerBlkioStatEntry"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, ContainerBlkioStatEntry containerBlkioStatEntry, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, containerBlkioStatEntry, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="ContainerBlkioStatEntry" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="containerBlkioStatEntry"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, ContainerBlkioStatEntry containerBlkioStatEntry, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (containerBlkioStatEntry.OpOption.IsSet && containerBlkioStatEntry.Op == null)
-                throw new ArgumentNullException(nameof(containerBlkioStatEntry.Op), "Property is required for class ContainerBlkioStatEntry.");
-
-            if (containerBlkioStatEntry.MajorOption.IsSet)
-                writer.WriteNumber("major", containerBlkioStatEntry.MajorOption.Value!.Value);
-
-            if (containerBlkioStatEntry.MinorOption.IsSet)
-                writer.WriteNumber("minor", containerBlkioStatEntry.MinorOption.Value!.Value);
-
-            if (containerBlkioStatEntry.OpOption.IsSet)
-                writer.WriteString("op", containerBlkioStatEntry.Op);
-
-            if (containerBlkioStatEntry.ValueOption.IsSet)
-                writer.WriteNumber("value", containerBlkioStatEntry.ValueOption.Value!.Value);
         }
     }
 }

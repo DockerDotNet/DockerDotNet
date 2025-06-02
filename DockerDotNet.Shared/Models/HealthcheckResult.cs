@@ -20,35 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// HealthcheckResult stores information about a single run of a healthcheck probe 
     /// </summary>
-    public partial class HealthcheckResult : IValidatableObject
+    public partial class HealthcheckResult
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="HealthcheckResult" /> class.
-        /// </summary>
-        /// <param name="start">Date and time at which this check started in [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) format with nano-seconds. </param>
-        /// <param name="end">Date and time at which this check ended in [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) format with nano-seconds. </param>
-        /// <param name="exitCode">ExitCode meanings:  - &#x60;0&#x60; healthy - &#x60;1&#x60; unhealthy - &#x60;2&#x60; reserved (considered unhealthy) - other values: error running probe </param>
-        /// <param name="output">Output from last check</param>
-        [JsonConstructor]
-        public HealthcheckResult(Option<DateTime?> start = default, Option<string?> end = default, Option<int?> exitCode = default, Option<string?> output = default)
-        {
-            StartOption = start;
-            EndOption = end;
-            ExitCodeOption = exitCode;
-            OutputOption = output;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Used to track the state of Start
         /// </summary>
@@ -122,142 +103,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  Output: ").Append(Output).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="HealthcheckResult" />
-    /// </summary>
-    public class HealthcheckResultJsonConverter : JsonConverter<HealthcheckResult>
-    {
-        /// <summary>
-        /// The format to use to serialize Start
-        /// </summary>
-        public static string StartFormat { get; set; } = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffffK";
-
-        /// <summary>
-        /// Deserializes json to <see cref="HealthcheckResult" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override HealthcheckResult Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<DateTime?> start = default;
-            Option<string?> end = default;
-            Option<int?> exitCode = default;
-            Option<string?> output = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "Start":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                start = new Option<DateTime?>(JsonSerializer.Deserialize<DateTime>(ref utf8JsonReader, jsonSerializerOptions));
-                            break;
-                        case "End":
-                            end = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "ExitCode":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                exitCode = new Option<int?>(utf8JsonReader.GetInt32());
-                            break;
-                        case "Output":
-                            output = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (start.IsSet && start.Value == null)
-                throw new ArgumentNullException(nameof(start), "Property is not nullable for class HealthcheckResult.");
-
-            if (end.IsSet && end.Value == null)
-                throw new ArgumentNullException(nameof(end), "Property is not nullable for class HealthcheckResult.");
-
-            if (exitCode.IsSet && exitCode.Value == null)
-                throw new ArgumentNullException(nameof(exitCode), "Property is not nullable for class HealthcheckResult.");
-
-            if (output.IsSet && output.Value == null)
-                throw new ArgumentNullException(nameof(output), "Property is not nullable for class HealthcheckResult.");
-
-            return new HealthcheckResult(start, end, exitCode, output);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="HealthcheckResult" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="healthcheckResult"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, HealthcheckResult healthcheckResult, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, healthcheckResult, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="HealthcheckResult" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="healthcheckResult"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, HealthcheckResult healthcheckResult, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (healthcheckResult.EndOption.IsSet && healthcheckResult.End == null)
-                throw new ArgumentNullException(nameof(healthcheckResult.End), "Property is required for class HealthcheckResult.");
-
-            if (healthcheckResult.OutputOption.IsSet && healthcheckResult.Output == null)
-                throw new ArgumentNullException(nameof(healthcheckResult.Output), "Property is required for class HealthcheckResult.");
-
-            if (healthcheckResult.StartOption.IsSet)
-                writer.WriteString("Start", healthcheckResult.StartOption.Value!.Value.ToString(StartFormat));
-
-            if (healthcheckResult.EndOption.IsSet)
-                writer.WriteString("End", healthcheckResult.End);
-
-            if (healthcheckResult.ExitCodeOption.IsSet)
-                writer.WriteNumber("ExitCode", healthcheckResult.ExitCodeOption.Value!.Value);
-
-            if (healthcheckResult.OutputOption.IsSet)
-                writer.WriteString("Output", healthcheckResult.Output);
         }
     }
 }

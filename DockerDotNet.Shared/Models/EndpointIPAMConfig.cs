@@ -20,33 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// EndpointIPAMConfig represents an endpoint&#39;s IPAM configuration. 
     /// </summary>
-    public partial class EndpointIPAMConfig : IValidatableObject
+    public partial class EndpointIPAMConfig
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EndpointIPAMConfig" /> class.
-        /// </summary>
-        /// <param name="iPv4Address">iPv4Address</param>
-        /// <param name="iPv6Address">iPv6Address</param>
-        /// <param name="linkLocalIPs">linkLocalIPs</param>
-        [JsonConstructor]
-        public EndpointIPAMConfig(Option<string?> iPv4Address = default, Option<string?> iPv6Address = default, Option<List<string>?> linkLocalIPs = default)
-        {
-            IPv4AddressOption = iPv4Address;
-            IPv6AddressOption = iPv6Address;
-            LinkLocalIPsOption = linkLocalIPs;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Used to track the state of IPv4Address
         /// </summary>
@@ -102,132 +85,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  LinkLocalIPs: ").Append(LinkLocalIPs).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="EndpointIPAMConfig" />
-    /// </summary>
-    public class EndpointIPAMConfigJsonConverter : JsonConverter<EndpointIPAMConfig>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="EndpointIPAMConfig" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override EndpointIPAMConfig Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<string?> iPv4Address = default;
-            Option<string?> iPv6Address = default;
-            Option<List<string>?> linkLocalIPs = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "IPv4Address":
-                            iPv4Address = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "IPv6Address":
-                            iPv6Address = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "LinkLocalIPs":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                linkLocalIPs = new Option<List<string>?>(JsonSerializer.Deserialize<List<string>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (iPv4Address.IsSet && iPv4Address.Value == null)
-                throw new ArgumentNullException(nameof(iPv4Address), "Property is not nullable for class EndpointIPAMConfig.");
-
-            if (iPv6Address.IsSet && iPv6Address.Value == null)
-                throw new ArgumentNullException(nameof(iPv6Address), "Property is not nullable for class EndpointIPAMConfig.");
-
-            if (linkLocalIPs.IsSet && linkLocalIPs.Value == null)
-                throw new ArgumentNullException(nameof(linkLocalIPs), "Property is not nullable for class EndpointIPAMConfig.");
-
-            return new EndpointIPAMConfig(iPv4Address, iPv6Address, linkLocalIPs);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="EndpointIPAMConfig" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="endpointIPAMConfig"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, EndpointIPAMConfig endpointIPAMConfig, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, endpointIPAMConfig, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="EndpointIPAMConfig" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="endpointIPAMConfig"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, EndpointIPAMConfig endpointIPAMConfig, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (endpointIPAMConfig.IPv4AddressOption.IsSet && endpointIPAMConfig.IPv4Address == null)
-                throw new ArgumentNullException(nameof(endpointIPAMConfig.IPv4Address), "Property is required for class EndpointIPAMConfig.");
-
-            if (endpointIPAMConfig.IPv6AddressOption.IsSet && endpointIPAMConfig.IPv6Address == null)
-                throw new ArgumentNullException(nameof(endpointIPAMConfig.IPv6Address), "Property is required for class EndpointIPAMConfig.");
-
-            if (endpointIPAMConfig.LinkLocalIPsOption.IsSet && endpointIPAMConfig.LinkLocalIPs == null)
-                throw new ArgumentNullException(nameof(endpointIPAMConfig.LinkLocalIPs), "Property is required for class EndpointIPAMConfig.");
-
-            if (endpointIPAMConfig.IPv4AddressOption.IsSet)
-                writer.WriteString("IPv4Address", endpointIPAMConfig.IPv4Address);
-
-            if (endpointIPAMConfig.IPv6AddressOption.IsSet)
-                writer.WriteString("IPv6Address", endpointIPAMConfig.IPv6Address);
-
-            if (endpointIPAMConfig.LinkLocalIPsOption.IsSet)
-            {
-                writer.WritePropertyName("LinkLocalIPs");
-                JsonSerializer.Serialize(writer, endpointIPAMConfig.LinkLocalIPs, jsonSerializerOptions);
-            }
         }
     }
 }

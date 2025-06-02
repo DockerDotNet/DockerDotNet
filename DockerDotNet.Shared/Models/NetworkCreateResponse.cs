@@ -20,31 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// OK response to NetworkCreate operation
     /// </summary>
-    public partial class NetworkCreateResponse : IValidatableObject
+    public partial class NetworkCreateResponse
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NetworkCreateResponse" /> class.
-        /// </summary>
-        /// <param name="id">The ID of the created network.</param>
-        /// <param name="warning">Warnings encountered when creating the container</param>
-        [JsonConstructor]
-        public NetworkCreateResponse(string id, string warning)
-        {
-            Id = id;
-            Warning = warning;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// The ID of the created network.
         /// </summary>
@@ -72,119 +57,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  Warning: ").Append(Warning).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="NetworkCreateResponse" />
-    /// </summary>
-    public class NetworkCreateResponseJsonConverter : JsonConverter<NetworkCreateResponse>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="NetworkCreateResponse" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override NetworkCreateResponse Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<string?> id = default;
-            Option<string?> warning = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "Id":
-                            id = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "Warning":
-                            warning = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (!id.IsSet)
-                throw new ArgumentException("Property is required for class NetworkCreateResponse.", nameof(id));
-
-            if (!warning.IsSet)
-                throw new ArgumentException("Property is required for class NetworkCreateResponse.", nameof(warning));
-
-            if (id.IsSet && id.Value == null)
-                throw new ArgumentNullException(nameof(id), "Property is not nullable for class NetworkCreateResponse.");
-
-            if (warning.IsSet && warning.Value == null)
-                throw new ArgumentNullException(nameof(warning), "Property is not nullable for class NetworkCreateResponse.");
-
-            return new NetworkCreateResponse(id.Value!, warning.Value!);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="NetworkCreateResponse" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="networkCreateResponse"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, NetworkCreateResponse networkCreateResponse, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, networkCreateResponse, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="NetworkCreateResponse" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="networkCreateResponse"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, NetworkCreateResponse networkCreateResponse, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (networkCreateResponse.Id == null)
-                throw new ArgumentNullException(nameof(networkCreateResponse.Id), "Property is required for class NetworkCreateResponse.");
-
-            if (networkCreateResponse.Warning == null)
-                throw new ArgumentNullException(nameof(networkCreateResponse.Warning), "Property is required for class NetworkCreateResponse.");
-
-            writer.WriteString("Id", networkCreateResponse.Id);
-
-            writer.WriteString("Warning", networkCreateResponse.Warning);
         }
     }
 }

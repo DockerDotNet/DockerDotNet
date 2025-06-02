@@ -20,45 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// Mount
     /// </summary>
-    public partial class Mount : IValidatableObject
+    public partial class Mount
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Mount" /> class.
-        /// </summary>
-        /// <param name="target">Container path.</param>
-        /// <param name="source">Mount source (e.g. a volume name, a host path).</param>
-        /// <param name="type">The mount type. Available types:  - &#x60;bind&#x60; Mounts a file or directory from the host into the container. Must exist prior to creating the container. - &#x60;volume&#x60; Creates a volume with the given name and options (or uses a pre-existing volume with the same name and options). These are **not** removed when the container is removed. - &#x60;image&#x60; Mounts an image. - &#x60;tmpfs&#x60; Create a tmpfs with the given options. The mount source cannot be specified for tmpfs. - &#x60;npipe&#x60; Mounts a named pipe from the host into the container. Must exist prior to creating the container. - &#x60;cluster&#x60; a Swarm cluster volume </param>
-        /// <param name="readOnly">Whether the mount should be read-only.</param>
-        /// <param name="consistency">The consistency requirement for the mount: &#x60;default&#x60;, &#x60;consistent&#x60;, &#x60;cached&#x60;, or &#x60;delegated&#x60;.</param>
-        /// <param name="bindOptions">bindOptions</param>
-        /// <param name="volumeOptions">volumeOptions</param>
-        /// <param name="imageOptions">imageOptions</param>
-        /// <param name="tmpfsOptions">tmpfsOptions</param>
-        [JsonConstructor]
-        public Mount(Option<string?> target = default, Option<string?> source = default, Option<TypeEnum?> type = default, Option<bool?> readOnly = default, Option<string?> consistency = default, Option<MountBindOptions?> bindOptions = default, Option<MountVolumeOptions?> volumeOptions = default, Option<MountImageOptions?> imageOptions = default, Option<MountTmpfsOptions?> tmpfsOptions = default)
-        {
-            TargetOption = target;
-            SourceOption = source;
-            TypeOption = type;
-            ReadOnlyOption = readOnly;
-            ConsistencyOption = consistency;
-            BindOptionsOption = bindOptions;
-            VolumeOptionsOption = volumeOptions;
-            ImageOptionsOption = imageOptions;
-            TmpfsOptionsOption = tmpfsOptions;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// The mount type. Available types:  - &#x60;bind&#x60; Mounts a file or directory from the host into the container. Must exist prior to creating the container. - &#x60;volume&#x60; Creates a volume with the given name and options (or uses a pre-existing volume with the same name and options). These are **not** removed when the container is removed. - &#x60;image&#x60; Mounts an image. - &#x60;tmpfs&#x60; Create a tmpfs with the given options. The mount source cannot be specified for tmpfs. - &#x60;npipe&#x60; Mounts a named pipe from the host into the container. Must exist prior to creating the container. - &#x60;cluster&#x60; a Swarm cluster volume 
         /// </summary>
@@ -96,91 +67,88 @@ namespace DockerDotNet.Shared.Models
             Cluster = 6
         }
 
-        /// <summary>
-        /// Returns a <see cref="TypeEnum"/>
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public static TypeEnum TypeEnumFromString(string value)
+/// <summary>
+/// A Json converter for type <see cref="TypeEnum"/>
+/// </summary>
+public class TypeEnumJsonConverter : JsonConverter<TypeEnum>
+{
+    public override TypeEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        string? enumString = reader.GetString();
+        return enumString switch
         {
-            if (value.Equals("bind"))
-                return TypeEnum.Bind;
+            "bind" => TypeEnum.Bind,
+            "volume" => TypeEnum.Volume,
+            "image" => TypeEnum.Image,
+            "tmpfs" => TypeEnum.Tmpfs,
+            "npipe" => TypeEnum.Npipe,
+            "cluster" => TypeEnum.Cluster,
+            _ => throw new JsonException($"Unknown value: {enumString}")
+        };
+    }
 
-            if (value.Equals("volume"))
-                return TypeEnum.Volume;
-
-            if (value.Equals("image"))
-                return TypeEnum.Image;
-
-            if (value.Equals("tmpfs"))
-                return TypeEnum.Tmpfs;
-
-            if (value.Equals("npipe"))
-                return TypeEnum.Npipe;
-
-            if (value.Equals("cluster"))
-                return TypeEnum.Cluster;
-
-            throw new NotImplementedException($"Could not convert value to type TypeEnum: '{value}'");
-        }
-
-        /// <summary>
-        /// Returns a <see cref="TypeEnum"/>
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public static TypeEnum? TypeEnumFromStringOrDefault(string value)
+    public override void Write(Utf8JsonWriter writer, TypeEnum value, JsonSerializerOptions options)
+    {
+        string enumString = value switch
         {
-            if (value.Equals("bind"))
-                return TypeEnum.Bind;
+            TypeEnum.Bind => "bind",
+            TypeEnum.Volume => "volume",
+            TypeEnum.Image => "image",
+            TypeEnum.Tmpfs => "tmpfs",
+            TypeEnum.Npipe => "npipe",
+            TypeEnum.Cluster => "cluster",
+            _ => throw new JsonException($"Unknown value: {value}")
+        };
+        writer.WriteStringValue(enumString);
+    }
+}
 
-            if (value.Equals("volume"))
-                return TypeEnum.Volume;
-
-            if (value.Equals("image"))
-                return TypeEnum.Image;
-
-            if (value.Equals("tmpfs"))
-                return TypeEnum.Tmpfs;
-
-            if (value.Equals("npipe"))
-                return TypeEnum.Npipe;
-
-            if (value.Equals("cluster"))
-                return TypeEnum.Cluster;
-
+/// <summary>
+/// A Json converter for nullable <see cref="TypeEnum"/>
+/// </summary>
+public class TypeEnumNullableJsonConverter : JsonConverter<TypeEnum?>
+{
+    public override TypeEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        if (reader.TokenType == JsonTokenType.Null)
             return null;
-        }
 
-        /// <summary>
-        /// Converts the <see cref="TypeEnum"/> to the json value
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public static string TypeEnumToJsonValue(TypeEnum? value)
+        string? enumString = reader.GetString();
+
+        return enumString switch
         {
-            if (value == TypeEnum.Bind)
-                return "bind";
+            "bind" => TypeEnum.Bind,
+            "volume" => TypeEnum.Volume,
+            "image" => TypeEnum.Image,
+            "tmpfs" => TypeEnum.Tmpfs,
+            "npipe" => TypeEnum.Npipe,
+            "cluster" => TypeEnum.Cluster,
+            _ => throw new JsonException($"Unknown value: {enumString}")
+        };
+    }
 
-            if (value == TypeEnum.Volume)
-                return "volume";
-
-            if (value == TypeEnum.Image)
-                return "image";
-
-            if (value == TypeEnum.Tmpfs)
-                return "tmpfs";
-
-            if (value == TypeEnum.Npipe)
-                return "npipe";
-
-            if (value == TypeEnum.Cluster)
-                return "cluster";
-
-            throw new NotImplementedException($"Value could not be handled: '{value}'");
+    public override void Write(Utf8JsonWriter writer, TypeEnum? value, JsonSerializerOptions options)
+    {
+        if (value == null)
+        {
+            writer.WriteNullValue();
+            return;
         }
+
+        string enumString = value.Value switch
+        {
+            TypeEnum.Bind => "bind",
+            TypeEnum.Volume => "volume",
+            TypeEnum.Image => "image",
+            TypeEnum.Tmpfs => "tmpfs",
+            TypeEnum.Npipe => "npipe",
+            TypeEnum.Cluster => "cluster",
+            _ => throw new JsonException($"Unknown value: {value}")
+        };
+
+        writer.WriteStringValue(enumString);
+    }
+}
 
         /// <summary>
         /// Used to track the state of Type
@@ -323,215 +291,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  TmpfsOptions: ").Append(TmpfsOptions).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="Mount" />
-    /// </summary>
-    public class MountJsonConverter : JsonConverter<Mount>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="Mount" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override Mount Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<string?> target = default;
-            Option<string?> source = default;
-            Option<Mount.TypeEnum?> type = default;
-            Option<bool?> readOnly = default;
-            Option<string?> consistency = default;
-            Option<MountBindOptions?> bindOptions = default;
-            Option<MountVolumeOptions?> volumeOptions = default;
-            Option<MountImageOptions?> imageOptions = default;
-            Option<MountTmpfsOptions?> tmpfsOptions = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "Target":
-                            target = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "Source":
-                            source = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "Type":
-                            string? typeRawValue = utf8JsonReader.GetString();
-                            if (typeRawValue != null)
-                                type = new Option<Mount.TypeEnum?>(Mount.TypeEnumFromStringOrDefault(typeRawValue));
-                            break;
-                        case "ReadOnly":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                readOnly = new Option<bool?>(utf8JsonReader.GetBoolean());
-                            break;
-                        case "Consistency":
-                            consistency = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "BindOptions":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                bindOptions = new Option<MountBindOptions?>(JsonSerializer.Deserialize<MountBindOptions>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "VolumeOptions":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                volumeOptions = new Option<MountVolumeOptions?>(JsonSerializer.Deserialize<MountVolumeOptions>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "ImageOptions":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                imageOptions = new Option<MountImageOptions?>(JsonSerializer.Deserialize<MountImageOptions>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "TmpfsOptions":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                tmpfsOptions = new Option<MountTmpfsOptions?>(JsonSerializer.Deserialize<MountTmpfsOptions>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (target.IsSet && target.Value == null)
-                throw new ArgumentNullException(nameof(target), "Property is not nullable for class Mount.");
-
-            if (source.IsSet && source.Value == null)
-                throw new ArgumentNullException(nameof(source), "Property is not nullable for class Mount.");
-
-            if (type.IsSet && type.Value == null)
-                throw new ArgumentNullException(nameof(type), "Property is not nullable for class Mount.");
-
-            if (readOnly.IsSet && readOnly.Value == null)
-                throw new ArgumentNullException(nameof(readOnly), "Property is not nullable for class Mount.");
-
-            if (consistency.IsSet && consistency.Value == null)
-                throw new ArgumentNullException(nameof(consistency), "Property is not nullable for class Mount.");
-
-            if (bindOptions.IsSet && bindOptions.Value == null)
-                throw new ArgumentNullException(nameof(bindOptions), "Property is not nullable for class Mount.");
-
-            if (volumeOptions.IsSet && volumeOptions.Value == null)
-                throw new ArgumentNullException(nameof(volumeOptions), "Property is not nullable for class Mount.");
-
-            if (imageOptions.IsSet && imageOptions.Value == null)
-                throw new ArgumentNullException(nameof(imageOptions), "Property is not nullable for class Mount.");
-
-            if (tmpfsOptions.IsSet && tmpfsOptions.Value == null)
-                throw new ArgumentNullException(nameof(tmpfsOptions), "Property is not nullable for class Mount.");
-
-            return new Mount(target, source, type, readOnly, consistency, bindOptions, volumeOptions, imageOptions, tmpfsOptions);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="Mount" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="mount"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, Mount mount, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, mount, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="Mount" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="mount"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, Mount mount, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (mount.TargetOption.IsSet && mount.Target == null)
-                throw new ArgumentNullException(nameof(mount.Target), "Property is required for class Mount.");
-
-            if (mount.SourceOption.IsSet && mount.Source == null)
-                throw new ArgumentNullException(nameof(mount.Source), "Property is required for class Mount.");
-
-            if (mount.ConsistencyOption.IsSet && mount.Consistency == null)
-                throw new ArgumentNullException(nameof(mount.Consistency), "Property is required for class Mount.");
-
-            if (mount.BindOptionsOption.IsSet && mount.BindOptions == null)
-                throw new ArgumentNullException(nameof(mount.BindOptions), "Property is required for class Mount.");
-
-            if (mount.VolumeOptionsOption.IsSet && mount.VolumeOptions == null)
-                throw new ArgumentNullException(nameof(mount.VolumeOptions), "Property is required for class Mount.");
-
-            if (mount.ImageOptionsOption.IsSet && mount.ImageOptions == null)
-                throw new ArgumentNullException(nameof(mount.ImageOptions), "Property is required for class Mount.");
-
-            if (mount.TmpfsOptionsOption.IsSet && mount.TmpfsOptions == null)
-                throw new ArgumentNullException(nameof(mount.TmpfsOptions), "Property is required for class Mount.");
-
-            if (mount.TargetOption.IsSet)
-                writer.WriteString("Target", mount.Target);
-
-            if (mount.SourceOption.IsSet)
-                writer.WriteString("Source", mount.Source);
-
-            var typeRawValue = Mount.TypeEnumToJsonValue(mount.TypeOption.Value!.Value);
-            writer.WriteString("Type", typeRawValue);
-            if (mount.ReadOnlyOption.IsSet)
-                writer.WriteBoolean("ReadOnly", mount.ReadOnlyOption.Value!.Value);
-
-            if (mount.ConsistencyOption.IsSet)
-                writer.WriteString("Consistency", mount.Consistency);
-
-            if (mount.BindOptionsOption.IsSet)
-            {
-                writer.WritePropertyName("BindOptions");
-                JsonSerializer.Serialize(writer, mount.BindOptions, jsonSerializerOptions);
-            }
-            if (mount.VolumeOptionsOption.IsSet)
-            {
-                writer.WritePropertyName("VolumeOptions");
-                JsonSerializer.Serialize(writer, mount.VolumeOptions, jsonSerializerOptions);
-            }
-            if (mount.ImageOptionsOption.IsSet)
-            {
-                writer.WritePropertyName("ImageOptions");
-                JsonSerializer.Serialize(writer, mount.ImageOptions, jsonSerializerOptions);
-            }
-            if (mount.TmpfsOptionsOption.IsSet)
-            {
-                writer.WritePropertyName("TmpfsOptions");
-                JsonSerializer.Serialize(writer, mount.TmpfsOptions, jsonSerializerOptions);
-            }
         }
     }
 }

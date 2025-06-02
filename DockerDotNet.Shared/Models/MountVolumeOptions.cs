@@ -20,35 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// Optional configuration for the &#x60;volume&#x60; type.
     /// </summary>
-    public partial class MountVolumeOptions : IValidatableObject
+    public partial class MountVolumeOptions
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MountVolumeOptions" /> class.
-        /// </summary>
-        /// <param name="noCopy">Populate volume with data from the target. (default to false)</param>
-        /// <param name="labels">User-defined key/value metadata.</param>
-        /// <param name="driverConfig">driverConfig</param>
-        /// <param name="subpath">Source path inside the volume. Must be relative without any back traversals.</param>
-        [JsonConstructor]
-        public MountVolumeOptions(Option<bool?> noCopy = default, Option<Dictionary<string, string>?> labels = default, Option<MountVolumeOptionsDriverConfig?> driverConfig = default, Option<string?> subpath = default)
-        {
-            NoCopyOption = noCopy;
-            LabelsOption = labels;
-            DriverConfigOption = driverConfig;
-            SubpathOption = subpath;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Used to track the state of NoCopy
         /// </summary>
@@ -119,145 +100,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  Subpath: ").Append(Subpath).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="MountVolumeOptions" />
-    /// </summary>
-    public class MountVolumeOptionsJsonConverter : JsonConverter<MountVolumeOptions>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="MountVolumeOptions" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override MountVolumeOptions Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<bool?> noCopy = default;
-            Option<Dictionary<string, string>?> labels = default;
-            Option<MountVolumeOptionsDriverConfig?> driverConfig = default;
-            Option<string?> subpath = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "NoCopy":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                noCopy = new Option<bool?>(utf8JsonReader.GetBoolean());
-                            break;
-                        case "Labels":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                labels = new Option<Dictionary<string, string>?>(JsonSerializer.Deserialize<Dictionary<string, string>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "DriverConfig":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                driverConfig = new Option<MountVolumeOptionsDriverConfig?>(JsonSerializer.Deserialize<MountVolumeOptionsDriverConfig>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "Subpath":
-                            subpath = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (noCopy.IsSet && noCopy.Value == null)
-                throw new ArgumentNullException(nameof(noCopy), "Property is not nullable for class MountVolumeOptions.");
-
-            if (labels.IsSet && labels.Value == null)
-                throw new ArgumentNullException(nameof(labels), "Property is not nullable for class MountVolumeOptions.");
-
-            if (driverConfig.IsSet && driverConfig.Value == null)
-                throw new ArgumentNullException(nameof(driverConfig), "Property is not nullable for class MountVolumeOptions.");
-
-            if (subpath.IsSet && subpath.Value == null)
-                throw new ArgumentNullException(nameof(subpath), "Property is not nullable for class MountVolumeOptions.");
-
-            return new MountVolumeOptions(noCopy, labels, driverConfig, subpath);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="MountVolumeOptions" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="mountVolumeOptions"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, MountVolumeOptions mountVolumeOptions, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, mountVolumeOptions, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="MountVolumeOptions" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="mountVolumeOptions"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, MountVolumeOptions mountVolumeOptions, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (mountVolumeOptions.LabelsOption.IsSet && mountVolumeOptions.Labels == null)
-                throw new ArgumentNullException(nameof(mountVolumeOptions.Labels), "Property is required for class MountVolumeOptions.");
-
-            if (mountVolumeOptions.DriverConfigOption.IsSet && mountVolumeOptions.DriverConfig == null)
-                throw new ArgumentNullException(nameof(mountVolumeOptions.DriverConfig), "Property is required for class MountVolumeOptions.");
-
-            if (mountVolumeOptions.SubpathOption.IsSet && mountVolumeOptions.Subpath == null)
-                throw new ArgumentNullException(nameof(mountVolumeOptions.Subpath), "Property is required for class MountVolumeOptions.");
-
-            if (mountVolumeOptions.NoCopyOption.IsSet)
-                writer.WriteBoolean("NoCopy", mountVolumeOptions.NoCopyOption.Value!.Value);
-
-            if (mountVolumeOptions.LabelsOption.IsSet)
-            {
-                writer.WritePropertyName("Labels");
-                JsonSerializer.Serialize(writer, mountVolumeOptions.Labels, jsonSerializerOptions);
-            }
-            if (mountVolumeOptions.DriverConfigOption.IsSet)
-            {
-                writer.WritePropertyName("DriverConfig");
-                JsonSerializer.Serialize(writer, mountVolumeOptions.DriverConfig, jsonSerializerOptions);
-            }
-            if (mountVolumeOptions.SubpathOption.IsSet)
-                writer.WriteString("Subpath", mountVolumeOptions.Subpath);
         }
     }
 }

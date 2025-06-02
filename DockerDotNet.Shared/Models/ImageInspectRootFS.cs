@@ -20,31 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// Information about the image&#39;s RootFS, including the layer IDs. 
     /// </summary>
-    public partial class ImageInspectRootFS : IValidatableObject
+    public partial class ImageInspectRootFS
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ImageInspectRootFS" /> class.
-        /// </summary>
-        /// <param name="type">type</param>
-        /// <param name="layers">layers</param>
-        [JsonConstructor]
-        public ImageInspectRootFS(string type, Option<List<string>?> layers = default)
-        {
-            Type = type;
-            LayersOption = layers;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Gets or Sets Type
         /// </summary>
@@ -78,121 +63,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  Layers: ").Append(Layers).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="ImageInspectRootFS" />
-    /// </summary>
-    public class ImageInspectRootFSJsonConverter : JsonConverter<ImageInspectRootFS>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="ImageInspectRootFS" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override ImageInspectRootFS Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<string?> type = default;
-            Option<List<string>?> layers = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "Type":
-                            type = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "Layers":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                layers = new Option<List<string>?>(JsonSerializer.Deserialize<List<string>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (!type.IsSet)
-                throw new ArgumentException("Property is required for class ImageInspectRootFS.", nameof(type));
-
-            if (type.IsSet && type.Value == null)
-                throw new ArgumentNullException(nameof(type), "Property is not nullable for class ImageInspectRootFS.");
-
-            if (layers.IsSet && layers.Value == null)
-                throw new ArgumentNullException(nameof(layers), "Property is not nullable for class ImageInspectRootFS.");
-
-            return new ImageInspectRootFS(type.Value!, layers);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="ImageInspectRootFS" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="imageInspectRootFS"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, ImageInspectRootFS imageInspectRootFS, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, imageInspectRootFS, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="ImageInspectRootFS" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="imageInspectRootFS"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, ImageInspectRootFS imageInspectRootFS, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (imageInspectRootFS.Type == null)
-                throw new ArgumentNullException(nameof(imageInspectRootFS.Type), "Property is required for class ImageInspectRootFS.");
-
-            if (imageInspectRootFS.LayersOption.IsSet && imageInspectRootFS.Layers == null)
-                throw new ArgumentNullException(nameof(imageInspectRootFS.Layers), "Property is required for class ImageInspectRootFS.");
-
-            writer.WriteString("Type", imageInspectRootFS.Type);
-
-            if (imageInspectRootFS.LayersOption.IsSet)
-            {
-                writer.WritePropertyName("Layers");
-                JsonSerializer.Serialize(writer, imageInspectRootFS.Layers, jsonSerializerOptions);
-            }
         }
     }
 }

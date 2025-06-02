@@ -20,31 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// GenericResourcesInnerDiscreteResourceSpec
     /// </summary>
-    public partial class GenericResourcesInnerDiscreteResourceSpec : IValidatableObject
+    public partial class GenericResourcesInnerDiscreteResourceSpec
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GenericResourcesInnerDiscreteResourceSpec" /> class.
-        /// </summary>
-        /// <param name="kind">kind</param>
-        /// <param name="value">value</param>
-        [JsonConstructor]
-        public GenericResourcesInnerDiscreteResourceSpec(Option<string?> kind = default, Option<long?> value = default)
-        {
-            KindOption = kind;
-            ValueOption = value;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Used to track the state of Kind
         /// </summary>
@@ -83,113 +68,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  Value: ").Append(Value).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="GenericResourcesInnerDiscreteResourceSpec" />
-    /// </summary>
-    public class GenericResourcesInnerDiscreteResourceSpecJsonConverter : JsonConverter<GenericResourcesInnerDiscreteResourceSpec>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="GenericResourcesInnerDiscreteResourceSpec" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override GenericResourcesInnerDiscreteResourceSpec Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<string?> kind = default;
-            Option<long?> value = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "Kind":
-                            kind = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "Value":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                value = new Option<long?>(utf8JsonReader.GetInt64());
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (kind.IsSet && kind.Value == null)
-                throw new ArgumentNullException(nameof(kind), "Property is not nullable for class GenericResourcesInnerDiscreteResourceSpec.");
-
-            if (value.IsSet && value.Value == null)
-                throw new ArgumentNullException(nameof(value), "Property is not nullable for class GenericResourcesInnerDiscreteResourceSpec.");
-
-            return new GenericResourcesInnerDiscreteResourceSpec(kind, value);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="GenericResourcesInnerDiscreteResourceSpec" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="genericResourcesInnerDiscreteResourceSpec"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, GenericResourcesInnerDiscreteResourceSpec genericResourcesInnerDiscreteResourceSpec, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, genericResourcesInnerDiscreteResourceSpec, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="GenericResourcesInnerDiscreteResourceSpec" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="genericResourcesInnerDiscreteResourceSpec"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, GenericResourcesInnerDiscreteResourceSpec genericResourcesInnerDiscreteResourceSpec, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (genericResourcesInnerDiscreteResourceSpec.KindOption.IsSet && genericResourcesInnerDiscreteResourceSpec.Kind == null)
-                throw new ArgumentNullException(nameof(genericResourcesInnerDiscreteResourceSpec.Kind), "Property is required for class GenericResourcesInnerDiscreteResourceSpec.");
-
-            if (genericResourcesInnerDiscreteResourceSpec.KindOption.IsSet)
-                writer.WriteString("Kind", genericResourcesInnerDiscreteResourceSpec.Kind);
-
-            if (genericResourcesInnerDiscreteResourceSpec.ValueOption.IsSet)
-                writer.WriteNumber("Value", genericResourcesInnerDiscreteResourceSpec.ValueOption.Value!.Value);
         }
     }
 }

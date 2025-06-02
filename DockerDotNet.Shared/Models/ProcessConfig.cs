@@ -20,37 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// ProcessConfig
     /// </summary>
-    public partial class ProcessConfig : IValidatableObject
+    public partial class ProcessConfig
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ProcessConfig" /> class.
-        /// </summary>
-        /// <param name="privileged">privileged</param>
-        /// <param name="user">user</param>
-        /// <param name="tty">tty</param>
-        /// <param name="entrypoint">entrypoint</param>
-        /// <param name="arguments">arguments</param>
-        [JsonConstructor]
-        public ProcessConfig(Option<bool?> privileged = default, Option<string?> user = default, Option<bool?> tty = default, Option<string?> entrypoint = default, Option<List<string>?> arguments = default)
-        {
-            PrivilegedOption = privileged;
-            UserOption = user;
-            TtyOption = tty;
-            EntrypointOption = entrypoint;
-            ArgumentsOption = arguments;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Used to track the state of Privileged
         /// </summary>
@@ -131,154 +110,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  Arguments: ").Append(Arguments).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="ProcessConfig" />
-    /// </summary>
-    public class ProcessConfigJsonConverter : JsonConverter<ProcessConfig>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="ProcessConfig" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override ProcessConfig Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<bool?> privileged = default;
-            Option<string?> user = default;
-            Option<bool?> tty = default;
-            Option<string?> entrypoint = default;
-            Option<List<string>?> arguments = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "privileged":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                privileged = new Option<bool?>(utf8JsonReader.GetBoolean());
-                            break;
-                        case "user":
-                            user = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "tty":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                tty = new Option<bool?>(utf8JsonReader.GetBoolean());
-                            break;
-                        case "entrypoint":
-                            entrypoint = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "arguments":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                arguments = new Option<List<string>?>(JsonSerializer.Deserialize<List<string>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (privileged.IsSet && privileged.Value == null)
-                throw new ArgumentNullException(nameof(privileged), "Property is not nullable for class ProcessConfig.");
-
-            if (user.IsSet && user.Value == null)
-                throw new ArgumentNullException(nameof(user), "Property is not nullable for class ProcessConfig.");
-
-            if (tty.IsSet && tty.Value == null)
-                throw new ArgumentNullException(nameof(tty), "Property is not nullable for class ProcessConfig.");
-
-            if (entrypoint.IsSet && entrypoint.Value == null)
-                throw new ArgumentNullException(nameof(entrypoint), "Property is not nullable for class ProcessConfig.");
-
-            if (arguments.IsSet && arguments.Value == null)
-                throw new ArgumentNullException(nameof(arguments), "Property is not nullable for class ProcessConfig.");
-
-            return new ProcessConfig(privileged, user, tty, entrypoint, arguments);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="ProcessConfig" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="processConfig"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, ProcessConfig processConfig, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, processConfig, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="ProcessConfig" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="processConfig"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, ProcessConfig processConfig, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (processConfig.UserOption.IsSet && processConfig.User == null)
-                throw new ArgumentNullException(nameof(processConfig.User), "Property is required for class ProcessConfig.");
-
-            if (processConfig.EntrypointOption.IsSet && processConfig.Entrypoint == null)
-                throw new ArgumentNullException(nameof(processConfig.Entrypoint), "Property is required for class ProcessConfig.");
-
-            if (processConfig.ArgumentsOption.IsSet && processConfig.Arguments == null)
-                throw new ArgumentNullException(nameof(processConfig.Arguments), "Property is required for class ProcessConfig.");
-
-            if (processConfig.PrivilegedOption.IsSet)
-                writer.WriteBoolean("privileged", processConfig.PrivilegedOption.Value!.Value);
-
-            if (processConfig.UserOption.IsSet)
-                writer.WriteString("user", processConfig.User);
-
-            if (processConfig.TtyOption.IsSet)
-                writer.WriteBoolean("tty", processConfig.TtyOption.Value!.Value);
-
-            if (processConfig.EntrypointOption.IsSet)
-                writer.WriteString("entrypoint", processConfig.Entrypoint);
-
-            if (processConfig.ArgumentsOption.IsSet)
-            {
-                writer.WritePropertyName("arguments");
-                JsonSerializer.Serialize(writer, processConfig.Arguments, jsonSerializerOptions);
-            }
         }
     }
 }

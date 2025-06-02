@@ -20,39 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// CreateImageInfo
     /// </summary>
-    public partial class CreateImageInfo : IValidatableObject
+    public partial class CreateImageInfo
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CreateImageInfo" /> class.
-        /// </summary>
-        /// <param name="id">id</param>
-        /// <param name="error">errors encountered during the operation.   &gt; **Deprecated**: This field is deprecated since API v1.4, and will be omitted in a future API version. Use the information in errorDetail instead.</param>
-        /// <param name="errorDetail">errorDetail</param>
-        /// <param name="status">status</param>
-        /// <param name="progress">Progress is a pre-formatted presentation of progressDetail.   &gt; **Deprecated**: This field is deprecated since API v1.8, and will be omitted in a future API version. Use the information in progressDetail instead.</param>
-        /// <param name="progressDetail">progressDetail</param>
-        [JsonConstructor]
-        public CreateImageInfo(Option<string?> id = default, Option<string?> error = default, Option<ErrorDetail?> errorDetail = default, Option<string?> status = default, Option<string?> progress = default, Option<ProgressDetail?> progressDetail = default)
-        {
-            IdOption = id;
-            ErrorOption = error;
-            ErrorDetailOption = errorDetail;
-            StatusOption = status;
-            ProgressOption = progress;
-            ProgressDetailOption = progressDetail;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Used to track the state of Id
         /// </summary>
@@ -149,168 +126,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  ProgressDetail: ").Append(ProgressDetail).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="CreateImageInfo" />
-    /// </summary>
-    public class CreateImageInfoJsonConverter : JsonConverter<CreateImageInfo>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="CreateImageInfo" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override CreateImageInfo Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<string?> id = default;
-            Option<string?> error = default;
-            Option<ErrorDetail?> errorDetail = default;
-            Option<string?> status = default;
-            Option<string?> progress = default;
-            Option<ProgressDetail?> progressDetail = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "id":
-                            id = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "error":
-                            error = new Option<string?>(utf8JsonReader.GetString());
-                            break;
-                        case "errorDetail":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                errorDetail = new Option<ErrorDetail?>(JsonSerializer.Deserialize<ErrorDetail>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "status":
-                            status = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "progress":
-                            progress = new Option<string?>(utf8JsonReader.GetString());
-                            break;
-                        case "progressDetail":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                progressDetail = new Option<ProgressDetail?>(JsonSerializer.Deserialize<ProgressDetail>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (id.IsSet && id.Value == null)
-                throw new ArgumentNullException(nameof(id), "Property is not nullable for class CreateImageInfo.");
-
-            if (errorDetail.IsSet && errorDetail.Value == null)
-                throw new ArgumentNullException(nameof(errorDetail), "Property is not nullable for class CreateImageInfo.");
-
-            if (status.IsSet && status.Value == null)
-                throw new ArgumentNullException(nameof(status), "Property is not nullable for class CreateImageInfo.");
-
-            if (progressDetail.IsSet && progressDetail.Value == null)
-                throw new ArgumentNullException(nameof(progressDetail), "Property is not nullable for class CreateImageInfo.");
-
-            return new CreateImageInfo(id, error, errorDetail, status, progress, progressDetail);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="CreateImageInfo" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="createImageInfo"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, CreateImageInfo createImageInfo, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, createImageInfo, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="CreateImageInfo" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="createImageInfo"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, CreateImageInfo createImageInfo, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (createImageInfo.IdOption.IsSet && createImageInfo.Id == null)
-                throw new ArgumentNullException(nameof(createImageInfo.Id), "Property is required for class CreateImageInfo.");
-
-            if (createImageInfo.ErrorDetailOption.IsSet && createImageInfo.ErrorDetail == null)
-                throw new ArgumentNullException(nameof(createImageInfo.ErrorDetail), "Property is required for class CreateImageInfo.");
-
-            if (createImageInfo.StatusOption.IsSet && createImageInfo.Status == null)
-                throw new ArgumentNullException(nameof(createImageInfo.Status), "Property is required for class CreateImageInfo.");
-
-            if (createImageInfo.ProgressDetailOption.IsSet && createImageInfo.ProgressDetail == null)
-                throw new ArgumentNullException(nameof(createImageInfo.ProgressDetail), "Property is required for class CreateImageInfo.");
-
-            if (createImageInfo.IdOption.IsSet)
-                writer.WriteString("id", createImageInfo.Id);
-
-            if (createImageInfo.ErrorOption.IsSet)
-                if (createImageInfo.ErrorOption.Value != null)
-                    writer.WriteString("error", createImageInfo.Error);
-                else
-                    writer.WriteNull("error");
-
-            if (createImageInfo.ErrorDetailOption.IsSet)
-            {
-                writer.WritePropertyName("errorDetail");
-                JsonSerializer.Serialize(writer, createImageInfo.ErrorDetail, jsonSerializerOptions);
-            }
-            if (createImageInfo.StatusOption.IsSet)
-                writer.WriteString("status", createImageInfo.Status);
-
-            if (createImageInfo.ProgressOption.IsSet)
-                if (createImageInfo.ProgressOption.Value != null)
-                    writer.WriteString("progress", createImageInfo.Progress);
-                else
-                    writer.WriteNull("progress");
-
-            if (createImageInfo.ProgressDetailOption.IsSet)
-            {
-                writer.WritePropertyName("progressDetail");
-                JsonSerializer.Serialize(writer, createImageInfo.ProgressDetail, jsonSerializerOptions);
-            }
         }
     }
 }

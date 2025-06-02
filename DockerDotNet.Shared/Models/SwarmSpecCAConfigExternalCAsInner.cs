@@ -20,35 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// SwarmSpecCAConfigExternalCAsInner
     /// </summary>
-    public partial class SwarmSpecCAConfigExternalCAsInner : IValidatableObject
+    public partial class SwarmSpecCAConfigExternalCAsInner
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SwarmSpecCAConfigExternalCAsInner" /> class.
-        /// </summary>
-        /// <param name="protocol">Protocol for communication with the external CA (currently only &#x60;cfssl&#x60; is supported).  (default to ProtocolEnum.Cfssl)</param>
-        /// <param name="uRL">URL where certificate signing requests should be sent. </param>
-        /// <param name="options">An object with key/value pairs that are interpreted as protocol-specific options for the external CA driver. </param>
-        /// <param name="cACert">The root CA certificate (in PEM format) this external CA uses to issue TLS certificates (assumed to be to the current swarm root CA certificate if not provided). </param>
-        [JsonConstructor]
-        public SwarmSpecCAConfigExternalCAsInner(Option<ProtocolEnum?> protocol = default, Option<string?> uRL = default, Option<Dictionary<string, string>?> options = default, Option<string?> cACert = default)
-        {
-            ProtocolOption = protocol;
-            URLOption = uRL;
-            OptionsOption = options;
-            CACertOption = cACert;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Protocol for communication with the external CA (currently only &#x60;cfssl&#x60; is supported). 
         /// </summary>
@@ -61,46 +42,68 @@ namespace DockerDotNet.Shared.Models
             Cfssl = 1
         }
 
-        /// <summary>
-        /// Returns a <see cref="ProtocolEnum"/>
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public static ProtocolEnum ProtocolEnumFromString(string value)
+/// <summary>
+/// A Json converter for type <see cref="ProtocolEnum"/>
+/// </summary>
+public class ProtocolEnumJsonConverter : JsonConverter<ProtocolEnum>
+{
+    public override ProtocolEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        string? enumString = reader.GetString();
+        return enumString switch
         {
-            if (value.Equals("cfssl"))
-                return ProtocolEnum.Cfssl;
+            "cfssl" => ProtocolEnum.Cfssl,
+            _ => throw new JsonException($"Unknown value: {enumString}")
+        };
+    }
 
-            throw new NotImplementedException($"Could not convert value to type ProtocolEnum: '{value}'");
-        }
-
-        /// <summary>
-        /// Returns a <see cref="ProtocolEnum"/>
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public static ProtocolEnum? ProtocolEnumFromStringOrDefault(string value)
+    public override void Write(Utf8JsonWriter writer, ProtocolEnum value, JsonSerializerOptions options)
+    {
+        string enumString = value switch
         {
-            if (value.Equals("cfssl"))
-                return ProtocolEnum.Cfssl;
+            ProtocolEnum.Cfssl => "cfssl",
+            _ => throw new JsonException($"Unknown value: {value}")
+        };
+        writer.WriteStringValue(enumString);
+    }
+}
 
+/// <summary>
+/// A Json converter for nullable <see cref="ProtocolEnum"/>
+/// </summary>
+public class ProtocolEnumNullableJsonConverter : JsonConverter<ProtocolEnum?>
+{
+    public override ProtocolEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        if (reader.TokenType == JsonTokenType.Null)
             return null;
-        }
 
-        /// <summary>
-        /// Converts the <see cref="ProtocolEnum"/> to the json value
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public static string ProtocolEnumToJsonValue(ProtocolEnum? value)
+        string? enumString = reader.GetString();
+
+        return enumString switch
         {
-            if (value == ProtocolEnum.Cfssl)
-                return "cfssl";
+            "cfssl" => ProtocolEnum.Cfssl,
+            _ => throw new JsonException($"Unknown value: {enumString}")
+        };
+    }
 
-            throw new NotImplementedException($"Value could not be handled: '{value}'");
+    public override void Write(Utf8JsonWriter writer, ProtocolEnum? value, JsonSerializerOptions options)
+    {
+        if (value == null)
+        {
+            writer.WriteNullValue();
+            return;
         }
+
+        string enumString = value.Value switch
+        {
+            ProtocolEnum.Cfssl => "cfssl",
+            _ => throw new JsonException($"Unknown value: {value}")
+        };
+
+        writer.WriteStringValue(enumString);
+    }
+}
 
         /// <summary>
         /// Used to track the state of Protocol
@@ -172,142 +175,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  CACert: ").Append(CACert).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="SwarmSpecCAConfigExternalCAsInner" />
-    /// </summary>
-    public class SwarmSpecCAConfigExternalCAsInnerJsonConverter : JsonConverter<SwarmSpecCAConfigExternalCAsInner>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="SwarmSpecCAConfigExternalCAsInner" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override SwarmSpecCAConfigExternalCAsInner Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<SwarmSpecCAConfigExternalCAsInner.ProtocolEnum?> protocol = default;
-            Option<string?> uRL = default;
-            Option<Dictionary<string, string>?> options = default;
-            Option<string?> cACert = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "Protocol":
-                            string? protocolRawValue = utf8JsonReader.GetString();
-                            if (protocolRawValue != null)
-                                protocol = new Option<SwarmSpecCAConfigExternalCAsInner.ProtocolEnum?>(SwarmSpecCAConfigExternalCAsInner.ProtocolEnumFromStringOrDefault(protocolRawValue));
-                            break;
-                        case "URL":
-                            uRL = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "Options":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                options = new Option<Dictionary<string, string>?>(JsonSerializer.Deserialize<Dictionary<string, string>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "CACert":
-                            cACert = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (protocol.IsSet && protocol.Value == null)
-                throw new ArgumentNullException(nameof(protocol), "Property is not nullable for class SwarmSpecCAConfigExternalCAsInner.");
-
-            if (uRL.IsSet && uRL.Value == null)
-                throw new ArgumentNullException(nameof(uRL), "Property is not nullable for class SwarmSpecCAConfigExternalCAsInner.");
-
-            if (options.IsSet && options.Value == null)
-                throw new ArgumentNullException(nameof(options), "Property is not nullable for class SwarmSpecCAConfigExternalCAsInner.");
-
-            if (cACert.IsSet && cACert.Value == null)
-                throw new ArgumentNullException(nameof(cACert), "Property is not nullable for class SwarmSpecCAConfigExternalCAsInner.");
-
-            return new SwarmSpecCAConfigExternalCAsInner(protocol, uRL, options, cACert);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="SwarmSpecCAConfigExternalCAsInner" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="swarmSpecCAConfigExternalCAsInner"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, SwarmSpecCAConfigExternalCAsInner swarmSpecCAConfigExternalCAsInner, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, swarmSpecCAConfigExternalCAsInner, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="SwarmSpecCAConfigExternalCAsInner" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="swarmSpecCAConfigExternalCAsInner"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, SwarmSpecCAConfigExternalCAsInner swarmSpecCAConfigExternalCAsInner, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (swarmSpecCAConfigExternalCAsInner.URLOption.IsSet && swarmSpecCAConfigExternalCAsInner.URL == null)
-                throw new ArgumentNullException(nameof(swarmSpecCAConfigExternalCAsInner.URL), "Property is required for class SwarmSpecCAConfigExternalCAsInner.");
-
-            if (swarmSpecCAConfigExternalCAsInner.OptionsOption.IsSet && swarmSpecCAConfigExternalCAsInner.Options == null)
-                throw new ArgumentNullException(nameof(swarmSpecCAConfigExternalCAsInner.Options), "Property is required for class SwarmSpecCAConfigExternalCAsInner.");
-
-            if (swarmSpecCAConfigExternalCAsInner.CACertOption.IsSet && swarmSpecCAConfigExternalCAsInner.CACert == null)
-                throw new ArgumentNullException(nameof(swarmSpecCAConfigExternalCAsInner.CACert), "Property is required for class SwarmSpecCAConfigExternalCAsInner.");
-
-            var protocolRawValue = SwarmSpecCAConfigExternalCAsInner.ProtocolEnumToJsonValue(swarmSpecCAConfigExternalCAsInner.ProtocolOption.Value!.Value);
-            writer.WriteString("Protocol", protocolRawValue);
-            if (swarmSpecCAConfigExternalCAsInner.URLOption.IsSet)
-                writer.WriteString("URL", swarmSpecCAConfigExternalCAsInner.URL);
-
-            if (swarmSpecCAConfigExternalCAsInner.OptionsOption.IsSet)
-            {
-                writer.WritePropertyName("Options");
-                JsonSerializer.Serialize(writer, swarmSpecCAConfigExternalCAsInner.Options, jsonSerializerOptions);
-            }
-            if (swarmSpecCAConfigExternalCAsInner.CACertOption.IsSet)
-                writer.WriteString("CACert", swarmSpecCAConfigExternalCAsInner.CACert);
         }
     }
 }

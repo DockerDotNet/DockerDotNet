@@ -20,33 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// Health stores information about the container&#39;s healthcheck results. 
     /// </summary>
-    public partial class Health : IValidatableObject
+    public partial class Health
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Health" /> class.
-        /// </summary>
-        /// <param name="status">Status is one of &#x60;none&#x60;, &#x60;starting&#x60;, &#x60;healthy&#x60; or &#x60;unhealthy&#x60;  - \&quot;none\&quot;      Indicates there is no healthcheck - \&quot;starting\&quot;  Starting indicates that the container is not yet ready - \&quot;healthy\&quot;   Healthy indicates that the container is running correctly - \&quot;unhealthy\&quot; Unhealthy indicates that the container has a problem </param>
-        /// <param name="failingStreak">FailingStreak is the number of consecutive failures</param>
-        /// <param name="log">Log contains the last few results (oldest first) </param>
-        [JsonConstructor]
-        public Health(Option<StatusEnum?> status = default, Option<int?> failingStreak = default, Option<List<HealthcheckResult>?> log = default)
-        {
-            StatusOption = status;
-            FailingStreakOption = failingStreak;
-            LogOption = log;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Status is one of &#x60;none&#x60;, &#x60;starting&#x60;, &#x60;healthy&#x60; or &#x60;unhealthy&#x60;  - \&quot;none\&quot;      Indicates there is no healthcheck - \&quot;starting\&quot;  Starting indicates that the container is not yet ready - \&quot;healthy\&quot;   Healthy indicates that the container is running correctly - \&quot;unhealthy\&quot; Unhealthy indicates that the container has a problem 
         /// </summary>
@@ -74,73 +57,80 @@ namespace DockerDotNet.Shared.Models
             Unhealthy = 4
         }
 
-        /// <summary>
-        /// Returns a <see cref="StatusEnum"/>
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public static StatusEnum StatusEnumFromString(string value)
+/// <summary>
+/// A Json converter for type <see cref="StatusEnum"/>
+/// </summary>
+public class StatusEnumJsonConverter : JsonConverter<StatusEnum>
+{
+    public override StatusEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        string? enumString = reader.GetString();
+        return enumString switch
         {
-            if (value.Equals("none"))
-                return StatusEnum.None;
+            "none" => StatusEnum.None,
+            "starting" => StatusEnum.Starting,
+            "healthy" => StatusEnum.Healthy,
+            "unhealthy" => StatusEnum.Unhealthy,
+            _ => throw new JsonException($"Unknown value: {enumString}")
+        };
+    }
 
-            if (value.Equals("starting"))
-                return StatusEnum.Starting;
-
-            if (value.Equals("healthy"))
-                return StatusEnum.Healthy;
-
-            if (value.Equals("unhealthy"))
-                return StatusEnum.Unhealthy;
-
-            throw new NotImplementedException($"Could not convert value to type StatusEnum: '{value}'");
-        }
-
-        /// <summary>
-        /// Returns a <see cref="StatusEnum"/>
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public static StatusEnum? StatusEnumFromStringOrDefault(string value)
+    public override void Write(Utf8JsonWriter writer, StatusEnum value, JsonSerializerOptions options)
+    {
+        string enumString = value switch
         {
-            if (value.Equals("none"))
-                return StatusEnum.None;
+            StatusEnum.None => "none",
+            StatusEnum.Starting => "starting",
+            StatusEnum.Healthy => "healthy",
+            StatusEnum.Unhealthy => "unhealthy",
+            _ => throw new JsonException($"Unknown value: {value}")
+        };
+        writer.WriteStringValue(enumString);
+    }
+}
 
-            if (value.Equals("starting"))
-                return StatusEnum.Starting;
-
-            if (value.Equals("healthy"))
-                return StatusEnum.Healthy;
-
-            if (value.Equals("unhealthy"))
-                return StatusEnum.Unhealthy;
-
+/// <summary>
+/// A Json converter for nullable <see cref="StatusEnum"/>
+/// </summary>
+public class StatusEnumNullableJsonConverter : JsonConverter<StatusEnum?>
+{
+    public override StatusEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        if (reader.TokenType == JsonTokenType.Null)
             return null;
-        }
 
-        /// <summary>
-        /// Converts the <see cref="StatusEnum"/> to the json value
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public static string StatusEnumToJsonValue(StatusEnum? value)
+        string? enumString = reader.GetString();
+
+        return enumString switch
         {
-            if (value == StatusEnum.None)
-                return "none";
+            "none" => StatusEnum.None,
+            "starting" => StatusEnum.Starting,
+            "healthy" => StatusEnum.Healthy,
+            "unhealthy" => StatusEnum.Unhealthy,
+            _ => throw new JsonException($"Unknown value: {enumString}")
+        };
+    }
 
-            if (value == StatusEnum.Starting)
-                return "starting";
-
-            if (value == StatusEnum.Healthy)
-                return "healthy";
-
-            if (value == StatusEnum.Unhealthy)
-                return "unhealthy";
-
-            throw new NotImplementedException($"Value could not be handled: '{value}'");
+    public override void Write(Utf8JsonWriter writer, StatusEnum? value, JsonSerializerOptions options)
+    {
+        if (value == null)
+        {
+            writer.WriteNullValue();
+            return;
         }
+
+        string enumString = value.Value switch
+        {
+            StatusEnum.None => "none",
+            StatusEnum.Starting => "starting",
+            StatusEnum.Healthy => "healthy",
+            StatusEnum.Unhealthy => "unhealthy",
+            _ => throw new JsonException($"Unknown value: {value}")
+        };
+
+        writer.WriteStringValue(enumString);
+    }
+}
 
         /// <summary>
         /// Used to track the state of Status
@@ -199,128 +189,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  Log: ").Append(Log).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="Health" />
-    /// </summary>
-    public class HealthJsonConverter : JsonConverter<Health>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="Health" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override Health Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<Health.StatusEnum?> status = default;
-            Option<int?> failingStreak = default;
-            Option<List<HealthcheckResult>?> log = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "Status":
-                            string? statusRawValue = utf8JsonReader.GetString();
-                            if (statusRawValue != null)
-                                status = new Option<Health.StatusEnum?>(Health.StatusEnumFromStringOrDefault(statusRawValue));
-                            break;
-                        case "FailingStreak":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                failingStreak = new Option<int?>(utf8JsonReader.GetInt32());
-                            break;
-                        case "Log":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                log = new Option<List<HealthcheckResult>?>(JsonSerializer.Deserialize<List<HealthcheckResult>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (status.IsSet && status.Value == null)
-                throw new ArgumentNullException(nameof(status), "Property is not nullable for class Health.");
-
-            if (failingStreak.IsSet && failingStreak.Value == null)
-                throw new ArgumentNullException(nameof(failingStreak), "Property is not nullable for class Health.");
-
-            if (log.IsSet && log.Value == null)
-                throw new ArgumentNullException(nameof(log), "Property is not nullable for class Health.");
-
-            return new Health(status, failingStreak, log);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="Health" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="health"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, Health health, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, health, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="Health" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="health"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, Health health, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (health.LogOption.IsSet && health.Log == null)
-                throw new ArgumentNullException(nameof(health.Log), "Property is required for class Health.");
-
-            var statusRawValue = Health.StatusEnumToJsonValue(health.StatusOption.Value!.Value);
-            writer.WriteString("Status", statusRawValue);
-            if (health.FailingStreakOption.IsSet)
-                writer.WriteNumber("FailingStreak", health.FailingStreakOption.Value!.Value);
-
-            if (health.LogOption.IsSet)
-            {
-                writer.WritePropertyName("Log");
-                JsonSerializer.Serialize(writer, health.Log, jsonSerializerOptions);
-            }
         }
     }
 }

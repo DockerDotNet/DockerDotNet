@@ -20,37 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// Volume configuration
     /// </summary>
-    public partial class VolumeCreateOptions : IValidatableObject
+    public partial class VolumeCreateOptions
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="VolumeCreateOptions" /> class.
-        /// </summary>
-        /// <param name="name">The new volume&#39;s name. If not specified, Docker generates a name. </param>
-        /// <param name="driver">Name of the volume driver to use. (default to &quot;local&quot;)</param>
-        /// <param name="driverOpts">A mapping of driver options and values. These options are passed directly to the driver and are driver specific. </param>
-        /// <param name="labels">User-defined key/value metadata.</param>
-        /// <param name="clusterVolumeSpec">clusterVolumeSpec</param>
-        [JsonConstructor]
-        public VolumeCreateOptions(Option<string?> name = default, Option<string?> driver = default, Option<Dictionary<string, string>?> driverOpts = default, Option<Dictionary<string, string>?> labels = default, Option<ClusterVolumeSpec?> clusterVolumeSpec = default)
-        {
-            NameOption = name;
-            DriverOption = driver;
-            DriverOptsOption = driverOpts;
-            LabelsOption = labels;
-            ClusterVolumeSpecOption = clusterVolumeSpec;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Used to track the state of Name
         /// </summary>
@@ -139,164 +118,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  ClusterVolumeSpec: ").Append(ClusterVolumeSpec).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="VolumeCreateOptions" />
-    /// </summary>
-    public class VolumeCreateOptionsJsonConverter : JsonConverter<VolumeCreateOptions>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="VolumeCreateOptions" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override VolumeCreateOptions Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<string?> name = default;
-            Option<string?> driver = default;
-            Option<Dictionary<string, string>?> driverOpts = default;
-            Option<Dictionary<string, string>?> labels = default;
-            Option<ClusterVolumeSpec?> clusterVolumeSpec = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "Name":
-                            name = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "Driver":
-                            driver = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "DriverOpts":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                driverOpts = new Option<Dictionary<string, string>?>(JsonSerializer.Deserialize<Dictionary<string, string>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "Labels":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                labels = new Option<Dictionary<string, string>?>(JsonSerializer.Deserialize<Dictionary<string, string>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "ClusterVolumeSpec":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                clusterVolumeSpec = new Option<ClusterVolumeSpec?>(JsonSerializer.Deserialize<ClusterVolumeSpec>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (name.IsSet && name.Value == null)
-                throw new ArgumentNullException(nameof(name), "Property is not nullable for class VolumeCreateOptions.");
-
-            if (driver.IsSet && driver.Value == null)
-                throw new ArgumentNullException(nameof(driver), "Property is not nullable for class VolumeCreateOptions.");
-
-            if (driverOpts.IsSet && driverOpts.Value == null)
-                throw new ArgumentNullException(nameof(driverOpts), "Property is not nullable for class VolumeCreateOptions.");
-
-            if (labels.IsSet && labels.Value == null)
-                throw new ArgumentNullException(nameof(labels), "Property is not nullable for class VolumeCreateOptions.");
-
-            if (clusterVolumeSpec.IsSet && clusterVolumeSpec.Value == null)
-                throw new ArgumentNullException(nameof(clusterVolumeSpec), "Property is not nullable for class VolumeCreateOptions.");
-
-            return new VolumeCreateOptions(name, driver, driverOpts, labels, clusterVolumeSpec);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="VolumeCreateOptions" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="volumeCreateOptions"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, VolumeCreateOptions volumeCreateOptions, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, volumeCreateOptions, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="VolumeCreateOptions" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="volumeCreateOptions"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, VolumeCreateOptions volumeCreateOptions, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (volumeCreateOptions.NameOption.IsSet && volumeCreateOptions.Name == null)
-                throw new ArgumentNullException(nameof(volumeCreateOptions.Name), "Property is required for class VolumeCreateOptions.");
-
-            if (volumeCreateOptions.DriverOption.IsSet && volumeCreateOptions.Driver == null)
-                throw new ArgumentNullException(nameof(volumeCreateOptions.Driver), "Property is required for class VolumeCreateOptions.");
-
-            if (volumeCreateOptions.DriverOptsOption.IsSet && volumeCreateOptions.DriverOpts == null)
-                throw new ArgumentNullException(nameof(volumeCreateOptions.DriverOpts), "Property is required for class VolumeCreateOptions.");
-
-            if (volumeCreateOptions.LabelsOption.IsSet && volumeCreateOptions.Labels == null)
-                throw new ArgumentNullException(nameof(volumeCreateOptions.Labels), "Property is required for class VolumeCreateOptions.");
-
-            if (volumeCreateOptions.ClusterVolumeSpecOption.IsSet && volumeCreateOptions.ClusterVolumeSpec == null)
-                throw new ArgumentNullException(nameof(volumeCreateOptions.ClusterVolumeSpec), "Property is required for class VolumeCreateOptions.");
-
-            if (volumeCreateOptions.NameOption.IsSet)
-                writer.WriteString("Name", volumeCreateOptions.Name);
-
-            if (volumeCreateOptions.DriverOption.IsSet)
-                writer.WriteString("Driver", volumeCreateOptions.Driver);
-
-            if (volumeCreateOptions.DriverOptsOption.IsSet)
-            {
-                writer.WritePropertyName("DriverOpts");
-                JsonSerializer.Serialize(writer, volumeCreateOptions.DriverOpts, jsonSerializerOptions);
-            }
-            if (volumeCreateOptions.LabelsOption.IsSet)
-            {
-                writer.WritePropertyName("Labels");
-                JsonSerializer.Serialize(writer, volumeCreateOptions.Labels, jsonSerializerOptions);
-            }
-            if (volumeCreateOptions.ClusterVolumeSpecOption.IsSet)
-            {
-                writer.WritePropertyName("ClusterVolumeSpec");
-                JsonSerializer.Serialize(writer, volumeCreateOptions.ClusterVolumeSpec, jsonSerializerOptions);
-            }
         }
     }
 }

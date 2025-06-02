@@ -20,64 +20,21 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// ContainerSummary
     /// </summary>
-    public partial class ContainerSummary : IValidatableObject
+    public partial class ContainerSummary
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ContainerSummary" /> class.
-        /// </summary>
-        /// <param name="id">The ID of this container as a 128-bit (64-character) hexadecimal string (32 bytes).</param>
-        /// <param name="names">The names associated with this container. Most containers have a single name, but when using legacy \&quot;links\&quot;, the container can have multiple names.  For historic reasons, names are prefixed with a forward-slash (&#x60;/&#x60;).</param>
-        /// <param name="image">The name or ID of the image used to create the container.  This field shows the image reference as was specified when creating the container, which can be in its canonical form (e.g., &#x60;docker.io/library/ubuntu:latest&#x60; or &#x60;docker.io/library/ubuntu@sha256:72297848456d5d37d1262630108ab308d3e9ec7ed1c3286a32fe09856619a782&#x60;), short form (e.g., &#x60;ubuntu:latest&#x60;)), or the ID(-prefix) of the image (e.g., &#x60;72297848456d&#x60;).  The content of this field can be updated at runtime if the image used to create the container is untagged, in which case the field is updated to contain the the image ID (digest) it was resolved to in its canonical, non-truncated form (e.g., &#x60;sha256:72297848456d5d37d1262630108ab308d3e9ec7ed1c3286a32fe09856619a782&#x60;).</param>
-        /// <param name="imageID">The ID (digest) of the image that this container was created from.</param>
-        /// <param name="imageManifestDescriptor">imageManifestDescriptor</param>
-        /// <param name="command">Command to run when starting the container</param>
-        /// <param name="created">Date and time at which the container was created as a Unix timestamp (number of seconds since EPOCH).</param>
-        /// <param name="ports">Port-mappings for the container.</param>
-        /// <param name="sizeRw">The size of files that have been created or changed by this container.  This field is omitted by default, and only set when size is requested in the API request.</param>
-        /// <param name="sizeRootFs">The total size of all files in the read-only layers from the image that the container uses. These layers can be shared between containers.  This field is omitted by default, and only set when size is requested in the API request.</param>
-        /// <param name="labels">User-defined key/value metadata.</param>
-        /// <param name="state">The state of this container. </param>
-        /// <param name="status">Additional human-readable status of this container (e.g. &#x60;Exit 0&#x60;)</param>
-        /// <param name="hostConfig">hostConfig</param>
-        /// <param name="networkSettings">networkSettings</param>
-        /// <param name="mounts">List of mounts used by the container.</param>
-        [JsonConstructor]
-        public ContainerSummary(Option<string?> id = default, Option<List<string>?> names = default, Option<string?> image = default, Option<string?> imageID = default, Option<OCIDescriptor?> imageManifestDescriptor = default, Option<string?> command = default, Option<long?> created = default, Option<List<Port>?> ports = default, Option<long?> sizeRw = default, Option<long?> sizeRootFs = default, Option<Dictionary<string, string>?> labels = default, Option<ContainerStateEnum?> state = default, Option<string?> status = default, Option<ContainerSummaryHostConfig?> hostConfig = default, Option<ContainerSummaryNetworkSettings?> networkSettings = default, Option<List<MountPoint>?> mounts = default)
-        {
-            IdOption = id;
-            NamesOption = names;
-            ImageOption = image;
-            ImageIDOption = imageID;
-            ImageManifestDescriptorOption = imageManifestDescriptor;
-            CommandOption = command;
-            CreatedOption = created;
-            PortsOption = ports;
-            SizeRwOption = sizeRw;
-            SizeRootFsOption = sizeRootFs;
-            LabelsOption = labels;
-            StateOption = state;
-            StatusOption = status;
-            HostConfigOption = hostConfig;
-            NetworkSettingsOption = networkSettings;
-            MountsOption = mounts;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// The state of this container. 
         /// </summary>
         /// <value>The state of this container. </value>
-        public enum ContainerStateEnum
+        public enum StateEnum
         {
             /// <summary>
             /// Enum Created for value: created
@@ -115,107 +72,99 @@ namespace DockerDotNet.Shared.Models
             Dead = 7
         }
 
-        /// <summary>
-        /// Returns a <see cref="ContainerStateEnum"/>
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public static ContainerStateEnum StateEnumFromString(string value)
+/// <summary>
+/// A Json converter for type <see cref="StateEnum"/>
+/// </summary>
+public class StateEnumJsonConverter : JsonConverter<StateEnum>
+{
+    public override StateEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        string? enumString = reader.GetString();
+        return enumString switch
         {
-            if (value.Equals("created"))
-                return ContainerStateEnum.Created;
+            "created" => StateEnum.Created,
+            "running" => StateEnum.Running,
+            "paused" => StateEnum.Paused,
+            "restarting" => StateEnum.Restarting,
+            "exited" => StateEnum.Exited,
+            "removing" => StateEnum.Removing,
+            "dead" => StateEnum.Dead,
+            _ => throw new JsonException($"Unknown value: {enumString}")
+        };
+    }
 
-            if (value.Equals("running"))
-                return ContainerStateEnum.Running;
-
-            if (value.Equals("paused"))
-                return ContainerStateEnum.Paused;
-
-            if (value.Equals("restarting"))
-                return ContainerStateEnum.Restarting;
-
-            if (value.Equals("exited"))
-                return ContainerStateEnum.Exited;
-
-            if (value.Equals("removing"))
-                return ContainerStateEnum.Removing;
-
-            if (value.Equals("dead"))
-                return ContainerStateEnum.Dead;
-
-            throw new NotImplementedException($"Could not convert value to type StateEnum: '{value}'");
-        }
-
-        /// <summary>
-        /// Returns a <see cref="ContainerStateEnum"/>
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public static ContainerStateEnum? StateEnumFromStringOrDefault(string value)
+    public override void Write(Utf8JsonWriter writer, StateEnum value, JsonSerializerOptions options)
+    {
+        string enumString = value switch
         {
-            if (value.Equals("created"))
-                return ContainerStateEnum.Created;
+            StateEnum.Created => "created",
+            StateEnum.Running => "running",
+            StateEnum.Paused => "paused",
+            StateEnum.Restarting => "restarting",
+            StateEnum.Exited => "exited",
+            StateEnum.Removing => "removing",
+            StateEnum.Dead => "dead",
+            _ => throw new JsonException($"Unknown value: {value}")
+        };
+        writer.WriteStringValue(enumString);
+    }
+}
 
-            if (value.Equals("running"))
-                return ContainerStateEnum.Running;
-
-            if (value.Equals("paused"))
-                return ContainerStateEnum.Paused;
-
-            if (value.Equals("restarting"))
-                return ContainerStateEnum.Restarting;
-
-            if (value.Equals("exited"))
-                return ContainerStateEnum.Exited;
-
-            if (value.Equals("removing"))
-                return ContainerStateEnum.Removing;
-
-            if (value.Equals("dead"))
-                return ContainerStateEnum.Dead;
-
+/// <summary>
+/// A Json converter for nullable <see cref="StateEnum"/>
+/// </summary>
+public class StateEnumNullableJsonConverter : JsonConverter<StateEnum?>
+{
+    public override StateEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        if (reader.TokenType == JsonTokenType.Null)
             return null;
-        }
 
-        /// <summary>
-        /// Converts the <see cref="ContainerStateEnum"/> to the json value
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public static string StateEnumToJsonValue(ContainerStateEnum? value)
+        string? enumString = reader.GetString();
+
+        return enumString switch
         {
-            if (value == ContainerStateEnum.Created)
-                return "created";
+            "created" => StateEnum.Created,
+            "running" => StateEnum.Running,
+            "paused" => StateEnum.Paused,
+            "restarting" => StateEnum.Restarting,
+            "exited" => StateEnum.Exited,
+            "removing" => StateEnum.Removing,
+            "dead" => StateEnum.Dead,
+            _ => throw new JsonException($"Unknown value: {enumString}")
+        };
+    }
 
-            if (value == ContainerStateEnum.Running)
-                return "running";
-
-            if (value == ContainerStateEnum.Paused)
-                return "paused";
-
-            if (value == ContainerStateEnum.Restarting)
-                return "restarting";
-
-            if (value == ContainerStateEnum.Exited)
-                return "exited";
-
-            if (value == ContainerStateEnum.Removing)
-                return "removing";
-
-            if (value == ContainerStateEnum.Dead)
-                return "dead";
-
-            throw new NotImplementedException($"Value could not be handled: '{value}'");
+    public override void Write(Utf8JsonWriter writer, StateEnum? value, JsonSerializerOptions options)
+    {
+        if (value == null)
+        {
+            writer.WriteNullValue();
+            return;
         }
+
+        string enumString = value.Value switch
+        {
+            StateEnum.Created => "created",
+            StateEnum.Running => "running",
+            StateEnum.Paused => "paused",
+            StateEnum.Restarting => "restarting",
+            StateEnum.Exited => "exited",
+            StateEnum.Removing => "removing",
+            StateEnum.Dead => "dead",
+            _ => throw new JsonException($"Unknown value: {value}")
+        };
+
+        writer.WriteStringValue(enumString);
+    }
+}
 
         /// <summary>
         /// Used to track the state of State
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<ContainerStateEnum?> StateOption { get; private set; }
+        public Option<StateEnum?> StateOption { get; private set; }
 
         /// <summary>
         /// The state of this container. 
@@ -223,7 +172,7 @@ namespace DockerDotNet.Shared.Models
         /// <value>The state of this container. </value>
         /* <example>running</example> */
         [JsonPropertyName("State")]
-        public ContainerStateEnum? State { get { return this.StateOption; } set { this.StateOption = new(value); } }
+        public StateEnum? State { get { return this.StateOption; } set { this.StateOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of Id
@@ -468,333 +417,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  Mounts: ").Append(Mounts).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            // Id (string) maxLength
-            if (this.Id != null && this.Id.Length > 64)
-            {
-                yield return new ValidationResult("Invalid value for Id, length must be less than 64.", new [] { "Id" });
-            }
-
-            // Id (string) minLength
-            if (this.Id != null && this.Id.Length < 64)
-            {
-                yield return new ValidationResult("Invalid value for Id, length must be greater than 64.", new [] { "Id" });
-            }
-
-            if (this.IdOption.Value != null) {
-                // Id (string) pattern
-                Regex regexId = new Regex(@"^[0-9a-fA-F]{64}$", RegexOptions.CultureInvariant);
-
-                if (this.IdOption.Value != null &&!regexId.Match(this.IdOption.Value).Success)
-                {
-                    yield return new System.ComponentModel.DataAnnotations.ValidationResult("Invalid value for Id, must match a pattern of " + regexId, new [] { "Id" });
-                }
-            }
-
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="ContainerSummary" />
-    /// </summary>
-    public class ContainerSummaryJsonConverter : JsonConverter<ContainerSummary>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="ContainerSummary" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override ContainerSummary Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<string?> id = default;
-            Option<List<string>?> names = default;
-            Option<string?> image = default;
-            Option<string?> imageID = default;
-            Option<OCIDescriptor?> imageManifestDescriptor = default;
-            Option<string?> command = default;
-            Option<long?> created = default;
-            Option<List<Port>?> ports = default;
-            Option<long?> sizeRw = default;
-            Option<long?> sizeRootFs = default;
-            Option<Dictionary<string, string>?> labels = default;
-            Option<ContainerSummary.ContainerStateEnum?> state = default;
-            Option<string?> status = default;
-            Option<ContainerSummaryHostConfig?> hostConfig = default;
-            Option<ContainerSummaryNetworkSettings?> networkSettings = default;
-            Option<List<MountPoint>?> mounts = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "Id":
-                            id = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "Names":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                names = new Option<List<string>?>(JsonSerializer.Deserialize<List<string>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "Image":
-                            image = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "ImageID":
-                            imageID = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "ImageManifestDescriptor":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                imageManifestDescriptor = new Option<OCIDescriptor?>(JsonSerializer.Deserialize<OCIDescriptor>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "Command":
-                            command = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "Created":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                created = new Option<long?>(utf8JsonReader.GetInt64());
-                            break;
-                        case "Ports":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                ports = new Option<List<Port>?>(JsonSerializer.Deserialize<List<Port>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "SizeRw":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                sizeRw = new Option<long?>(utf8JsonReader.GetInt64());
-                            break;
-                        case "SizeRootFs":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                sizeRootFs = new Option<long?>(utf8JsonReader.GetInt64());
-                            break;
-                        case "Labels":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                labels = new Option<Dictionary<string, string>?>(JsonSerializer.Deserialize<Dictionary<string, string>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "State":
-                            string? stateRawValue = utf8JsonReader.GetString();
-                            if (stateRawValue != null)
-                                state = new Option<ContainerSummary.ContainerStateEnum?>(ContainerSummary.StateEnumFromStringOrDefault(stateRawValue));
-                            break;
-                        case "Status":
-                            status = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "HostConfig":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                hostConfig = new Option<ContainerSummaryHostConfig?>(JsonSerializer.Deserialize<ContainerSummaryHostConfig>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "NetworkSettings":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                networkSettings = new Option<ContainerSummaryNetworkSettings?>(JsonSerializer.Deserialize<ContainerSummaryNetworkSettings>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "Mounts":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                mounts = new Option<List<MountPoint>?>(JsonSerializer.Deserialize<List<MountPoint>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (id.IsSet && id.Value == null)
-                throw new ArgumentNullException(nameof(id), "Property is not nullable for class ContainerSummary.");
-
-            if (names.IsSet && names.Value == null)
-                throw new ArgumentNullException(nameof(names), "Property is not nullable for class ContainerSummary.");
-
-            if (image.IsSet && image.Value == null)
-                throw new ArgumentNullException(nameof(image), "Property is not nullable for class ContainerSummary.");
-
-            if (imageID.IsSet && imageID.Value == null)
-                throw new ArgumentNullException(nameof(imageID), "Property is not nullable for class ContainerSummary.");
-
-            if (imageManifestDescriptor.IsSet && imageManifestDescriptor.Value == null)
-                throw new ArgumentNullException(nameof(imageManifestDescriptor), "Property is not nullable for class ContainerSummary.");
-
-            if (command.IsSet && command.Value == null)
-                throw new ArgumentNullException(nameof(command), "Property is not nullable for class ContainerSummary.");
-
-            if (created.IsSet && created.Value == null)
-                throw new ArgumentNullException(nameof(created), "Property is not nullable for class ContainerSummary.");
-
-            if (ports.IsSet && ports.Value == null)
-                throw new ArgumentNullException(nameof(ports), "Property is not nullable for class ContainerSummary.");
-
-            if (labels.IsSet && labels.Value == null)
-                throw new ArgumentNullException(nameof(labels), "Property is not nullable for class ContainerSummary.");
-
-            if (state.IsSet && state.Value == null)
-                throw new ArgumentNullException(nameof(state), "Property is not nullable for class ContainerSummary.");
-
-            if (status.IsSet && status.Value == null)
-                throw new ArgumentNullException(nameof(status), "Property is not nullable for class ContainerSummary.");
-
-            if (hostConfig.IsSet && hostConfig.Value == null)
-                throw new ArgumentNullException(nameof(hostConfig), "Property is not nullable for class ContainerSummary.");
-
-            if (networkSettings.IsSet && networkSettings.Value == null)
-                throw new ArgumentNullException(nameof(networkSettings), "Property is not nullable for class ContainerSummary.");
-
-            if (mounts.IsSet && mounts.Value == null)
-                throw new ArgumentNullException(nameof(mounts), "Property is not nullable for class ContainerSummary.");
-
-            return new ContainerSummary(id, names, image, imageID, imageManifestDescriptor, command, created, ports, sizeRw, sizeRootFs, labels, state, status, hostConfig, networkSettings, mounts);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="ContainerSummary" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="containerSummary"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, ContainerSummary containerSummary, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, containerSummary, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="ContainerSummary" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="containerSummary"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, ContainerSummary containerSummary, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (containerSummary.IdOption.IsSet && containerSummary.Id == null)
-                throw new ArgumentNullException(nameof(containerSummary.Id), "Property is required for class ContainerSummary.");
-
-            if (containerSummary.NamesOption.IsSet && containerSummary.Names == null)
-                throw new ArgumentNullException(nameof(containerSummary.Names), "Property is required for class ContainerSummary.");
-
-            if (containerSummary.ImageOption.IsSet && containerSummary.Image == null)
-                throw new ArgumentNullException(nameof(containerSummary.Image), "Property is required for class ContainerSummary.");
-
-            if (containerSummary.ImageIDOption.IsSet && containerSummary.ImageID == null)
-                throw new ArgumentNullException(nameof(containerSummary.ImageID), "Property is required for class ContainerSummary.");
-
-            if (containerSummary.ImageManifestDescriptorOption.IsSet && containerSummary.ImageManifestDescriptor == null)
-                throw new ArgumentNullException(nameof(containerSummary.ImageManifestDescriptor), "Property is required for class ContainerSummary.");
-
-            if (containerSummary.CommandOption.IsSet && containerSummary.Command == null)
-                throw new ArgumentNullException(nameof(containerSummary.Command), "Property is required for class ContainerSummary.");
-
-            if (containerSummary.PortsOption.IsSet && containerSummary.Ports == null)
-                throw new ArgumentNullException(nameof(containerSummary.Ports), "Property is required for class ContainerSummary.");
-
-            if (containerSummary.LabelsOption.IsSet && containerSummary.Labels == null)
-                throw new ArgumentNullException(nameof(containerSummary.Labels), "Property is required for class ContainerSummary.");
-
-            if (containerSummary.StatusOption.IsSet && containerSummary.Status == null)
-                throw new ArgumentNullException(nameof(containerSummary.Status), "Property is required for class ContainerSummary.");
-
-            if (containerSummary.HostConfigOption.IsSet && containerSummary.HostConfig == null)
-                throw new ArgumentNullException(nameof(containerSummary.HostConfig), "Property is required for class ContainerSummary.");
-
-            if (containerSummary.NetworkSettingsOption.IsSet && containerSummary.NetworkSettings == null)
-                throw new ArgumentNullException(nameof(containerSummary.NetworkSettings), "Property is required for class ContainerSummary.");
-
-            if (containerSummary.MountsOption.IsSet && containerSummary.Mounts == null)
-                throw new ArgumentNullException(nameof(containerSummary.Mounts), "Property is required for class ContainerSummary.");
-
-            if (containerSummary.IdOption.IsSet)
-                writer.WriteString("Id", containerSummary.Id);
-
-            if (containerSummary.NamesOption.IsSet)
-            {
-                writer.WritePropertyName("Names");
-                JsonSerializer.Serialize(writer, containerSummary.Names, jsonSerializerOptions);
-            }
-            if (containerSummary.ImageOption.IsSet)
-                writer.WriteString("Image", containerSummary.Image);
-
-            if (containerSummary.ImageIDOption.IsSet)
-                writer.WriteString("ImageID", containerSummary.ImageID);
-
-            if (containerSummary.ImageManifestDescriptorOption.IsSet)
-            {
-                writer.WritePropertyName("ImageManifestDescriptor");
-                JsonSerializer.Serialize(writer, containerSummary.ImageManifestDescriptor, jsonSerializerOptions);
-            }
-            if (containerSummary.CommandOption.IsSet)
-                writer.WriteString("Command", containerSummary.Command);
-
-            if (containerSummary.CreatedOption.IsSet)
-                writer.WriteNumber("Created", containerSummary.CreatedOption.Value!.Value);
-
-            if (containerSummary.PortsOption.IsSet)
-            {
-                writer.WritePropertyName("Ports");
-                JsonSerializer.Serialize(writer, containerSummary.Ports, jsonSerializerOptions);
-            }
-            if (containerSummary.SizeRwOption.IsSet)
-                if (containerSummary.SizeRwOption.Value != null)
-                    writer.WriteNumber("SizeRw", containerSummary.SizeRwOption.Value!.Value);
-                else
-                    writer.WriteNull("SizeRw");
-
-            if (containerSummary.SizeRootFsOption.IsSet)
-                if (containerSummary.SizeRootFsOption.Value != null)
-                    writer.WriteNumber("SizeRootFs", containerSummary.SizeRootFsOption.Value!.Value);
-                else
-                    writer.WriteNull("SizeRootFs");
-
-            if (containerSummary.LabelsOption.IsSet)
-            {
-                writer.WritePropertyName("Labels");
-                JsonSerializer.Serialize(writer, containerSummary.Labels, jsonSerializerOptions);
-            }
-            var stateRawValue = ContainerSummary.StateEnumToJsonValue(containerSummary.StateOption.Value!.Value);
-            writer.WriteString("State", stateRawValue);
-            if (containerSummary.StatusOption.IsSet)
-                writer.WriteString("Status", containerSummary.Status);
-
-            if (containerSummary.HostConfigOption.IsSet)
-            {
-                writer.WritePropertyName("HostConfig");
-                JsonSerializer.Serialize(writer, containerSummary.HostConfig, jsonSerializerOptions);
-            }
-            if (containerSummary.NetworkSettingsOption.IsSet)
-            {
-                writer.WritePropertyName("NetworkSettings");
-                JsonSerializer.Serialize(writer, containerSummary.NetworkSettings, jsonSerializerOptions);
-            }
-            if (containerSummary.MountsOption.IsSet)
-            {
-                writer.WritePropertyName("Mounts");
-                JsonSerializer.Serialize(writer, containerSummary.Mounts, jsonSerializerOptions);
-            }
         }
     }
 }

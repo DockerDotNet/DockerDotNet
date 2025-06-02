@@ -20,7 +20,7 @@ namespace DockerDotNet.API.Tests
         private readonly ITestOutputHelper _output;
         private readonly IContainerService _containerService;
 
-        string _containerID = "7733bfa5017ae064b390b3e9428e8dae21c0ffeaf90820c6a9d444fbfc0b08eb";
+        string _containerID = "67a9de123f68f8e7db1965813198aa2da7c0b36c96f9d94058e2295efe75bb47";
 
         public ContainerControllerTests(ITestOutputHelper testOutputHelper) : base(Array.Empty<string>())
         {
@@ -126,7 +126,7 @@ namespace DockerDotNet.API.Tests
             var result = response.Match(Left: null, Right: right => right);
             result.ShouldNotBeNull();
 
-            _output.WriteLine(JsonSerializer.Serialize(response));
+            _output.WriteLine(JsonSerializer.Serialize(result));
         }
 
         [Fact]

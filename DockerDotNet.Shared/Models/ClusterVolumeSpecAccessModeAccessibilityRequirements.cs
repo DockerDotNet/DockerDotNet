@@ -20,31 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// Requirements for the accessible topology of the volume. These fields are optional. For an in-depth description of what these fields mean, see the CSI specification. 
     /// </summary>
-    public partial class ClusterVolumeSpecAccessModeAccessibilityRequirements : IValidatableObject
+    public partial class ClusterVolumeSpecAccessModeAccessibilityRequirements
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ClusterVolumeSpecAccessModeAccessibilityRequirements" /> class.
-        /// </summary>
-        /// <param name="requisite">A list of required topologies, at least one of which the volume must be accessible from. </param>
-        /// <param name="preferred">A list of topologies that the volume should attempt to be provisioned in. </param>
-        [JsonConstructor]
-        public ClusterVolumeSpecAccessModeAccessibilityRequirements(Option<List<Dictionary<string, string>>?> requisite = default, Option<List<Dictionary<string, string>>?> preferred = default)
-        {
-            RequisiteOption = requisite;
-            PreferredOption = preferred;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Used to track the state of Requisite
         /// </summary>
@@ -85,122 +70,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  Preferred: ").Append(Preferred).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="ClusterVolumeSpecAccessModeAccessibilityRequirements" />
-    /// </summary>
-    public class ClusterVolumeSpecAccessModeAccessibilityRequirementsJsonConverter : JsonConverter<ClusterVolumeSpecAccessModeAccessibilityRequirements>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="ClusterVolumeSpecAccessModeAccessibilityRequirements" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override ClusterVolumeSpecAccessModeAccessibilityRequirements Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<List<Dictionary<string, string>>?> requisite = default;
-            Option<List<Dictionary<string, string>>?> preferred = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "Requisite":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                requisite = new Option<List<Dictionary<string, string>>?>(JsonSerializer.Deserialize<List<Dictionary<string, string>>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "Preferred":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                preferred = new Option<List<Dictionary<string, string>>?>(JsonSerializer.Deserialize<List<Dictionary<string, string>>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (requisite.IsSet && requisite.Value == null)
-                throw new ArgumentNullException(nameof(requisite), "Property is not nullable for class ClusterVolumeSpecAccessModeAccessibilityRequirements.");
-
-            if (preferred.IsSet && preferred.Value == null)
-                throw new ArgumentNullException(nameof(preferred), "Property is not nullable for class ClusterVolumeSpecAccessModeAccessibilityRequirements.");
-
-            return new ClusterVolumeSpecAccessModeAccessibilityRequirements(requisite, preferred);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="ClusterVolumeSpecAccessModeAccessibilityRequirements" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="clusterVolumeSpecAccessModeAccessibilityRequirements"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, ClusterVolumeSpecAccessModeAccessibilityRequirements clusterVolumeSpecAccessModeAccessibilityRequirements, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, clusterVolumeSpecAccessModeAccessibilityRequirements, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="ClusterVolumeSpecAccessModeAccessibilityRequirements" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="clusterVolumeSpecAccessModeAccessibilityRequirements"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, ClusterVolumeSpecAccessModeAccessibilityRequirements clusterVolumeSpecAccessModeAccessibilityRequirements, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (clusterVolumeSpecAccessModeAccessibilityRequirements.RequisiteOption.IsSet && clusterVolumeSpecAccessModeAccessibilityRequirements.Requisite == null)
-                throw new ArgumentNullException(nameof(clusterVolumeSpecAccessModeAccessibilityRequirements.Requisite), "Property is required for class ClusterVolumeSpecAccessModeAccessibilityRequirements.");
-
-            if (clusterVolumeSpecAccessModeAccessibilityRequirements.PreferredOption.IsSet && clusterVolumeSpecAccessModeAccessibilityRequirements.Preferred == null)
-                throw new ArgumentNullException(nameof(clusterVolumeSpecAccessModeAccessibilityRequirements.Preferred), "Property is required for class ClusterVolumeSpecAccessModeAccessibilityRequirements.");
-
-            if (clusterVolumeSpecAccessModeAccessibilityRequirements.RequisiteOption.IsSet)
-            {
-                writer.WritePropertyName("Requisite");
-                JsonSerializer.Serialize(writer, clusterVolumeSpecAccessModeAccessibilityRequirements.Requisite, jsonSerializerOptions);
-            }
-            if (clusterVolumeSpecAccessModeAccessibilityRequirements.PreferredOption.IsSet)
-            {
-                writer.WritePropertyName("Preferred");
-                JsonSerializer.Serialize(writer, clusterVolumeSpecAccessModeAccessibilityRequirements.Preferred, jsonSerializerOptions);
-            }
         }
     }
 }

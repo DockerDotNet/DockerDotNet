@@ -20,37 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// Describes the platform which the image in the manifest runs on, as defined in the [OCI Image Index Specification](https://github.com/opencontainers/image-spec/blob/v1.0.1/image-index.md). 
     /// </summary>
-    public partial class OCIPlatform : IValidatableObject
+    public partial class OCIPlatform
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="OCIPlatform" /> class.
-        /// </summary>
-        /// <param name="architecture">The CPU architecture, for example &#x60;amd64&#x60; or &#x60;ppc64&#x60;. </param>
-        /// <param name="os">The operating system, for example &#x60;linux&#x60; or &#x60;windows&#x60;. </param>
-        /// <param name="osVersion">Optional field specifying the operating system version, for example on Windows &#x60;10.0.19041.1165&#x60;. </param>
-        /// <param name="osFeatures">Optional field specifying an array of strings, each listing a required OS feature (for example on Windows &#x60;win32k&#x60;). </param>
-        /// <param name="variant">Optional field specifying a variant of the CPU, for example &#x60;v7&#x60; to specify ARMv7 when architecture is &#x60;arm&#x60;. </param>
-        [JsonConstructor]
-        public OCIPlatform(Option<string?> architecture = default, Option<string?> os = default, Option<string?> osVersion = default, Option<List<string>?> osFeatures = default, Option<string?> variant = default)
-        {
-            ArchitectureOption = architecture;
-            OsOption = os;
-            OsVersionOption = osVersion;
-            OsFeaturesOption = osFeatures;
-            VariantOption = variant;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Used to track the state of Architecture
         /// </summary>
@@ -141,157 +120,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  Variant: ").Append(Variant).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="OCIPlatform" />
-    /// </summary>
-    public class OCIPlatformJsonConverter : JsonConverter<OCIPlatform>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="OCIPlatform" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override OCIPlatform Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<string?> architecture = default;
-            Option<string?> os = default;
-            Option<string?> osVersion = default;
-            Option<List<string>?> osFeatures = default;
-            Option<string?> variant = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "architecture":
-                            architecture = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "os":
-                            os = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "os.version":
-                            osVersion = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "os.features":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                osFeatures = new Option<List<string>?>(JsonSerializer.Deserialize<List<string>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "variant":
-                            variant = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (architecture.IsSet && architecture.Value == null)
-                throw new ArgumentNullException(nameof(architecture), "Property is not nullable for class OCIPlatform.");
-
-            if (os.IsSet && os.Value == null)
-                throw new ArgumentNullException(nameof(os), "Property is not nullable for class OCIPlatform.");
-
-            if (osVersion.IsSet && osVersion.Value == null)
-                throw new ArgumentNullException(nameof(osVersion), "Property is not nullable for class OCIPlatform.");
-
-            if (osFeatures.IsSet && osFeatures.Value == null)
-                throw new ArgumentNullException(nameof(osFeatures), "Property is not nullable for class OCIPlatform.");
-
-            if (variant.IsSet && variant.Value == null)
-                throw new ArgumentNullException(nameof(variant), "Property is not nullable for class OCIPlatform.");
-
-            return new OCIPlatform(architecture, os, osVersion, osFeatures, variant);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="OCIPlatform" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="oCIPlatform"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, OCIPlatform oCIPlatform, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, oCIPlatform, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="OCIPlatform" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="oCIPlatform"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, OCIPlatform oCIPlatform, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (oCIPlatform.ArchitectureOption.IsSet && oCIPlatform.Architecture == null)
-                throw new ArgumentNullException(nameof(oCIPlatform.Architecture), "Property is required for class OCIPlatform.");
-
-            if (oCIPlatform.OsOption.IsSet && oCIPlatform.Os == null)
-                throw new ArgumentNullException(nameof(oCIPlatform.Os), "Property is required for class OCIPlatform.");
-
-            if (oCIPlatform.OsVersionOption.IsSet && oCIPlatform.OsVersion == null)
-                throw new ArgumentNullException(nameof(oCIPlatform.OsVersion), "Property is required for class OCIPlatform.");
-
-            if (oCIPlatform.OsFeaturesOption.IsSet && oCIPlatform.OsFeatures == null)
-                throw new ArgumentNullException(nameof(oCIPlatform.OsFeatures), "Property is required for class OCIPlatform.");
-
-            if (oCIPlatform.VariantOption.IsSet && oCIPlatform.Variant == null)
-                throw new ArgumentNullException(nameof(oCIPlatform.Variant), "Property is required for class OCIPlatform.");
-
-            if (oCIPlatform.ArchitectureOption.IsSet)
-                writer.WriteString("architecture", oCIPlatform.Architecture);
-
-            if (oCIPlatform.OsOption.IsSet)
-                writer.WriteString("os", oCIPlatform.Os);
-
-            if (oCIPlatform.OsVersionOption.IsSet)
-                writer.WriteString("os.version", oCIPlatform.OsVersion);
-
-            if (oCIPlatform.OsFeaturesOption.IsSet)
-            {
-                writer.WritePropertyName("os.features");
-                JsonSerializer.Serialize(writer, oCIPlatform.OsFeatures, jsonSerializerOptions);
-            }
-            if (oCIPlatform.VariantOption.IsSet)
-                writer.WriteString("variant", oCIPlatform.Variant);
         }
     }
 }

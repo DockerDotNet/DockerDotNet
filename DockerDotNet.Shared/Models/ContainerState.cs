@@ -20,51 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// ContainerState stores container&#39;s running state. It&#39;s part of ContainerJSONBase and will be returned by the \&quot;inspect\&quot; command. 
     /// </summary>
-    public partial class ContainerState : IValidatableObject
+    public partial class ContainerState
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ContainerState" /> class.
-        /// </summary>
-        /// <param name="status">String representation of the container state. Can be one of \&quot;created\&quot;, \&quot;running\&quot;, \&quot;paused\&quot;, \&quot;restarting\&quot;, \&quot;removing\&quot;, \&quot;exited\&quot;, or \&quot;dead\&quot;. </param>
-        /// <param name="running">Whether this container is running.  Note that a running container can be _paused_. The &#x60;Running&#x60; and &#x60;Paused&#x60; booleans are not mutually exclusive:  When pausing a container (on Linux), the freezer cgroup is used to suspend all processes in the container. Freezing the process requires the process to be running. As a result, paused containers are both &#x60;Running&#x60; _and_ &#x60;Paused&#x60;.  Use the &#x60;Status&#x60; field instead to determine if a container&#39;s state is \&quot;running\&quot;. </param>
-        /// <param name="paused">Whether this container is paused.</param>
-        /// <param name="restarting">Whether this container is restarting.</param>
-        /// <param name="oOMKilled">Whether a process within this container has been killed because it ran out of memory since the container was last started. </param>
-        /// <param name="dead">dead</param>
-        /// <param name="pid">The process ID of this container</param>
-        /// <param name="exitCode">The last exit code of this container</param>
-        /// <param name="error">error</param>
-        /// <param name="startedAt">The time when this container was last started.</param>
-        /// <param name="finishedAt">The time when this container last exited.</param>
-        /// <param name="health">health</param>
-        [JsonConstructor]
-        public ContainerState(Option<StatusEnum?> status = default, Option<bool?> running = default, Option<bool?> paused = default, Option<bool?> restarting = default, Option<bool?> oOMKilled = default, Option<bool?> dead = default, Option<int?> pid = default, Option<int?> exitCode = default, Option<string?> error = default, Option<string?> startedAt = default, Option<string?> finishedAt = default, Option<Health?> health = default)
-        {
-            StatusOption = status;
-            RunningOption = running;
-            PausedOption = paused;
-            RestartingOption = restarting;
-            OOMKilledOption = oOMKilled;
-            DeadOption = dead;
-            PidOption = pid;
-            ExitCodeOption = exitCode;
-            ErrorOption = error;
-            StartedAtOption = startedAt;
-            FinishedAtOption = finishedAt;
-            HealthOption = health;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// String representation of the container state. Can be one of \&quot;created\&quot;, \&quot;running\&quot;, \&quot;paused\&quot;, \&quot;restarting\&quot;, \&quot;removing\&quot;, \&quot;exited\&quot;, or \&quot;dead\&quot;. 
         /// </summary>
@@ -107,100 +72,92 @@ namespace DockerDotNet.Shared.Models
             Dead = 7
         }
 
-        /// <summary>
-        /// Returns a <see cref="StatusEnum"/>
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public static StatusEnum StatusEnumFromString(string value)
+/// <summary>
+/// A Json converter for type <see cref="StatusEnum"/>
+/// </summary>
+public class StatusEnumJsonConverter : JsonConverter<StatusEnum>
+{
+    public override StatusEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        string? enumString = reader.GetString();
+        return enumString switch
         {
-            if (value.Equals("created"))
-                return StatusEnum.Created;
+            "created" => StatusEnum.Created,
+            "running" => StatusEnum.Running,
+            "paused" => StatusEnum.Paused,
+            "restarting" => StatusEnum.Restarting,
+            "removing" => StatusEnum.Removing,
+            "exited" => StatusEnum.Exited,
+            "dead" => StatusEnum.Dead,
+            _ => throw new JsonException($"Unknown value: {enumString}")
+        };
+    }
 
-            if (value.Equals("running"))
-                return StatusEnum.Running;
-
-            if (value.Equals("paused"))
-                return StatusEnum.Paused;
-
-            if (value.Equals("restarting"))
-                return StatusEnum.Restarting;
-
-            if (value.Equals("removing"))
-                return StatusEnum.Removing;
-
-            if (value.Equals("exited"))
-                return StatusEnum.Exited;
-
-            if (value.Equals("dead"))
-                return StatusEnum.Dead;
-
-            throw new NotImplementedException($"Could not convert value to type StatusEnum: '{value}'");
-        }
-
-        /// <summary>
-        /// Returns a <see cref="StatusEnum"/>
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public static StatusEnum? StatusEnumFromStringOrDefault(string value)
+    public override void Write(Utf8JsonWriter writer, StatusEnum value, JsonSerializerOptions options)
+    {
+        string enumString = value switch
         {
-            if (value.Equals("created"))
-                return StatusEnum.Created;
+            StatusEnum.Created => "created",
+            StatusEnum.Running => "running",
+            StatusEnum.Paused => "paused",
+            StatusEnum.Restarting => "restarting",
+            StatusEnum.Removing => "removing",
+            StatusEnum.Exited => "exited",
+            StatusEnum.Dead => "dead",
+            _ => throw new JsonException($"Unknown value: {value}")
+        };
+        writer.WriteStringValue(enumString);
+    }
+}
 
-            if (value.Equals("running"))
-                return StatusEnum.Running;
-
-            if (value.Equals("paused"))
-                return StatusEnum.Paused;
-
-            if (value.Equals("restarting"))
-                return StatusEnum.Restarting;
-
-            if (value.Equals("removing"))
-                return StatusEnum.Removing;
-
-            if (value.Equals("exited"))
-                return StatusEnum.Exited;
-
-            if (value.Equals("dead"))
-                return StatusEnum.Dead;
-
+/// <summary>
+/// A Json converter for nullable <see cref="StatusEnum"/>
+/// </summary>
+public class StatusEnumNullableJsonConverter : JsonConverter<StatusEnum?>
+{
+    public override StatusEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        if (reader.TokenType == JsonTokenType.Null)
             return null;
-        }
 
-        /// <summary>
-        /// Converts the <see cref="StatusEnum"/> to the json value
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public static string StatusEnumToJsonValue(StatusEnum? value)
+        string? enumString = reader.GetString();
+
+        return enumString switch
         {
-            if (value == StatusEnum.Created)
-                return "created";
+            "created" => StatusEnum.Created,
+            "running" => StatusEnum.Running,
+            "paused" => StatusEnum.Paused,
+            "restarting" => StatusEnum.Restarting,
+            "removing" => StatusEnum.Removing,
+            "exited" => StatusEnum.Exited,
+            "dead" => StatusEnum.Dead,
+            _ => throw new JsonException($"Unknown value: {enumString}")
+        };
+    }
 
-            if (value == StatusEnum.Running)
-                return "running";
-
-            if (value == StatusEnum.Paused)
-                return "paused";
-
-            if (value == StatusEnum.Restarting)
-                return "restarting";
-
-            if (value == StatusEnum.Removing)
-                return "removing";
-
-            if (value == StatusEnum.Exited)
-                return "exited";
-
-            if (value == StatusEnum.Dead)
-                return "dead";
-
-            throw new NotImplementedException($"Value could not be handled: '{value}'");
+    public override void Write(Utf8JsonWriter writer, StatusEnum? value, JsonSerializerOptions options)
+    {
+        if (value == null)
+        {
+            writer.WriteNullValue();
+            return;
         }
+
+        string enumString = value.Value switch
+        {
+            StatusEnum.Created => "created",
+            StatusEnum.Running => "running",
+            StatusEnum.Paused => "paused",
+            StatusEnum.Restarting => "restarting",
+            StatusEnum.Removing => "removing",
+            StatusEnum.Exited => "exited",
+            StatusEnum.Dead => "dead",
+            _ => throw new JsonException($"Unknown value: {value}")
+        };
+
+        writer.WriteStringValue(enumString);
+    }
+}
 
         /// <summary>
         /// Used to track the state of Status
@@ -399,230 +356,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  Health: ").Append(Health).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="ContainerState" />
-    /// </summary>
-    public class ContainerStateJsonConverter : JsonConverter<ContainerState>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="ContainerState" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override ContainerState Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<ContainerState.StatusEnum?> status = default;
-            Option<bool?> running = default;
-            Option<bool?> paused = default;
-            Option<bool?> restarting = default;
-            Option<bool?> oOMKilled = default;
-            Option<bool?> dead = default;
-            Option<int?> pid = default;
-            Option<int?> exitCode = default;
-            Option<string?> error = default;
-            Option<string?> startedAt = default;
-            Option<string?> finishedAt = default;
-            Option<Health?> health = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "Status":
-                            string? statusRawValue = utf8JsonReader.GetString();
-                            if (statusRawValue != null)
-                                status = new Option<ContainerState.StatusEnum?>(ContainerState.StatusEnumFromStringOrDefault(statusRawValue));
-                            break;
-                        case "Running":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                running = new Option<bool?>(utf8JsonReader.GetBoolean());
-                            break;
-                        case "Paused":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                paused = new Option<bool?>(utf8JsonReader.GetBoolean());
-                            break;
-                        case "Restarting":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                restarting = new Option<bool?>(utf8JsonReader.GetBoolean());
-                            break;
-                        case "OOMKilled":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                oOMKilled = new Option<bool?>(utf8JsonReader.GetBoolean());
-                            break;
-                        case "Dead":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                dead = new Option<bool?>(utf8JsonReader.GetBoolean());
-                            break;
-                        case "Pid":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                pid = new Option<int?>(utf8JsonReader.GetInt32());
-                            break;
-                        case "ExitCode":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                exitCode = new Option<int?>(utf8JsonReader.GetInt32());
-                            break;
-                        case "Error":
-                            error = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "StartedAt":
-                            startedAt = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "FinishedAt":
-                            finishedAt = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "Health":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                health = new Option<Health?>(JsonSerializer.Deserialize<Health>(ref utf8JsonReader, jsonSerializerOptions));
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (status.IsSet && status.Value == null)
-                throw new ArgumentNullException(nameof(status), "Property is not nullable for class ContainerState.");
-
-            if (running.IsSet && running.Value == null)
-                throw new ArgumentNullException(nameof(running), "Property is not nullable for class ContainerState.");
-
-            if (paused.IsSet && paused.Value == null)
-                throw new ArgumentNullException(nameof(paused), "Property is not nullable for class ContainerState.");
-
-            if (restarting.IsSet && restarting.Value == null)
-                throw new ArgumentNullException(nameof(restarting), "Property is not nullable for class ContainerState.");
-
-            if (oOMKilled.IsSet && oOMKilled.Value == null)
-                throw new ArgumentNullException(nameof(oOMKilled), "Property is not nullable for class ContainerState.");
-
-            if (dead.IsSet && dead.Value == null)
-                throw new ArgumentNullException(nameof(dead), "Property is not nullable for class ContainerState.");
-
-            if (pid.IsSet && pid.Value == null)
-                throw new ArgumentNullException(nameof(pid), "Property is not nullable for class ContainerState.");
-
-            if (exitCode.IsSet && exitCode.Value == null)
-                throw new ArgumentNullException(nameof(exitCode), "Property is not nullable for class ContainerState.");
-
-            if (error.IsSet && error.Value == null)
-                throw new ArgumentNullException(nameof(error), "Property is not nullable for class ContainerState.");
-
-            if (startedAt.IsSet && startedAt.Value == null)
-                throw new ArgumentNullException(nameof(startedAt), "Property is not nullable for class ContainerState.");
-
-            if (finishedAt.IsSet && finishedAt.Value == null)
-                throw new ArgumentNullException(nameof(finishedAt), "Property is not nullable for class ContainerState.");
-
-            return new ContainerState(status, running, paused, restarting, oOMKilled, dead, pid, exitCode, error, startedAt, finishedAt, health);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="ContainerState" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="containerState"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, ContainerState containerState, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, containerState, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="ContainerState" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="containerState"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, ContainerState containerState, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (containerState.ErrorOption.IsSet && containerState.Error == null)
-                throw new ArgumentNullException(nameof(containerState.Error), "Property is required for class ContainerState.");
-
-            if (containerState.StartedAtOption.IsSet && containerState.StartedAt == null)
-                throw new ArgumentNullException(nameof(containerState.StartedAt), "Property is required for class ContainerState.");
-
-            if (containerState.FinishedAtOption.IsSet && containerState.FinishedAt == null)
-                throw new ArgumentNullException(nameof(containerState.FinishedAt), "Property is required for class ContainerState.");
-
-            var statusRawValue = ContainerState.StatusEnumToJsonValue(containerState.StatusOption.Value!.Value);
-            writer.WriteString("Status", statusRawValue);
-            if (containerState.RunningOption.IsSet)
-                writer.WriteBoolean("Running", containerState.RunningOption.Value!.Value);
-
-            if (containerState.PausedOption.IsSet)
-                writer.WriteBoolean("Paused", containerState.PausedOption.Value!.Value);
-
-            if (containerState.RestartingOption.IsSet)
-                writer.WriteBoolean("Restarting", containerState.RestartingOption.Value!.Value);
-
-            if (containerState.OOMKilledOption.IsSet)
-                writer.WriteBoolean("OOMKilled", containerState.OOMKilledOption.Value!.Value);
-
-            if (containerState.DeadOption.IsSet)
-                writer.WriteBoolean("Dead", containerState.DeadOption.Value!.Value);
-
-            if (containerState.PidOption.IsSet)
-                writer.WriteNumber("Pid", containerState.PidOption.Value!.Value);
-
-            if (containerState.ExitCodeOption.IsSet)
-                writer.WriteNumber("ExitCode", containerState.ExitCodeOption.Value!.Value);
-
-            if (containerState.ErrorOption.IsSet)
-                writer.WriteString("Error", containerState.Error);
-
-            if (containerState.StartedAtOption.IsSet)
-                writer.WriteString("StartedAt", containerState.StartedAt);
-
-            if (containerState.FinishedAtOption.IsSet)
-                writer.WriteString("FinishedAt", containerState.FinishedAt);
-
-            if (containerState.HealthOption.IsSet)
-                if (containerState.HealthOption.Value != null)
-                {
-                    writer.WritePropertyName("Health");
-                    JsonSerializer.Serialize(writer, containerState.Health, jsonSerializerOptions);
-                }
-                else
-                    writer.WriteNull("Health");
         }
     }
 }

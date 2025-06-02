@@ -20,31 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// SystemAuthResponse
     /// </summary>
-    public partial class SystemAuthResponse : IValidatableObject
+    public partial class SystemAuthResponse
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SystemAuthResponse" /> class.
-        /// </summary>
-        /// <param name="status">The status of the authentication</param>
-        /// <param name="identityToken">An opaque token used to authenticate a user after a successful login</param>
-        [JsonConstructor]
-        public SystemAuthResponse(string status, Option<string?> identityToken = default)
-        {
-            Status = status;
-            IdentityTokenOption = identityToken;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// The status of the authentication
         /// </summary>
@@ -78,117 +63,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  IdentityToken: ").Append(IdentityToken).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="SystemAuthResponse" />
-    /// </summary>
-    public class SystemAuthResponseJsonConverter : JsonConverter<SystemAuthResponse>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="SystemAuthResponse" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override SystemAuthResponse Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<string?> status = default;
-            Option<string?> identityToken = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "Status":
-                            status = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "IdentityToken":
-                            identityToken = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (!status.IsSet)
-                throw new ArgumentException("Property is required for class SystemAuthResponse.", nameof(status));
-
-            if (status.IsSet && status.Value == null)
-                throw new ArgumentNullException(nameof(status), "Property is not nullable for class SystemAuthResponse.");
-
-            if (identityToken.IsSet && identityToken.Value == null)
-                throw new ArgumentNullException(nameof(identityToken), "Property is not nullable for class SystemAuthResponse.");
-
-            return new SystemAuthResponse(status.Value!, identityToken);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="SystemAuthResponse" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="systemAuthResponse"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, SystemAuthResponse systemAuthResponse, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, systemAuthResponse, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="SystemAuthResponse" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="systemAuthResponse"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, SystemAuthResponse systemAuthResponse, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (systemAuthResponse.Status == null)
-                throw new ArgumentNullException(nameof(systemAuthResponse.Status), "Property is required for class SystemAuthResponse.");
-
-            if (systemAuthResponse.IdentityTokenOption.IsSet && systemAuthResponse.IdentityToken == null)
-                throw new ArgumentNullException(nameof(systemAuthResponse.IdentityToken), "Property is required for class SystemAuthResponse.");
-
-            writer.WriteString("Status", systemAuthResponse.Status);
-
-            if (systemAuthResponse.IdentityTokenOption.IsSet)
-                writer.WriteString("IdentityToken", systemAuthResponse.IdentityToken);
         }
     }
 }

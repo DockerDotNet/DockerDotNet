@@ -20,36 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// ExecStartConfig
     /// </summary>
-    public partial class ExecStartConfig : IValidatableObject
+    public partial class ExecStartConfig
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ExecStartConfig" /> class.
-        /// </summary>
-        /// <param name="detach">Detach from the command.</param>
-        /// <param name="tty">Allocate a pseudo-TTY.</param>
-        public ExecStartConfig(Option<bool?> detach = default, Option<bool?> tty = default, Option<List<int>?> consoleSize = default)
-        {
-            DetachOption = detach;
-            TtyOption = tty;
-            ConsoleSizeOption = consoleSize;
-            OnCreated();
-        }
-
-        [JsonConstructor]
-        public ExecStartConfig()
-        {
-
-        }
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Used to track the state of Detach
         /// </summary>
@@ -93,7 +73,6 @@ namespace DockerDotNet.Shared.Models
         /// <value>Initial console size, as an &#x60;[height, width]&#x60; array.</value>
         /* <example>[80, 64]</example> */
         [JsonPropertyName("ConsoleSize")]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public List<int>? ConsoleSize { get { return this.ConsoleSizeOption; } set { this.ConsoleSizeOption = new(value); } }
 
         /// <summary>
@@ -109,125 +88,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  ConsoleSize: ").Append(ConsoleSize).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="ExecStartConfig" />
-    /// </summary>
-    public class ExecStartConfigJsonConverter : JsonConverter<ExecStartConfig>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="ExecStartConfig" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override ExecStartConfig Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<bool?> detach = default;
-            Option<bool?> tty = default;
-            Option<List<int>?> consoleSize = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "Detach":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                detach = new Option<bool?>(utf8JsonReader.GetBoolean());
-                            break;
-                        case "Tty":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                tty = new Option<bool?>(utf8JsonReader.GetBoolean());
-                            break;
-                        case "ConsoleSize":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                consoleSize = new Option<List<int>?>(JsonSerializer.Deserialize<List<int>>(ref utf8JsonReader, jsonSerializerOptions));
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (detach.IsSet && detach.Value == null)
-                throw new ArgumentNullException(nameof(detach), "Property is not nullable for class ExecStartConfig.");
-
-            if (tty.IsSet && tty.Value == null)
-                throw new ArgumentNullException(nameof(tty), "Property is not nullable for class ExecStartConfig.");
-
-            return new ExecStartConfig(detach, tty, consoleSize);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="ExecStartConfig" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="execStartConfig"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, ExecStartConfig execStartConfig, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, execStartConfig, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="ExecStartConfig" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="execStartConfig"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, ExecStartConfig execStartConfig, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (execStartConfig.DetachOption.IsSet)
-                writer.WriteBoolean("Detach", execStartConfig.DetachOption.Value!.Value);
-
-            if (execStartConfig.TtyOption.IsSet)
-                writer.WriteBoolean("Tty", execStartConfig.TtyOption.Value!.Value);
-
-            if (execStartConfig.ConsoleSizeOption.IsSet)
-                if (execStartConfig.ConsoleSizeOption.Value != null)
-                {
-                    writer.WritePropertyName("ConsoleSize");
-                    JsonSerializer.Serialize(writer, execStartConfig.ConsoleSize, jsonSerializerOptions);
-                }
-                else
-                    writer.WriteNull("ConsoleSize");
         }
     }
 }

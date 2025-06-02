@@ -20,33 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// Optional configuration for the &#x60;tmpfs&#x60; type.
     /// </summary>
-    public partial class MountTmpfsOptions : IValidatableObject
+    public partial class MountTmpfsOptions
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MountTmpfsOptions" /> class.
-        /// </summary>
-        /// <param name="sizeBytes">The size for the tmpfs mount in bytes.</param>
-        /// <param name="mode">The permission mode for the tmpfs mount in an integer.</param>
-        /// <param name="options">The options to be passed to the tmpfs mount. An array of arrays. Flag options should be provided as 1-length arrays. Other types should be provided as as 2-length arrays, where the first item is the key and the second the value. </param>
-        [JsonConstructor]
-        public MountTmpfsOptions(Option<long?> sizeBytes = default, Option<int?> mode = default, Option<List<List<string>>?> options = default)
-        {
-            SizeBytesOption = sizeBytes;
-            ModeOption = mode;
-            OptionsOption = options;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Used to track the state of SizeBytes
         /// </summary>
@@ -103,128 +86,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  Options: ").Append(Options).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="MountTmpfsOptions" />
-    /// </summary>
-    public class MountTmpfsOptionsJsonConverter : JsonConverter<MountTmpfsOptions>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="MountTmpfsOptions" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override MountTmpfsOptions Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<long?> sizeBytes = default;
-            Option<int?> mode = default;
-            Option<List<List<string>>?> options = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "SizeBytes":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                sizeBytes = new Option<long?>(utf8JsonReader.GetInt64());
-                            break;
-                        case "Mode":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                mode = new Option<int?>(utf8JsonReader.GetInt32());
-                            break;
-                        case "Options":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                options = new Option<List<List<string>>?>(JsonSerializer.Deserialize<List<List<string>>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (sizeBytes.IsSet && sizeBytes.Value == null)
-                throw new ArgumentNullException(nameof(sizeBytes), "Property is not nullable for class MountTmpfsOptions.");
-
-            if (mode.IsSet && mode.Value == null)
-                throw new ArgumentNullException(nameof(mode), "Property is not nullable for class MountTmpfsOptions.");
-
-            if (options.IsSet && options.Value == null)
-                throw new ArgumentNullException(nameof(options), "Property is not nullable for class MountTmpfsOptions.");
-
-            return new MountTmpfsOptions(sizeBytes, mode, options);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="MountTmpfsOptions" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="mountTmpfsOptions"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, MountTmpfsOptions mountTmpfsOptions, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, mountTmpfsOptions, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="MountTmpfsOptions" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="mountTmpfsOptions"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, MountTmpfsOptions mountTmpfsOptions, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (mountTmpfsOptions.OptionsOption.IsSet && mountTmpfsOptions.Options == null)
-                throw new ArgumentNullException(nameof(mountTmpfsOptions.Options), "Property is required for class MountTmpfsOptions.");
-
-            if (mountTmpfsOptions.SizeBytesOption.IsSet)
-                writer.WriteNumber("SizeBytes", mountTmpfsOptions.SizeBytesOption.Value!.Value);
-
-            if (mountTmpfsOptions.ModeOption.IsSet)
-                writer.WriteNumber("Mode", mountTmpfsOptions.ModeOption.Value!.Value);
-
-            if (mountTmpfsOptions.OptionsOption.IsSet)
-            {
-                writer.WritePropertyName("Options");
-                JsonSerializer.Serialize(writer, mountTmpfsOptions.Options, jsonSerializerOptions);
-            }
         }
     }
 }

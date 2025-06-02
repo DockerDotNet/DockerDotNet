@@ -20,31 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// NetworkConnectRequest
     /// </summary>
-    public partial class NetworkConnectRequest : IValidatableObject
+    public partial class NetworkConnectRequest
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NetworkConnectRequest" /> class.
-        /// </summary>
-        /// <param name="container">The ID or name of the container to connect to the network.</param>
-        /// <param name="endpointConfig">endpointConfig</param>
-        [JsonConstructor]
-        public NetworkConnectRequest(Option<string?> container = default, Option<EndpointSettings?> endpointConfig = default)
-        {
-            ContainerOption = container;
-            EndpointConfigOption = endpointConfig;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Used to track the state of Container
         /// </summary>
@@ -84,119 +69,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  EndpointConfig: ").Append(EndpointConfig).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="NetworkConnectRequest" />
-    /// </summary>
-    public class NetworkConnectRequestJsonConverter : JsonConverter<NetworkConnectRequest>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="NetworkConnectRequest" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override NetworkConnectRequest Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<string?> container = default;
-            Option<EndpointSettings?> endpointConfig = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "Container":
-                            container = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "EndpointConfig":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                endpointConfig = new Option<EndpointSettings?>(JsonSerializer.Deserialize<EndpointSettings>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (container.IsSet && container.Value == null)
-                throw new ArgumentNullException(nameof(container), "Property is not nullable for class NetworkConnectRequest.");
-
-            if (endpointConfig.IsSet && endpointConfig.Value == null)
-                throw new ArgumentNullException(nameof(endpointConfig), "Property is not nullable for class NetworkConnectRequest.");
-
-            return new NetworkConnectRequest(container, endpointConfig);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="NetworkConnectRequest" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="networkConnectRequest"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, NetworkConnectRequest networkConnectRequest, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, networkConnectRequest, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="NetworkConnectRequest" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="networkConnectRequest"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, NetworkConnectRequest networkConnectRequest, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (networkConnectRequest.ContainerOption.IsSet && networkConnectRequest.Container == null)
-                throw new ArgumentNullException(nameof(networkConnectRequest.Container), "Property is required for class NetworkConnectRequest.");
-
-            if (networkConnectRequest.EndpointConfigOption.IsSet && networkConnectRequest.EndpointConfig == null)
-                throw new ArgumentNullException(nameof(networkConnectRequest.EndpointConfig), "Property is required for class NetworkConnectRequest.");
-
-            if (networkConnectRequest.ContainerOption.IsSet)
-                writer.WriteString("Container", networkConnectRequest.Container);
-
-            if (networkConnectRequest.EndpointConfigOption.IsSet)
-            {
-                writer.WritePropertyName("EndpointConfig");
-                JsonSerializer.Serialize(writer, networkConnectRequest.EndpointConfig, jsonSerializerOptions);
-            }
         }
     }
 }

@@ -20,41 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// ImageManifestSummary represents a summary of an image manifest. 
     /// </summary>
-    public partial class ImageManifestSummary : IValidatableObject
+    public partial class ImageManifestSummary
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ImageManifestSummary" /> class.
-        /// </summary>
-        /// <param name="iD">ID is the content-addressable ID of an image and is the same as the digest of the image manifest. </param>
-        /// <param name="descriptor">descriptor</param>
-        /// <param name="available">Indicates whether all the child content (image config, layers) is fully available locally.</param>
-        /// <param name="size">size</param>
-        /// <param name="kind">The kind of the manifest.  kind         | description - -- -- -- -- -- --|- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- image        | Image manifest that can be used to start a container. attestation  | Attestation manifest produced by the Buildkit builder for a specific image manifest. </param>
-        /// <param name="imageData">imageData</param>
-        /// <param name="attestationData">attestationData</param>
-        [JsonConstructor]
-        public ImageManifestSummary(string iD, OCIDescriptor descriptor, bool available, ImageManifestSummarySize size, KindEnum kind, Option<ImageManifestSummaryImageData?> imageData = default, Option<ImageManifestSummaryAttestationData?> attestationData = default)
-        {
-            ID = iD;
-            Descriptor = descriptor;
-            Available = available;
-            Size = size;
-            Kind = kind;
-            ImageDataOption = imageData;
-            AttestationDataOption = attestationData;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// The kind of the manifest.  kind         | description - -- -- -- -- -- --|- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- image        | Image manifest that can be used to start a container. attestation  | Attestation manifest produced by the Buildkit builder for a specific image manifest. 
         /// </summary>
@@ -77,64 +52,76 @@ namespace DockerDotNet.Shared.Models
             Unknown = 3
         }
 
-        /// <summary>
-        /// Returns a <see cref="KindEnum"/>
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public static KindEnum KindEnumFromString(string value)
+/// <summary>
+/// A Json converter for type <see cref="KindEnum"/>
+/// </summary>
+public class KindEnumJsonConverter : JsonConverter<KindEnum>
+{
+    public override KindEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        string? enumString = reader.GetString();
+        return enumString switch
         {
-            if (value.Equals("image"))
-                return KindEnum.Image;
+            "image" => KindEnum.Image,
+            "attestation" => KindEnum.Attestation,
+            "unknown" => KindEnum.Unknown,
+            _ => throw new JsonException($"Unknown value: {enumString}")
+        };
+    }
 
-            if (value.Equals("attestation"))
-                return KindEnum.Attestation;
-
-            if (value.Equals("unknown"))
-                return KindEnum.Unknown;
-
-            throw new NotImplementedException($"Could not convert value to type KindEnum: '{value}'");
-        }
-
-        /// <summary>
-        /// Returns a <see cref="KindEnum"/>
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public static KindEnum? KindEnumFromStringOrDefault(string value)
+    public override void Write(Utf8JsonWriter writer, KindEnum value, JsonSerializerOptions options)
+    {
+        string enumString = value switch
         {
-            if (value.Equals("image"))
-                return KindEnum.Image;
+            KindEnum.Image => "image",
+            KindEnum.Attestation => "attestation",
+            KindEnum.Unknown => "unknown",
+            _ => throw new JsonException($"Unknown value: {value}")
+        };
+        writer.WriteStringValue(enumString);
+    }
+}
 
-            if (value.Equals("attestation"))
-                return KindEnum.Attestation;
-
-            if (value.Equals("unknown"))
-                return KindEnum.Unknown;
-
+/// <summary>
+/// A Json converter for nullable <see cref="KindEnum"/>
+/// </summary>
+public class KindEnumNullableJsonConverter : JsonConverter<KindEnum?>
+{
+    public override KindEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        if (reader.TokenType == JsonTokenType.Null)
             return null;
-        }
 
-        /// <summary>
-        /// Converts the <see cref="KindEnum"/> to the json value
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public static string KindEnumToJsonValue(KindEnum value)
+        string? enumString = reader.GetString();
+
+        return enumString switch
         {
-            if (value == KindEnum.Image)
-                return "image";
+            "image" => KindEnum.Image,
+            "attestation" => KindEnum.Attestation,
+            "unknown" => KindEnum.Unknown,
+            _ => throw new JsonException($"Unknown value: {enumString}")
+        };
+    }
 
-            if (value == KindEnum.Attestation)
-                return "attestation";
-
-            if (value == KindEnum.Unknown)
-                return "unknown";
-
-            throw new NotImplementedException($"Value could not be handled: '{value}'");
+    public override void Write(Utf8JsonWriter writer, KindEnum? value, JsonSerializerOptions options)
+    {
+        if (value == null)
+        {
+            writer.WriteNullValue();
+            return;
         }
+
+        string enumString = value.Value switch
+        {
+            KindEnum.Image => "image",
+            KindEnum.Attestation => "attestation",
+            KindEnum.Unknown => "unknown",
+            _ => throw new JsonException($"Unknown value: {value}")
+        };
+
+        writer.WriteStringValue(enumString);
+    }
+}
 
         /// <summary>
         /// The kind of the manifest.  kind         | description - -- -- -- -- -- --|- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- image        | Image manifest that can be used to start a container. attestation  | Attestation manifest produced by the Buildkit builder for a specific image manifest. 
@@ -215,190 +202,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  AttestationData: ").Append(AttestationData).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="ImageManifestSummary" />
-    /// </summary>
-    public class ImageManifestSummaryJsonConverter : JsonConverter<ImageManifestSummary>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="ImageManifestSummary" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override ImageManifestSummary Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<string?> iD = default;
-            Option<OCIDescriptor?> descriptor = default;
-            Option<bool?> available = default;
-            Option<ImageManifestSummarySize?> size = default;
-            Option<ImageManifestSummary.KindEnum?> kind = default;
-            Option<ImageManifestSummaryImageData?> imageData = default;
-            Option<ImageManifestSummaryAttestationData?> attestationData = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "ID":
-                            iD = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "Descriptor":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                descriptor = new Option<OCIDescriptor?>(JsonSerializer.Deserialize<OCIDescriptor>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "Available":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                available = new Option<bool?>(utf8JsonReader.GetBoolean());
-                            break;
-                        case "Size":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                size = new Option<ImageManifestSummarySize?>(JsonSerializer.Deserialize<ImageManifestSummarySize>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "Kind":
-                            string? kindRawValue = utf8JsonReader.GetString();
-                            if (kindRawValue != null)
-                                kind = new Option<ImageManifestSummary.KindEnum?>(ImageManifestSummary.KindEnumFromStringOrDefault(kindRawValue));
-                            break;
-                        case "ImageData":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                imageData = new Option<ImageManifestSummaryImageData?>(JsonSerializer.Deserialize<ImageManifestSummaryImageData>(ref utf8JsonReader, jsonSerializerOptions));
-                            break;
-                        case "AttestationData":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                attestationData = new Option<ImageManifestSummaryAttestationData?>(JsonSerializer.Deserialize<ImageManifestSummaryAttestationData>(ref utf8JsonReader, jsonSerializerOptions));
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (!iD.IsSet)
-                throw new ArgumentException("Property is required for class ImageManifestSummary.", nameof(iD));
-
-            if (!descriptor.IsSet)
-                throw new ArgumentException("Property is required for class ImageManifestSummary.", nameof(descriptor));
-
-            if (!available.IsSet)
-                throw new ArgumentException("Property is required for class ImageManifestSummary.", nameof(available));
-
-            if (!size.IsSet)
-                throw new ArgumentException("Property is required for class ImageManifestSummary.", nameof(size));
-
-            if (!kind.IsSet)
-                throw new ArgumentException("Property is required for class ImageManifestSummary.", nameof(kind));
-
-            if (iD.IsSet && iD.Value == null)
-                throw new ArgumentNullException(nameof(iD), "Property is not nullable for class ImageManifestSummary.");
-
-            if (descriptor.IsSet && descriptor.Value == null)
-                throw new ArgumentNullException(nameof(descriptor), "Property is not nullable for class ImageManifestSummary.");
-
-            if (available.IsSet && available.Value == null)
-                throw new ArgumentNullException(nameof(available), "Property is not nullable for class ImageManifestSummary.");
-
-            if (size.IsSet && size.Value == null)
-                throw new ArgumentNullException(nameof(size), "Property is not nullable for class ImageManifestSummary.");
-
-            if (kind.IsSet && kind.Value == null)
-                throw new ArgumentNullException(nameof(kind), "Property is not nullable for class ImageManifestSummary.");
-
-            return new ImageManifestSummary(iD.Value!, descriptor.Value!, available.Value!.Value!, size.Value!, kind.Value!.Value!, imageData, attestationData);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="ImageManifestSummary" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="imageManifestSummary"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, ImageManifestSummary imageManifestSummary, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, imageManifestSummary, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="ImageManifestSummary" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="imageManifestSummary"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, ImageManifestSummary imageManifestSummary, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (imageManifestSummary.ID == null)
-                throw new ArgumentNullException(nameof(imageManifestSummary.ID), "Property is required for class ImageManifestSummary.");
-
-            if (imageManifestSummary.Descriptor == null)
-                throw new ArgumentNullException(nameof(imageManifestSummary.Descriptor), "Property is required for class ImageManifestSummary.");
-
-            if (imageManifestSummary.Size == null)
-                throw new ArgumentNullException(nameof(imageManifestSummary.Size), "Property is required for class ImageManifestSummary.");
-
-            writer.WriteString("ID", imageManifestSummary.ID);
-
-            writer.WritePropertyName("Descriptor");
-            JsonSerializer.Serialize(writer, imageManifestSummary.Descriptor, jsonSerializerOptions);
-            writer.WriteBoolean("Available", imageManifestSummary.Available);
-
-            writer.WritePropertyName("Size");
-            JsonSerializer.Serialize(writer, imageManifestSummary.Size, jsonSerializerOptions);
-            var kindRawValue = ImageManifestSummary.KindEnumToJsonValue(imageManifestSummary.Kind);
-            writer.WriteString("Kind", kindRawValue);
-            if (imageManifestSummary.ImageDataOption.IsSet)
-                if (imageManifestSummary.ImageDataOption.Value != null)
-                {
-                    writer.WritePropertyName("ImageData");
-                    JsonSerializer.Serialize(writer, imageManifestSummary.ImageData, jsonSerializerOptions);
-                }
-                else
-                    writer.WriteNull("ImageData");
-            if (imageManifestSummary.AttestationDataOption.IsSet)
-                if (imageManifestSummary.AttestationDataOption.Value != null)
-                {
-                    writer.WritePropertyName("AttestationData");
-                    JsonSerializer.Serialize(writer, imageManifestSummary.AttestationData, jsonSerializerOptions);
-                }
-                else
-                    writer.WriteNull("AttestationData");
         }
     }
 }

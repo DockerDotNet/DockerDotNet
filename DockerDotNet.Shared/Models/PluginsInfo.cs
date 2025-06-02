@@ -20,35 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// Available plugins per type.  &lt;p&gt;&lt;br /&gt;&lt;/p&gt;  &gt; **Note**: Only unmanaged (V1) plugins are included in this list. &gt; V1 plugins are \&quot;lazily\&quot; loaded, and are not returned in this list &gt; if there is no resource using the plugin. 
     /// </summary>
-    public partial class PluginsInfo : IValidatableObject
+    public partial class PluginsInfo
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PluginsInfo" /> class.
-        /// </summary>
-        /// <param name="volume">Names of available volume-drivers, and network-driver plugins.</param>
-        /// <param name="network">Names of available network-drivers, and network-driver plugins.</param>
-        /// <param name="authorization">Names of available authorization plugins.</param>
-        /// <param name="log">Names of available logging-drivers, and logging-driver plugins.</param>
-        [JsonConstructor]
-        public PluginsInfo(Option<List<string>?> volume = default, Option<List<string>?> network = default, Option<List<string>?> authorization = default, Option<List<string>?> log = default)
-        {
-            VolumeOption = volume;
-            NetworkOption = network;
-            AuthorizationOption = authorization;
-            LogOption = log;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Used to track the state of Volume
         /// </summary>
@@ -123,154 +104,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  Log: ").Append(Log).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="PluginsInfo" />
-    /// </summary>
-    public class PluginsInfoJsonConverter : JsonConverter<PluginsInfo>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="PluginsInfo" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override PluginsInfo Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<List<string>?> volume = default;
-            Option<List<string>?> network = default;
-            Option<List<string>?> authorization = default;
-            Option<List<string>?> log = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "Volume":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                volume = new Option<List<string>?>(JsonSerializer.Deserialize<List<string>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "Network":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                network = new Option<List<string>?>(JsonSerializer.Deserialize<List<string>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "Authorization":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                authorization = new Option<List<string>?>(JsonSerializer.Deserialize<List<string>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "Log":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                log = new Option<List<string>?>(JsonSerializer.Deserialize<List<string>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (volume.IsSet && volume.Value == null)
-                throw new ArgumentNullException(nameof(volume), "Property is not nullable for class PluginsInfo.");
-
-            if (network.IsSet && network.Value == null)
-                throw new ArgumentNullException(nameof(network), "Property is not nullable for class PluginsInfo.");
-
-            if (authorization.IsSet && authorization.Value == null)
-                throw new ArgumentNullException(nameof(authorization), "Property is not nullable for class PluginsInfo.");
-
-            if (log.IsSet && log.Value == null)
-                throw new ArgumentNullException(nameof(log), "Property is not nullable for class PluginsInfo.");
-
-            return new PluginsInfo(volume, network, authorization, log);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="PluginsInfo" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="pluginsInfo"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, PluginsInfo pluginsInfo, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, pluginsInfo, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="PluginsInfo" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="pluginsInfo"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, PluginsInfo pluginsInfo, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (pluginsInfo.VolumeOption.IsSet && pluginsInfo.Volume == null)
-                throw new ArgumentNullException(nameof(pluginsInfo.Volume), "Property is required for class PluginsInfo.");
-
-            if (pluginsInfo.NetworkOption.IsSet && pluginsInfo.Network == null)
-                throw new ArgumentNullException(nameof(pluginsInfo.Network), "Property is required for class PluginsInfo.");
-
-            if (pluginsInfo.AuthorizationOption.IsSet && pluginsInfo.Authorization == null)
-                throw new ArgumentNullException(nameof(pluginsInfo.Authorization), "Property is required for class PluginsInfo.");
-
-            if (pluginsInfo.LogOption.IsSet && pluginsInfo.Log == null)
-                throw new ArgumentNullException(nameof(pluginsInfo.Log), "Property is required for class PluginsInfo.");
-
-            if (pluginsInfo.VolumeOption.IsSet)
-            {
-                writer.WritePropertyName("Volume");
-                JsonSerializer.Serialize(writer, pluginsInfo.Volume, jsonSerializerOptions);
-            }
-            if (pluginsInfo.NetworkOption.IsSet)
-            {
-                writer.WritePropertyName("Network");
-                JsonSerializer.Serialize(writer, pluginsInfo.Network, jsonSerializerOptions);
-            }
-            if (pluginsInfo.AuthorizationOption.IsSet)
-            {
-                writer.WritePropertyName("Authorization");
-                JsonSerializer.Serialize(writer, pluginsInfo.Authorization, jsonSerializerOptions);
-            }
-            if (pluginsInfo.LogOption.IsSet)
-            {
-                writer.WritePropertyName("Log");
-                JsonSerializer.Serialize(writer, pluginsInfo.Log, jsonSerializerOptions);
-            }
         }
     }
 }

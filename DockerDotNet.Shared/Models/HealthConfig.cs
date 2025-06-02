@@ -20,39 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// A test to perform to check that the container is healthy.
     /// </summary>
-    public partial class HealthConfig : IValidatableObject
+    public partial class HealthConfig
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="HealthConfig" /> class.
-        /// </summary>
-        /// <param name="test">The test to perform. Possible values are:  - &#x60;[]&#x60; inherit healthcheck from image or parent image - &#x60;[\&quot;NONE\&quot;]&#x60; disable healthcheck - &#x60;[\&quot;CMD\&quot;, args...]&#x60; exec arguments directly - &#x60;[\&quot;CMD-SHELL\&quot;, command]&#x60; run command with system&#39;s default shell </param>
-        /// <param name="interval">The time to wait between checks in nanoseconds. It should be 0 or at least 1000000 (1 ms). 0 means inherit. </param>
-        /// <param name="timeout">The time to wait before considering the check to have hung. It should be 0 or at least 1000000 (1 ms). 0 means inherit. </param>
-        /// <param name="retries">The number of consecutive failures needed to consider a container as unhealthy. 0 means inherit. </param>
-        /// <param name="startPeriod">Start period for the container to initialize before starting health-retries countdown in nanoseconds. It should be 0 or at least 1000000 (1 ms). 0 means inherit. </param>
-        /// <param name="startInterval">The time to wait between checks in nanoseconds during the start period. It should be 0 or at least 1000000 (1 ms). 0 means inherit. </param>
-        [JsonConstructor]
-        public HealthConfig(Option<List<string>?> test = default, Option<long?> interval = default, Option<long?> timeout = default, Option<int?> retries = default, Option<long?> startPeriod = default, Option<long?> startInterval = default)
-        {
-            TestOption = test;
-            IntervalOption = interval;
-            TimeoutOption = timeout;
-            RetriesOption = retries;
-            StartPeriodOption = startPeriod;
-            StartIntervalOption = startInterval;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Used to track the state of Test
         /// </summary>
@@ -153,160 +130,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  StartInterval: ").Append(StartInterval).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="HealthConfig" />
-    /// </summary>
-    public class HealthConfigJsonConverter : JsonConverter<HealthConfig>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="HealthConfig" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override HealthConfig Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<List<string>?> test = default;
-            Option<long?> interval = default;
-            Option<long?> timeout = default;
-            Option<int?> retries = default;
-            Option<long?> startPeriod = default;
-            Option<long?> startInterval = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "Test":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                test = new Option<List<string>?>(JsonSerializer.Deserialize<List<string>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "Interval":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                interval = new Option<long?>(utf8JsonReader.GetInt64());
-                            break;
-                        case "Timeout":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                timeout = new Option<long?>(utf8JsonReader.GetInt64());
-                            break;
-                        case "Retries":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                retries = new Option<int?>(utf8JsonReader.GetInt32());
-                            break;
-                        case "StartPeriod":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                startPeriod = new Option<long?>(utf8JsonReader.GetInt64());
-                            break;
-                        case "StartInterval":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                startInterval = new Option<long?>(utf8JsonReader.GetInt64());
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (test.IsSet && test.Value == null)
-                throw new ArgumentNullException(nameof(test), "Property is not nullable for class HealthConfig.");
-
-            if (interval.IsSet && interval.Value == null)
-                throw new ArgumentNullException(nameof(interval), "Property is not nullable for class HealthConfig.");
-
-            if (timeout.IsSet && timeout.Value == null)
-                throw new ArgumentNullException(nameof(timeout), "Property is not nullable for class HealthConfig.");
-
-            if (retries.IsSet && retries.Value == null)
-                throw new ArgumentNullException(nameof(retries), "Property is not nullable for class HealthConfig.");
-
-            if (startPeriod.IsSet && startPeriod.Value == null)
-                throw new ArgumentNullException(nameof(startPeriod), "Property is not nullable for class HealthConfig.");
-
-            if (startInterval.IsSet && startInterval.Value == null)
-                throw new ArgumentNullException(nameof(startInterval), "Property is not nullable for class HealthConfig.");
-
-            return new HealthConfig(test, interval, timeout, retries, startPeriod, startInterval);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="HealthConfig" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="healthConfig"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, HealthConfig healthConfig, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, healthConfig, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="HealthConfig" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="healthConfig"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, HealthConfig healthConfig, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (healthConfig.TestOption.IsSet && healthConfig.Test == null)
-                throw new ArgumentNullException(nameof(healthConfig.Test), "Property is required for class HealthConfig.");
-
-            if (healthConfig.TestOption.IsSet)
-            {
-                writer.WritePropertyName("Test");
-                JsonSerializer.Serialize(writer, healthConfig.Test, jsonSerializerOptions);
-            }
-            if (healthConfig.IntervalOption.IsSet)
-                writer.WriteNumber("Interval", healthConfig.IntervalOption.Value!.Value);
-
-            if (healthConfig.TimeoutOption.IsSet)
-                writer.WriteNumber("Timeout", healthConfig.TimeoutOption.Value!.Value);
-
-            if (healthConfig.RetriesOption.IsSet)
-                writer.WriteNumber("Retries", healthConfig.RetriesOption.Value!.Value);
-
-            if (healthConfig.StartPeriodOption.IsSet)
-                writer.WriteNumber("StartPeriod", healthConfig.StartPeriodOption.Value!.Value);
-
-            if (healthConfig.StartIntervalOption.IsSet)
-                writer.WriteNumber("StartInterval", healthConfig.StartIntervalOption.Value!.Value);
         }
     }
 }

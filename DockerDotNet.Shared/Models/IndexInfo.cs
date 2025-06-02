@@ -20,35 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// IndexInfo contains information about a registry.
     /// </summary>
-    public partial class IndexInfo : IValidatableObject
+    public partial class IndexInfo
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="IndexInfo" /> class.
-        /// </summary>
-        /// <param name="name">Name of the registry, such as \&quot;docker.io\&quot;. </param>
-        /// <param name="mirrors">List of mirrors, expressed as URIs. </param>
-        /// <param name="secure">Indicates if the registry is part of the list of insecure registries.  If &#x60;false&#x60;, the registry is insecure. Insecure registries accept un-encrypted (HTTP) and/or untrusted (HTTPS with certificates from unknown CAs) communication.  &gt; **Warning**: Insecure registries can be useful when running a local &gt; registry. However, because its use creates security vulnerabilities &gt; it should ONLY be enabled for testing purposes. For increased &gt; security, users should add their CA to their system&#39;s list of &gt; trusted CAs instead of enabling this option. </param>
-        /// <param name="official">Indicates whether this is an official registry (i.e., Docker Hub / docker.io) </param>
-        [JsonConstructor]
-        public IndexInfo(Option<string?> name = default, Option<List<string>?> mirrors = default, Option<bool?> secure = default, Option<bool?> official = default)
-        {
-            NameOption = name;
-            MirrorsOption = mirrors;
-            SecureOption = secure;
-            OfficialOption = official;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Used to track the state of Name
         /// </summary>
@@ -123,140 +104,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  Official: ").Append(Official).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="IndexInfo" />
-    /// </summary>
-    public class IndexInfoJsonConverter : JsonConverter<IndexInfo>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="IndexInfo" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override IndexInfo Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<string?> name = default;
-            Option<List<string>?> mirrors = default;
-            Option<bool?> secure = default;
-            Option<bool?> official = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "Name":
-                            name = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "Mirrors":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                mirrors = new Option<List<string>?>(JsonSerializer.Deserialize<List<string>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "Secure":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                secure = new Option<bool?>(utf8JsonReader.GetBoolean());
-                            break;
-                        case "Official":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                official = new Option<bool?>(utf8JsonReader.GetBoolean());
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (name.IsSet && name.Value == null)
-                throw new ArgumentNullException(nameof(name), "Property is not nullable for class IndexInfo.");
-
-            if (mirrors.IsSet && mirrors.Value == null)
-                throw new ArgumentNullException(nameof(mirrors), "Property is not nullable for class IndexInfo.");
-
-            if (secure.IsSet && secure.Value == null)
-                throw new ArgumentNullException(nameof(secure), "Property is not nullable for class IndexInfo.");
-
-            if (official.IsSet && official.Value == null)
-                throw new ArgumentNullException(nameof(official), "Property is not nullable for class IndexInfo.");
-
-            return new IndexInfo(name, mirrors, secure, official);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="IndexInfo" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="indexInfo"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, IndexInfo indexInfo, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, indexInfo, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="IndexInfo" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="indexInfo"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, IndexInfo indexInfo, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (indexInfo.NameOption.IsSet && indexInfo.Name == null)
-                throw new ArgumentNullException(nameof(indexInfo.Name), "Property is required for class IndexInfo.");
-
-            if (indexInfo.MirrorsOption.IsSet && indexInfo.Mirrors == null)
-                throw new ArgumentNullException(nameof(indexInfo.Mirrors), "Property is required for class IndexInfo.");
-
-            if (indexInfo.NameOption.IsSet)
-                writer.WriteString("Name", indexInfo.Name);
-
-            if (indexInfo.MirrorsOption.IsSet)
-            {
-                writer.WritePropertyName("Mirrors");
-                JsonSerializer.Serialize(writer, indexInfo.Mirrors, jsonSerializerOptions);
-            }
-            if (indexInfo.SecureOption.IsSet)
-                writer.WriteBoolean("Secure", indexInfo.SecureOption.Value!.Value);
-
-            if (indexInfo.OfficialOption.IsSet)
-                writer.WriteBoolean("Official", indexInfo.OfficialOption.Value!.Value);
         }
     }
 }

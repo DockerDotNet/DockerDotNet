@@ -20,41 +20,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json.Serialization.Metadata;
 
 namespace DockerDotNet.Shared.Models
 {
     /// <summary>
     /// Options and information specific to, and only present on, Swarm CSI cluster volumes. 
     /// </summary>
-    public partial class ClusterVolume : IValidatableObject
+    public partial class ClusterVolume
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ClusterVolume" /> class.
-        /// </summary>
-        /// <param name="iD">The Swarm ID of this volume. Because cluster volumes are Swarm objects, they have an ID, unlike non-cluster volumes. This ID can be used to refer to the Volume instead of the name. </param>
-        /// <param name="varVersion">varVersion</param>
-        /// <param name="createdAt">createdAt</param>
-        /// <param name="updatedAt">updatedAt</param>
-        /// <param name="spec">spec</param>
-        /// <param name="info">info</param>
-        /// <param name="publishStatus">The status of the volume as it pertains to its publishing and use on specific nodes </param>
-        [JsonConstructor]
-        public ClusterVolume(Option<string?> iD = default, Option<ObjectVersion?> varVersion = default, Option<string?> createdAt = default, Option<string?> updatedAt = default, Option<ClusterVolumeSpec?> spec = default, Option<ClusterVolumeInfo?> info = default, Option<List<ClusterVolumePublishStatusInner>?> publishStatus = default)
-        {
-            IDOption = iD;
-            VarVersionOption = varVersion;
-            CreatedAtOption = createdAt;
-            UpdatedAtOption = updatedAt;
-            SpecOption = spec;
-            InfoOption = info;
-            PublishStatusOption = publishStatus;
-            OnCreated();
-        }
-
-        partial void OnCreated();
-
+        
         /// <summary>
         /// Used to track the state of ID
         /// </summary>
@@ -165,193 +140,6 @@ namespace DockerDotNet.Shared.Models
             sb.Append("  PublishStatus: ").Append(PublishStatus).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// To validate all properties of the instance
-        /// </summary>
-        /// <param name="validationContext">Validation context</param>
-        /// <returns>Validation Result</returns>
-        IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
-        {
-            yield break;
-        }
-    }
-
-    /// <summary>
-    /// A Json converter for type <see cref="ClusterVolume" />
-    /// </summary>
-    public class ClusterVolumeJsonConverter : JsonConverter<ClusterVolume>
-    {
-        /// <summary>
-        /// Deserializes json to <see cref="ClusterVolume" />
-        /// </summary>
-        /// <param name="utf8JsonReader"></param>
-        /// <param name="typeToConvert"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <returns></returns>
-        /// <exception cref="JsonException"></exception>
-        public override ClusterVolume Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
-        {
-            int currentDepth = utf8JsonReader.CurrentDepth;
-
-            if (utf8JsonReader.TokenType != JsonTokenType.StartObject && utf8JsonReader.TokenType != JsonTokenType.StartArray)
-                throw new JsonException();
-
-            JsonTokenType startingTokenType = utf8JsonReader.TokenType;
-
-            Option<string?> iD = default;
-            Option<ObjectVersion?> varVersion = default;
-            Option<string?> createdAt = default;
-            Option<string?> updatedAt = default;
-            Option<ClusterVolumeSpec?> spec = default;
-            Option<ClusterVolumeInfo?> info = default;
-            Option<List<ClusterVolumePublishStatusInner>?> publishStatus = default;
-
-            while (utf8JsonReader.Read())
-            {
-                if (startingTokenType == JsonTokenType.StartObject && utf8JsonReader.TokenType == JsonTokenType.EndObject && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (startingTokenType == JsonTokenType.StartArray && utf8JsonReader.TokenType == JsonTokenType.EndArray && currentDepth == utf8JsonReader.CurrentDepth)
-                    break;
-
-                if (utf8JsonReader.TokenType == JsonTokenType.PropertyName && currentDepth == utf8JsonReader.CurrentDepth - 1)
-                {
-                    string? localVarJsonPropertyName = utf8JsonReader.GetString();
-                    utf8JsonReader.Read();
-
-                    switch (localVarJsonPropertyName)
-                    {
-                        case "ID":
-                            iD = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "Version":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                varVersion = new Option<ObjectVersion?>(JsonSerializer.Deserialize<ObjectVersion>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "CreatedAt":
-                            createdAt = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "UpdatedAt":
-                            updatedAt = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
-                        case "Spec":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                spec = new Option<ClusterVolumeSpec?>(JsonSerializer.Deserialize<ClusterVolumeSpec>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "Info":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                info = new Option<ClusterVolumeInfo?>(JsonSerializer.Deserialize<ClusterVolumeInfo>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        case "PublishStatus":
-                            if (utf8JsonReader.TokenType != JsonTokenType.Null)
-                                publishStatus = new Option<List<ClusterVolumePublishStatusInner>?>(JsonSerializer.Deserialize<List<ClusterVolumePublishStatusInner>>(ref utf8JsonReader, jsonSerializerOptions)!);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (iD.IsSet && iD.Value == null)
-                throw new ArgumentNullException(nameof(iD), "Property is not nullable for class ClusterVolume.");
-
-            if (varVersion.IsSet && varVersion.Value == null)
-                throw new ArgumentNullException(nameof(varVersion), "Property is not nullable for class ClusterVolume.");
-
-            if (createdAt.IsSet && createdAt.Value == null)
-                throw new ArgumentNullException(nameof(createdAt), "Property is not nullable for class ClusterVolume.");
-
-            if (updatedAt.IsSet && updatedAt.Value == null)
-                throw new ArgumentNullException(nameof(updatedAt), "Property is not nullable for class ClusterVolume.");
-
-            if (spec.IsSet && spec.Value == null)
-                throw new ArgumentNullException(nameof(spec), "Property is not nullable for class ClusterVolume.");
-
-            if (info.IsSet && info.Value == null)
-                throw new ArgumentNullException(nameof(info), "Property is not nullable for class ClusterVolume.");
-
-            if (publishStatus.IsSet && publishStatus.Value == null)
-                throw new ArgumentNullException(nameof(publishStatus), "Property is not nullable for class ClusterVolume.");
-
-            return new ClusterVolume(iD, varVersion, createdAt, updatedAt, spec, info, publishStatus);
-        }
-
-        /// <summary>
-        /// Serializes a <see cref="ClusterVolume" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="clusterVolume"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, ClusterVolume clusterVolume, JsonSerializerOptions jsonSerializerOptions)
-        {
-            writer.WriteStartObject();
-
-            WriteProperties(writer, clusterVolume, jsonSerializerOptions);
-            writer.WriteEndObject();
-        }
-
-        /// <summary>
-        /// Serializes the properties of <see cref="ClusterVolume" />
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="clusterVolume"></param>
-        /// <param name="jsonSerializerOptions"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, ClusterVolume clusterVolume, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (clusterVolume.IDOption.IsSet && clusterVolume.ID == null)
-                throw new ArgumentNullException(nameof(clusterVolume.ID), "Property is required for class ClusterVolume.");
-
-            if (clusterVolume.VarVersionOption.IsSet && clusterVolume.VarVersion == null)
-                throw new ArgumentNullException(nameof(clusterVolume.VarVersion), "Property is required for class ClusterVolume.");
-
-            if (clusterVolume.CreatedAtOption.IsSet && clusterVolume.CreatedAt == null)
-                throw new ArgumentNullException(nameof(clusterVolume.CreatedAt), "Property is required for class ClusterVolume.");
-
-            if (clusterVolume.UpdatedAtOption.IsSet && clusterVolume.UpdatedAt == null)
-                throw new ArgumentNullException(nameof(clusterVolume.UpdatedAt), "Property is required for class ClusterVolume.");
-
-            if (clusterVolume.SpecOption.IsSet && clusterVolume.Spec == null)
-                throw new ArgumentNullException(nameof(clusterVolume.Spec), "Property is required for class ClusterVolume.");
-
-            if (clusterVolume.InfoOption.IsSet && clusterVolume.Info == null)
-                throw new ArgumentNullException(nameof(clusterVolume.Info), "Property is required for class ClusterVolume.");
-
-            if (clusterVolume.PublishStatusOption.IsSet && clusterVolume.PublishStatus == null)
-                throw new ArgumentNullException(nameof(clusterVolume.PublishStatus), "Property is required for class ClusterVolume.");
-
-            if (clusterVolume.IDOption.IsSet)
-                writer.WriteString("ID", clusterVolume.ID);
-
-            if (clusterVolume.VarVersionOption.IsSet)
-            {
-                writer.WritePropertyName("Version");
-                JsonSerializer.Serialize(writer, clusterVolume.VarVersion, jsonSerializerOptions);
-            }
-            if (clusterVolume.CreatedAtOption.IsSet)
-                writer.WriteString("CreatedAt", clusterVolume.CreatedAt);
-
-            if (clusterVolume.UpdatedAtOption.IsSet)
-                writer.WriteString("UpdatedAt", clusterVolume.UpdatedAt);
-
-            if (clusterVolume.SpecOption.IsSet)
-            {
-                writer.WritePropertyName("Spec");
-                JsonSerializer.Serialize(writer, clusterVolume.Spec, jsonSerializerOptions);
-            }
-            if (clusterVolume.InfoOption.IsSet)
-            {
-                writer.WritePropertyName("Info");
-                JsonSerializer.Serialize(writer, clusterVolume.Info, jsonSerializerOptions);
-            }
-            if (clusterVolume.PublishStatusOption.IsSet)
-            {
-                writer.WritePropertyName("PublishStatus");
-                JsonSerializer.Serialize(writer, clusterVolume.PublishStatus, jsonSerializerOptions);
-            }
         }
     }
 }
