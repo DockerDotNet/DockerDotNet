@@ -24,25 +24,10 @@ namespace DockerDotNet.Shared.Extensions
 
                 options(context, services);
 
-                services.AddAllJsonSerializerOptions();
+                services.AddJsonSerializerOptions();
             });
 
             return builder;
         }
-
-        public static IHostBuilder ConfigureBaseApi(this IHostBuilder builder, Action<HostBuilderContext, IServiceCollection> options)
-        {
-            builder.ConfigureServices((context, services) =>
-            {
-                //HostConfiguration config = new HostConfiguration(services);
-
-                options(context, services);
-
-                services.AddBasicJsonSerializerOptions();
-            });
-
-            return builder;
-        }
-
     }
 }

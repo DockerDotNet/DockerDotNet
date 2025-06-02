@@ -19,7 +19,7 @@ namespace DockerDotNet.Shared.Extensions
     {
         private static JsonSerializerOptions _jsonOptions = new JsonSerializerOptions();
 
-        public static void AddAllJsonSerializerOptions(this IServiceCollection serviceCollection)
+        public static void AddJsonSerializerOptions(this IServiceCollection serviceCollection)
         {
             _jsonOptions.Converters.Add(new JsonStringEnumConverter(allowIntegerValues: false));
             _jsonOptions.Converters.Add(new DateTimeJsonConverter());

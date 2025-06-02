@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DockerDotNet.Shared", "Dock
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DockerDotNet.Relay", "DockerDotNet.Relay\DockerDotNet.Relay.csproj", "{9F014C96-A42D-410E-A9C1-E9E6B27F9597}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DockerDotNet.Relay.Tests", "DockerDotNet.Relay.Tests\DockerDotNet.Relay.Tests.csproj", "{E18405D4-B2ED-4FC1-8801-E4923B5D59EA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{9F014C96-A42D-410E-A9C1-E9E6B27F9597}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9F014C96-A42D-410E-A9C1-E9E6B27F9597}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9F014C96-A42D-410E-A9C1-E9E6B27F9597}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E18405D4-B2ED-4FC1-8801-E4923B5D59EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E18405D4-B2ED-4FC1-8801-E4923B5D59EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E18405D4-B2ED-4FC1-8801-E4923B5D59EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E18405D4-B2ED-4FC1-8801-E4923B5D59EA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

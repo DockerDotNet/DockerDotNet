@@ -28,7 +28,7 @@ namespace DockerDotNet.Relay.Tests
         #region Setup
 
         public static IHostBuilder CreateHostBuilder(string[] args) => Host.CreateDefaultBuilder(args)
-            .ConfigureBaseApi((context, services) =>
+            .ConfigureApi((context, services) =>
             {
                 services.AddHttpClient();
                 //services.AddSingleton<DockerClient>();
