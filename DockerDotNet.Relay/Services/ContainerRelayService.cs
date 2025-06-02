@@ -1,4 +1,5 @@
-﻿using DockerDotNet.Shared.Interfaces;
+﻿using DockerDotNet.Shared.Helpers;
+using DockerDotNet.Shared.Interfaces;
 using DockerDotNet.Shared.Models;
 
 using LanguageExt;
@@ -14,7 +15,13 @@ namespace DockerDotNet.Relay.Services
 {
     public class ContainerRelayService : IContainerService
     {
-        private string baseAddress = string.Empty;
+        private readonly HttpClientHelper _clientHelper;
+        private Uri? baseAddress = new UriBuilder("https://localhost:7075/api/").Uri;
+
+        public ContainerRelayService(HttpClientHelper clientHelper)
+        {
+            this._clientHelper = clientHelper;
+        }
 
         public Task<Either<DockerError?, ContainerCreateResponse?>> CreateContainer(ContainerCreateParameters createContainerQueryParameters, ContainerCreateRequest createContainer, CancellationToken cancellationToken)
         {
@@ -28,9 +35,11 @@ namespace DockerDotNet.Relay.Services
 
         public Task<Either<DockerError?, ContainerInspectResponse?>> GetContainer(string id, ContainerInspectParameters queryParameters, CancellationToken cancellationToken)
         {
-            HttpClient httpClient = new HttpClient();
-            
-            throw new NotImplementedException();
+            string query = _clientHelper.GetQueryString(queryParameters);
+            HttpRequestMessage requestMessage = _clientHelper.PrepareHttpRequestMessage(baseAddress, HttpMethod.Get, $"containers/{id}", query);
+
+            return _clientHelper.SendRequestAsync<ContainerInspectResponse>(requestMessage, cancellationToken); 
+            //throw new NotImplementedException();
         }
 
         public Task<Either<DockerError?, Stream?>> GetContainerLogs(string id, ContainerLogsParameters parameters, WebSocket webSocket, CancellationToken cancellationToken)
