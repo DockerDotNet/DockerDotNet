@@ -60,8 +60,13 @@ namespace DockerDotNet.Shared.Helpers
 
         #region Helper Methods
 
-
-        public HttpRequestMessage PrepareHttpRequestMessage(Uri baseAddress, HttpMethod httpMethod, string endpoint, string queryParameters, Dictionary<string, string>? headers = null, HttpContent? requestBody = null)
+        public HttpRequestMessage PrepareHttpRequestMessage(
+            Uri baseAddress,
+            HttpMethod httpMethod,
+            string endpoint,
+            string queryParameters,
+            Dictionary<string, string>? headers = null,
+            HttpContent? requestBody = null)
         {
             string uriFormat = $"{baseAddress}{endpoint}";
 

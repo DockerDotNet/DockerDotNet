@@ -87,7 +87,7 @@ namespace DockerDotNet.Core.Services
         //    return await _dockerClient.PostAsync<Shared.Models.ContainerExecCreateResponse>($"containers/{id}/exec", string.Empty, cancellationToken, body: JsonContent.Create(createParameters));
         //}
 
-        public async Task<Either<DockerError?, Stream?>> GetContainerLogs(string id, ContainerLogsParameters parameters, WebSocket webSocket, CancellationToken cancellationToken)
+        public async Task<Either<DockerError?, Stream?>> GetContainerLogs(string id, ContainerLogsParameters parameters, CancellationToken cancellationToken)
         {
             try
             {
@@ -106,7 +106,7 @@ namespace DockerDotNet.Core.Services
             }
         }
 
-        public async Task<Either<DockerError?, Stream?>> GetContainerStats(string id, ContainerStatsParameters parameters, WebSocket webSocket, CancellationToken cancellationToken)
+        public async Task<Either<DockerError?, Stream?>> GetContainerStats(string id, ContainerStatsParameters parameters, CancellationToken cancellationToken)
         {
             try
             {

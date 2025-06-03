@@ -43,5 +43,46 @@ namespace DockerDotNet.Relay.Tests
             var response = result.Match(Right: response => response, Left: _ => null);
             outputHelper.WriteLine(JsonSerializer.Serialize(response));
         }
+
+        [Fact]
+        public async System.Threading.Tasks.Task GetContainerLogs()
+        {
+            ContainerLogsParameters parameters = new ContainerLogsParameters();
+
+            var result = await containerRelayService.GetContainerLogs("67a9de123f68f8e7db1965813198aa2da7c0b36c96f9d94058e2295efe75bb47", parameters, CancellationToken.None);
+
+            result.IsRight.ShouldBeTrue();
+            var response = result.Match(response => response, Left: _ => null);
+
+            response.ShouldNotBeNull();
+
+            StreamReader streamReader = new StreamReader(response);
+            while (!streamReader.EndOfStream)
+            {                 
+                var line = await streamReader.ReadLineAsync();
+                outputHelper.WriteLine(line);
+            }
+        }
+
+        [Fact]
+        public async System.Threading.Tasks.Task GetContainerStats()
+        {
+            ContainerStatsParameters parameters = new ContainerStatsParameters();
+
+            var result = await containerRelayService.GetContainerStats("67a9de123f68f8e7db1965813198aa2da7c0b36c96f9d94058e2295efe75bb47", parameters, CancellationToken.None);
+
+            result.IsRight.ShouldBeTrue();
+            var response = result.Match(response => response, Left: _ => null);
+
+            response.ShouldNotBeNull();
+
+            StreamReader streamReader = new StreamReader(response);
+            while (!streamReader.EndOfStream)
+            {
+                var line = await streamReader.ReadLineAsync();
+                outputHelper.WriteLine(line);
+            }
+        }
+
     }
 }

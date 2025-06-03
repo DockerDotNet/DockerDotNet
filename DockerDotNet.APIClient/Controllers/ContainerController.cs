@@ -146,7 +146,7 @@ namespace DockerDotNet.APIClient.Controllers
             }
             using var webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
 
-            var res = await _containerService.GetContainerLogs(id, parameters, webSocket, cancellationToken);
+            var res = await _containerService.GetContainerLogs(id, parameters, cancellationToken);
 
             if (res.IsLeft)
             {
@@ -173,7 +173,7 @@ namespace DockerDotNet.APIClient.Controllers
             }
             using var webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
 
-            var res =  await _containerService.GetContainerStats(id, parameters, webSocket, cancellationToken);
+            var res =  await _containerService.GetContainerStats(id, parameters, cancellationToken);
 
             if (res.IsLeft)
             {
