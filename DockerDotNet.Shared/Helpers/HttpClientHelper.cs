@@ -68,15 +68,13 @@ namespace DockerDotNet.Shared.Helpers
             Dictionary<string, string>? headers = null,
             HttpContent? requestBody = null)
         {
-            string uriFormat = $"{baseAddress}{endpoint}";
-
-            // Add query parameters
-            if (!string.IsNullOrEmpty(queryParameters))
+            UriBuilder uriBuilder = new UriBuilder(baseAddress)
             {
-                uriFormat += "?" + queryParameters;
-            }
+                Path = CombinePaths(baseAddress.AbsolutePath, endpoint),
+                Query = queryParameters ?? string.Empty
+            };
 
-            Uri requestUri = new UriBuilder(uriFormat).Uri;
+            Uri requestUri = uriBuilder.Uri;
 
             HttpRequestMessage httpRequestMessage = new HttpRequestMessage(httpMethod, requestUri);
 
@@ -100,6 +98,20 @@ namespace DockerDotNet.Shared.Helpers
             {
                 requestMessage.Headers.TryAddWithoutValidation(header.Key, header.Value);
             }
+        }
+
+        private string CombinePaths(string basePath, string endpoint)
+        {
+            if (string.IsNullOrEmpty(endpoint))
+                return basePath;
+
+            if (basePath.EndsWith('/'))
+                basePath = basePath.TrimEnd('/');
+
+            if (endpoint.StartsWith('/'))
+                endpoint = endpoint.TrimStart('/');
+
+            return $"{basePath}/{endpoint}";
         }
 
         public async Task<Either<DockerError?, T?>> ProcessResponse<T>(HttpResponseMessage response, CancellationToken cancellationToken)
