@@ -92,14 +92,14 @@ namespace DockerDotNet.Shared.Models
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> ForceRotateOption { get; private set; }
+        public Option<ulong?> ForceRotateOption { get; private set; }
 
         /// <summary>
         /// An integer whose purpose is to force swarm to generate a new signing CA certificate and key, if none have been specified in &#x60;SigningCACert&#x60; and &#x60;SigningCAKey&#x60; 
         /// </summary>
         /// <value>An integer whose purpose is to force swarm to generate a new signing CA certificate and key, if none have been specified in &#x60;SigningCACert&#x60; and &#x60;SigningCAKey&#x60; </value>
         [JsonPropertyName("ForceRotate")]
-        public int? ForceRotate { get { return this.ForceRotateOption; } set { this.ForceRotateOption = new(value); } }
+        public ulong? ForceRotate { get { return this.ForceRotateOption; } set { this.ForceRotateOption = new(value); } }
 
         /// <summary>
         /// Returns the string presentation of the object

@@ -104,122 +104,123 @@ namespace DockerDotNet.Shared.Models
         /// </summary>
         Orphaned = 15
     }
-/// <summary>
-/// A Json converter for type <see cref="TaskState"/>
-/// </summary>
-public class TaskStateJsonConverter : JsonConverter<TaskState>
-{
-    public override TaskState Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    
+    /// <summary>
+    /// A Json converter for type <see cref="TaskState"/>
+    /// </summary>
+    public class TaskStateJsonConverter : JsonConverter<TaskState>
     {
-        string? enumString = reader.GetString();
-        return enumString switch
+        public override TaskState Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            "new" => TaskState.New,
-            "allocated" => TaskState.Allocated,
-            "pending" => TaskState.Pending,
-            "assigned" => TaskState.Assigned,
-            "accepted" => TaskState.Accepted,
-            "preparing" => TaskState.Preparing,
-            "ready" => TaskState.Ready,
-            "starting" => TaskState.Starting,
-            "running" => TaskState.Running,
-            "complete" => TaskState.Complete,
-            "shutdown" => TaskState.Shutdown,
-            "failed" => TaskState.Failed,
-            "rejected" => TaskState.Rejected,
-            "remove" => TaskState.Remove,
-            "orphaned" => TaskState.Orphaned,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, TaskState value, JsonSerializerOptions options)
-    {
-        string enumString = value switch
-        {
-            TaskState.New => "new",
-            TaskState.Allocated => "allocated",
-            TaskState.Pending => "pending",
-            TaskState.Assigned => "assigned",
-            TaskState.Accepted => "accepted",
-            TaskState.Preparing => "preparing",
-            TaskState.Ready => "ready",
-            TaskState.Starting => "starting",
-            TaskState.Running => "running",
-            TaskState.Complete => "complete",
-            TaskState.Shutdown => "shutdown",
-            TaskState.Failed => "failed",
-            TaskState.Rejected => "rejected",
-            TaskState.Remove => "remove",
-            TaskState.Orphaned => "orphaned",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-        writer.WriteStringValue(enumString);
-    }
-}
-
-/// <summary>
-/// A Json converter for nullable <see cref="TaskState"/>
-/// </summary>
-public class TaskStateNullableJsonConverter : JsonConverter<TaskState?>
-{
-    public override TaskState? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        if (reader.TokenType == JsonTokenType.Null)
-            return null;
-
-        string? enumString = reader.GetString();
-
-        return enumString switch
-        {
-            "new" => TaskState.New,
-            "allocated" => TaskState.Allocated,
-            "pending" => TaskState.Pending,
-            "assigned" => TaskState.Assigned,
-            "accepted" => TaskState.Accepted,
-            "preparing" => TaskState.Preparing,
-            "ready" => TaskState.Ready,
-            "starting" => TaskState.Starting,
-            "running" => TaskState.Running,
-            "complete" => TaskState.Complete,
-            "shutdown" => TaskState.Shutdown,
-            "failed" => TaskState.Failed,
-            "rejected" => TaskState.Rejected,
-            "remove" => TaskState.Remove,
-            "orphaned" => TaskState.Orphaned,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, TaskState? value, JsonSerializerOptions options)
-    {
-        if (value == null)
-        {
-            writer.WriteNullValue();
-            return;
+            string? enumString = reader.GetString();
+            return enumString switch
+            {
+                "new" => TaskState.New,
+                "allocated" => TaskState.Allocated,
+                "pending" => TaskState.Pending,
+                "assigned" => TaskState.Assigned,
+                "accepted" => TaskState.Accepted,
+                "preparing" => TaskState.Preparing,
+                "ready" => TaskState.Ready,
+                "starting" => TaskState.Starting,
+                "running" => TaskState.Running,
+                "complete" => TaskState.Complete,
+                "shutdown" => TaskState.Shutdown,
+                "failed" => TaskState.Failed,
+                "rejected" => TaskState.Rejected,
+                "remove" => TaskState.Remove,
+                "orphaned" => TaskState.Orphaned,
+                _ => throw new JsonException($"Unknown value: {enumString}")
+            };
         }
-
-        string enumString = value.Value switch
+    
+        public override void Write(Utf8JsonWriter writer, TaskState value, JsonSerializerOptions options)
         {
-            TaskState.New => "new",
-            TaskState.Allocated => "allocated",
-            TaskState.Pending => "pending",
-            TaskState.Assigned => "assigned",
-            TaskState.Accepted => "accepted",
-            TaskState.Preparing => "preparing",
-            TaskState.Ready => "ready",
-            TaskState.Starting => "starting",
-            TaskState.Running => "running",
-            TaskState.Complete => "complete",
-            TaskState.Shutdown => "shutdown",
-            TaskState.Failed => "failed",
-            TaskState.Rejected => "rejected",
-            TaskState.Remove => "remove",
-            TaskState.Orphaned => "orphaned",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-
-        writer.WriteStringValue(enumString);
+            string enumString = value switch
+            {
+                TaskState.New => "new",
+                TaskState.Allocated => "allocated",
+                TaskState.Pending => "pending",
+                TaskState.Assigned => "assigned",
+                TaskState.Accepted => "accepted",
+                TaskState.Preparing => "preparing",
+                TaskState.Ready => "ready",
+                TaskState.Starting => "starting",
+                TaskState.Running => "running",
+                TaskState.Complete => "complete",
+                TaskState.Shutdown => "shutdown",
+                TaskState.Failed => "failed",
+                TaskState.Rejected => "rejected",
+                TaskState.Remove => "remove",
+                TaskState.Orphaned => "orphaned",
+                _ => throw new JsonException($"Unknown value: {value}")
+            };
+            writer.WriteStringValue(enumString);
+        }
     }
-}
+    
+    /// <summary>
+    /// A Json converter for nullable <see cref="TaskState"/>
+    /// </summary>
+    public class TaskStateNullableJsonConverter : JsonConverter<TaskState?>
+    {
+        public override TaskState? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            if (reader.TokenType == JsonTokenType.Null)
+                return null;
+    
+            string? enumString = reader.GetString();
+    
+            return enumString switch
+            {
+                "new" => TaskState.New,
+                "allocated" => TaskState.Allocated,
+                "pending" => TaskState.Pending,
+                "assigned" => TaskState.Assigned,
+                "accepted" => TaskState.Accepted,
+                "preparing" => TaskState.Preparing,
+                "ready" => TaskState.Ready,
+                "starting" => TaskState.Starting,
+                "running" => TaskState.Running,
+                "complete" => TaskState.Complete,
+                "shutdown" => TaskState.Shutdown,
+                "failed" => TaskState.Failed,
+                "rejected" => TaskState.Rejected,
+                "remove" => TaskState.Remove,
+                "orphaned" => TaskState.Orphaned,
+                _ => throw new JsonException($"Unknown value: {enumString}")
+            };
+        }
+    
+        public override void Write(Utf8JsonWriter writer, TaskState? value, JsonSerializerOptions options)
+        {
+            if (value == null)
+            {
+                writer.WriteNullValue();
+                return;
+            }
+    
+            string enumString = value.Value switch
+            {
+                TaskState.New => "new",
+                TaskState.Allocated => "allocated",
+                TaskState.Pending => "pending",
+                TaskState.Assigned => "assigned",
+                TaskState.Accepted => "accepted",
+                TaskState.Preparing => "preparing",
+                TaskState.Ready => "ready",
+                TaskState.Starting => "starting",
+                TaskState.Running => "running",
+                TaskState.Complete => "complete",
+                TaskState.Shutdown => "shutdown",
+                TaskState.Failed => "failed",
+                TaskState.Rejected => "rejected",
+                TaskState.Remove => "remove",
+                TaskState.Orphaned => "orphaned",
+                _ => throw new JsonException($"Unknown value: {value}")
+            };
+    
+            writer.WriteStringValue(enumString);
+        }
+    }
 }

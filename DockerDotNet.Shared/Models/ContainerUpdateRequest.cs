@@ -35,14 +35,14 @@ namespace DockerDotNet.Shared.Models
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> CpuSharesOption { get; private set; }
+        public Option<ulong?> CpuSharesOption { get; private set; }
 
         /// <summary>
         /// An integer value representing this container&#39;s relative CPU weight versus other containers. 
         /// </summary>
         /// <value>An integer value representing this container&#39;s relative CPU weight versus other containers. </value>
         [JsonPropertyName("CpuShares")]
-        public int? CpuShares { get { return this.CpuSharesOption; } set { this.CpuSharesOption = new(value); } }
+        public ulong? CpuShares { get { return this.CpuSharesOption; } set { this.CpuSharesOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of Memory
@@ -77,14 +77,14 @@ namespace DockerDotNet.Shared.Models
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> BlkioWeightOption { get; private set; }
+        public Option<ulong?> BlkioWeightOption { get; private set; }
 
         /// <summary>
         /// Block IO weight (relative weight).
         /// </summary>
         /// <value>Block IO weight (relative weight).</value>
         [JsonPropertyName("BlkioWeight")]
-        public int? BlkioWeight { get { return this.BlkioWeightOption; } set { this.BlkioWeightOption = new(value); } }
+        public ulong? BlkioWeight { get { return this.BlkioWeightOption; } set { this.BlkioWeightOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of BlkioWeightDevice

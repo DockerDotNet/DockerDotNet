@@ -65,7 +65,7 @@ namespace DockerDotNet.Shared.Models
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> ExitCodeOption { get; private set; }
+        public Option<ulong?> ExitCodeOption { get; private set; }
 
         /// <summary>
         /// ExitCode meanings:  - &#x60;0&#x60; healthy - &#x60;1&#x60; unhealthy - &#x60;2&#x60; reserved (considered unhealthy) - other values: error running probe 
@@ -73,7 +73,7 @@ namespace DockerDotNet.Shared.Models
         /// <value>ExitCode meanings:  - &#x60;0&#x60; healthy - &#x60;1&#x60; unhealthy - &#x60;2&#x60; reserved (considered unhealthy) - other values: error running probe </value>
         /* <example>0</example> */
         [JsonPropertyName("ExitCode")]
-        public int? ExitCode { get { return this.ExitCodeOption; } set { this.ExitCodeOption = new(value); } }
+        public ulong? ExitCode { get { return this.ExitCodeOption; } set { this.ExitCodeOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of Output

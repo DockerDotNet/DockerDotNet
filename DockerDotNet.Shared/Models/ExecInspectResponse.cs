@@ -87,13 +87,13 @@ namespace DockerDotNet.Shared.Models
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> ExitCodeOption { get; private set; }
+        public Option<ulong?> ExitCodeOption { get; private set; }
 
         /// <summary>
         /// Gets or Sets ExitCode
         /// </summary>
         [JsonPropertyName("ExitCode")]
-        public int? ExitCode { get { return this.ExitCodeOption; } set { this.ExitCodeOption = new(value); } }
+        public ulong? ExitCode { get { return this.ExitCodeOption; } set { this.ExitCodeOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of ProcessConfig
@@ -165,14 +165,14 @@ namespace DockerDotNet.Shared.Models
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> PidOption { get; private set; }
+        public Option<ulong?> PidOption { get; private set; }
 
         /// <summary>
         /// The system process ID for the exec process.
         /// </summary>
         /// <value>The system process ID for the exec process.</value>
         [JsonPropertyName("Pid")]
-        public int? Pid { get { return this.PidOption; } set { this.PidOption = new(value); } }
+        public ulong? Pid { get { return this.PidOption; } set { this.PidOption = new(value); } }
 
         /// <summary>
         /// Returns the string presentation of the object

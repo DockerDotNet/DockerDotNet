@@ -35,7 +35,7 @@ namespace DockerDotNet.Shared.Models
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> CurrentOption { get; private set; }
+        public Option<ulong?> CurrentOption { get; private set; }
 
         /// <summary>
         /// Current is the number of PIDs in the cgroup. 
@@ -43,21 +43,21 @@ namespace DockerDotNet.Shared.Models
         /// <value>Current is the number of PIDs in the cgroup. </value>
         /* <example>5</example> */
         [JsonPropertyName("current")]
-        public int? Current { get { return this.CurrentOption; } set { this.CurrentOption = new(value); } }
+        public ulong? Current { get { return this.CurrentOption; } set { this.CurrentOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of Limit
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> LimitOption { get; private set; }
+        public Option<ulong?> LimitOption { get; private set; }
 
         /// <summary>
         /// Limit is the hard limit on the number of pids in the cgroup. A \&quot;Limit\&quot; of 0 means that there is no limit. 
         /// </summary>
         /// <value>Limit is the hard limit on the number of pids in the cgroup. A \&quot;Limit\&quot; of 0 means that there is no limit. </value>
         [JsonPropertyName("limit")]
-        public int? Limit { get { return this.LimitOption; } set { this.LimitOption = new(value); } }
+        public ulong? Limit { get { return this.LimitOption; } set { this.LimitOption = new(value); } }
 
         /// <summary>
         /// Returns the string presentation of the object

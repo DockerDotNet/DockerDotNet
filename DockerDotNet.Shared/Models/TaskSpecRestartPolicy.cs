@@ -52,76 +52,76 @@ namespace DockerDotNet.Shared.Models
             Any = 3
         }
 
-/// <summary>
-/// A Json converter for type <see cref="ConditionEnum"/>
-/// </summary>
-public class ConditionEnumJsonConverter : JsonConverter<ConditionEnum>
-{
-    public override ConditionEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        string? enumString = reader.GetString();
-        return enumString switch
+        /// <summary>
+        /// A Json converter for type <see cref="ConditionEnum"/>
+        /// </summary>
+        public class ConditionEnumJsonConverter : JsonConverter<ConditionEnum>
         {
-            "none" => ConditionEnum.None,
-            "on-failure" => ConditionEnum.OnFailure,
-            "any" => ConditionEnum.Any,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, ConditionEnum value, JsonSerializerOptions options)
-    {
-        string enumString = value switch
-        {
-            ConditionEnum.None => "none",
-            ConditionEnum.OnFailure => "on-failure",
-            ConditionEnum.Any => "any",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-        writer.WriteStringValue(enumString);
-    }
-}
-
-/// <summary>
-/// A Json converter for nullable <see cref="ConditionEnum"/>
-/// </summary>
-public class ConditionEnumNullableJsonConverter : JsonConverter<ConditionEnum?>
-{
-    public override ConditionEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        if (reader.TokenType == JsonTokenType.Null)
-            return null;
-
-        string? enumString = reader.GetString();
-
-        return enumString switch
-        {
-            "none" => ConditionEnum.None,
-            "on-failure" => ConditionEnum.OnFailure,
-            "any" => ConditionEnum.Any,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, ConditionEnum? value, JsonSerializerOptions options)
-    {
-        if (value == null)
-        {
-            writer.WriteNullValue();
-            return;
+            public override ConditionEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                string? enumString = reader.GetString();
+                return enumString switch
+                {
+                    "none" => ConditionEnum.None,
+                    "on-failure" => ConditionEnum.OnFailure,
+                    "any" => ConditionEnum.Any,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, ConditionEnum value, JsonSerializerOptions options)
+            {
+                string enumString = value switch
+                {
+                    ConditionEnum.None => "none",
+                    ConditionEnum.OnFailure => "on-failure",
+                    ConditionEnum.Any => "any",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+                writer.WriteStringValue(enumString);
+            }
         }
-
-        string enumString = value.Value switch
+        
+        /// <summary>
+        /// A Json converter for nullable <see cref="ConditionEnum"/>
+        /// </summary>
+        public class ConditionEnumNullableJsonConverter : JsonConverter<ConditionEnum?>
         {
-            ConditionEnum.None => "none",
-            ConditionEnum.OnFailure => "on-failure",
-            ConditionEnum.Any => "any",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-
-        writer.WriteStringValue(enumString);
-    }
-}
+            public override ConditionEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                if (reader.TokenType == JsonTokenType.Null)
+                    return null;
+        
+                string? enumString = reader.GetString();
+        
+                return enumString switch
+                {
+                    "none" => ConditionEnum.None,
+                    "on-failure" => ConditionEnum.OnFailure,
+                    "any" => ConditionEnum.Any,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, ConditionEnum? value, JsonSerializerOptions options)
+            {
+                if (value == null)
+                {
+                    writer.WriteNullValue();
+                    return;
+                }
+        
+                string enumString = value.Value switch
+                {
+                    ConditionEnum.None => "none",
+                    ConditionEnum.OnFailure => "on-failure",
+                    ConditionEnum.Any => "any",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+        
+                writer.WriteStringValue(enumString);
+            }
+        }
 
         /// <summary>
         /// Used to track the state of Condition

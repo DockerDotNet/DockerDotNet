@@ -49,14 +49,14 @@ namespace DockerDotNet.Shared.Models
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> PrefixLenOption { get; private set; }
+        public Option<ulong?> PrefixLenOption { get; private set; }
 
         /// <summary>
         /// Mask length of the IP address.
         /// </summary>
         /// <value>Mask length of the IP address.</value>
         [JsonPropertyName("PrefixLen")]
-        public int? PrefixLen { get { return this.PrefixLenOption; } set { this.PrefixLenOption = new(value); } }
+        public ulong? PrefixLen { get { return this.PrefixLenOption; } set { this.PrefixLenOption = new(value); } }
 
         /// <summary>
         /// Returns the string presentation of the object

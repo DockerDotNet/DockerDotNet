@@ -50,78 +50,79 @@ namespace DockerDotNet.Shared.Models
         /// </summary>
         Disconnected
     }
-/// <summary>
-/// A Json converter for type <see cref="NodeState"/>
-/// </summary>
-public class NodeStateJsonConverter : JsonConverter<NodeState>
-{
-    public override NodeState Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    
+    /// <summary>
+    /// A Json converter for type <see cref="NodeState"/>
+    /// </summary>
+    public class NodeStateJsonConverter : JsonConverter<NodeState>
     {
-        string? enumString = reader.GetString();
-        return enumString switch
+        public override NodeState Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            "unknown" => NodeState.Unknown,
-            "down" => NodeState.Down,
-            "ready" => NodeState.Ready,
-            "disconnected" => NodeState.Disconnected,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, NodeState value, JsonSerializerOptions options)
-    {
-        string enumString = value switch
-        {
-            NodeState.Unknown => "unknown",
-            NodeState.Down => "down",
-            NodeState.Ready => "ready",
-            NodeState.Disconnected => "disconnected",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-        writer.WriteStringValue(enumString);
-    }
-}
-
-/// <summary>
-/// A Json converter for nullable <see cref="NodeState"/>
-/// </summary>
-public class NodeStateNullableJsonConverter : JsonConverter<NodeState?>
-{
-    public override NodeState? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        if (reader.TokenType == JsonTokenType.Null)
-            return null;
-
-        string? enumString = reader.GetString();
-
-        return enumString switch
-        {
-            "unknown" => NodeState.Unknown,
-            "down" => NodeState.Down,
-            "ready" => NodeState.Ready,
-            "disconnected" => NodeState.Disconnected,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, NodeState? value, JsonSerializerOptions options)
-    {
-        if (value == null)
-        {
-            writer.WriteNullValue();
-            return;
+            string? enumString = reader.GetString();
+            return enumString switch
+            {
+                "unknown" => NodeState.Unknown,
+                "down" => NodeState.Down,
+                "ready" => NodeState.Ready,
+                "disconnected" => NodeState.Disconnected,
+                _ => throw new JsonException($"Unknown value: {enumString}")
+            };
         }
-
-        string enumString = value.Value switch
+    
+        public override void Write(Utf8JsonWriter writer, NodeState value, JsonSerializerOptions options)
         {
-            NodeState.Unknown => "unknown",
-            NodeState.Down => "down",
-            NodeState.Ready => "ready",
-            NodeState.Disconnected => "disconnected",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-
-        writer.WriteStringValue(enumString);
+            string enumString = value switch
+            {
+                NodeState.Unknown => "unknown",
+                NodeState.Down => "down",
+                NodeState.Ready => "ready",
+                NodeState.Disconnected => "disconnected",
+                _ => throw new JsonException($"Unknown value: {value}")
+            };
+            writer.WriteStringValue(enumString);
+        }
     }
-}
+    
+    /// <summary>
+    /// A Json converter for nullable <see cref="NodeState"/>
+    /// </summary>
+    public class NodeStateNullableJsonConverter : JsonConverter<NodeState?>
+    {
+        public override NodeState? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            if (reader.TokenType == JsonTokenType.Null)
+                return null;
+    
+            string? enumString = reader.GetString();
+    
+            return enumString switch
+            {
+                "unknown" => NodeState.Unknown,
+                "down" => NodeState.Down,
+                "ready" => NodeState.Ready,
+                "disconnected" => NodeState.Disconnected,
+                _ => throw new JsonException($"Unknown value: {enumString}")
+            };
+        }
+    
+        public override void Write(Utf8JsonWriter writer, NodeState? value, JsonSerializerOptions options)
+        {
+            if (value == null)
+            {
+                writer.WriteNullValue();
+                return;
+            }
+    
+            string enumString = value.Value switch
+            {
+                NodeState.Unknown => "unknown",
+                NodeState.Down => "down",
+                NodeState.Ready => "ready",
+                NodeState.Disconnected => "disconnected",
+                _ => throw new JsonException($"Unknown value: {value}")
+            };
+    
+            writer.WriteStringValue(enumString);
+        }
+    }
 }

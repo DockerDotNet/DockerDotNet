@@ -51,76 +51,76 @@ namespace DockerDotNet.Shared.Models
             Sctp = 3
         }
 
-/// <summary>
-/// A Json converter for type <see cref="TypeEnum"/>
-/// </summary>
-public class TypeEnumJsonConverter : JsonConverter<TypeEnum>
-{
-    public override TypeEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        string? enumString = reader.GetString();
-        return enumString switch
+        /// <summary>
+        /// A Json converter for type <see cref="TypeEnum"/>
+        /// </summary>
+        public class TypeEnumJsonConverter : JsonConverter<TypeEnum>
         {
-            "tcp" => TypeEnum.Tcp,
-            "udp" => TypeEnum.Udp,
-            "sctp" => TypeEnum.Sctp,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, TypeEnum value, JsonSerializerOptions options)
-    {
-        string enumString = value switch
-        {
-            TypeEnum.Tcp => "tcp",
-            TypeEnum.Udp => "udp",
-            TypeEnum.Sctp => "sctp",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-        writer.WriteStringValue(enumString);
-    }
-}
-
-/// <summary>
-/// A Json converter for nullable <see cref="TypeEnum"/>
-/// </summary>
-public class TypeEnumNullableJsonConverter : JsonConverter<TypeEnum?>
-{
-    public override TypeEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        if (reader.TokenType == JsonTokenType.Null)
-            return null;
-
-        string? enumString = reader.GetString();
-
-        return enumString switch
-        {
-            "tcp" => TypeEnum.Tcp,
-            "udp" => TypeEnum.Udp,
-            "sctp" => TypeEnum.Sctp,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, TypeEnum? value, JsonSerializerOptions options)
-    {
-        if (value == null)
-        {
-            writer.WriteNullValue();
-            return;
+            public override TypeEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                string? enumString = reader.GetString();
+                return enumString switch
+                {
+                    "tcp" => TypeEnum.Tcp,
+                    "udp" => TypeEnum.Udp,
+                    "sctp" => TypeEnum.Sctp,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, TypeEnum value, JsonSerializerOptions options)
+            {
+                string enumString = value switch
+                {
+                    TypeEnum.Tcp => "tcp",
+                    TypeEnum.Udp => "udp",
+                    TypeEnum.Sctp => "sctp",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+                writer.WriteStringValue(enumString);
+            }
         }
-
-        string enumString = value.Value switch
+        
+        /// <summary>
+        /// A Json converter for nullable <see cref="TypeEnum"/>
+        /// </summary>
+        public class TypeEnumNullableJsonConverter : JsonConverter<TypeEnum?>
         {
-            TypeEnum.Tcp => "tcp",
-            TypeEnum.Udp => "udp",
-            TypeEnum.Sctp => "sctp",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-
-        writer.WriteStringValue(enumString);
-    }
-}
+            public override TypeEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                if (reader.TokenType == JsonTokenType.Null)
+                    return null;
+        
+                string? enumString = reader.GetString();
+        
+                return enumString switch
+                {
+                    "tcp" => TypeEnum.Tcp,
+                    "udp" => TypeEnum.Udp,
+                    "sctp" => TypeEnum.Sctp,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, TypeEnum? value, JsonSerializerOptions options)
+            {
+                if (value == null)
+                {
+                    writer.WriteNullValue();
+                    return;
+                }
+        
+                string enumString = value.Value switch
+                {
+                    TypeEnum.Tcp => "tcp",
+                    TypeEnum.Udp => "udp",
+                    TypeEnum.Sctp => "sctp",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+        
+                writer.WriteStringValue(enumString);
+            }
+        }
 
         /// <summary>
         /// Gets or Sets Type
@@ -133,7 +133,7 @@ public class TypeEnumNullableJsonConverter : JsonConverter<TypeEnum?>
         /// </summary>
         /// <value>Port on the container</value>
         [JsonPropertyName("PrivatePort")]
-        public int PrivatePort { get; set; }
+        public ulong PrivatePort { get; set; }
 
         /// <summary>
         /// Used to track the state of IP
@@ -154,14 +154,14 @@ public class TypeEnumNullableJsonConverter : JsonConverter<TypeEnum?>
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> PublicPortOption { get; private set; }
+        public Option<ulong?> PublicPortOption { get; private set; }
 
         /// <summary>
         /// Port exposed on the host
         /// </summary>
         /// <value>Port exposed on the host</value>
         [JsonPropertyName("PublicPort")]
-        public int? PublicPort { get { return this.PublicPortOption; } set { this.PublicPortOption = new(value); } }
+        public ulong? PublicPort { get { return this.PublicPortOption; } set { this.PublicPortOption = new(value); } }
 
         /// <summary>
         /// Returns the string presentation of the object

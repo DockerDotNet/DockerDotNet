@@ -57,80 +57,80 @@ namespace DockerDotNet.Shared.Models
             Unhealthy = 4
         }
 
-/// <summary>
-/// A Json converter for type <see cref="StatusEnum"/>
-/// </summary>
-public class StatusEnumJsonConverter : JsonConverter<StatusEnum>
-{
-    public override StatusEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        string? enumString = reader.GetString();
-        return enumString switch
+        /// <summary>
+        /// A Json converter for type <see cref="StatusEnum"/>
+        /// </summary>
+        public class StatusEnumJsonConverter : JsonConverter<StatusEnum>
         {
-            "none" => StatusEnum.None,
-            "starting" => StatusEnum.Starting,
-            "healthy" => StatusEnum.Healthy,
-            "unhealthy" => StatusEnum.Unhealthy,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, StatusEnum value, JsonSerializerOptions options)
-    {
-        string enumString = value switch
-        {
-            StatusEnum.None => "none",
-            StatusEnum.Starting => "starting",
-            StatusEnum.Healthy => "healthy",
-            StatusEnum.Unhealthy => "unhealthy",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-        writer.WriteStringValue(enumString);
-    }
-}
-
-/// <summary>
-/// A Json converter for nullable <see cref="StatusEnum"/>
-/// </summary>
-public class StatusEnumNullableJsonConverter : JsonConverter<StatusEnum?>
-{
-    public override StatusEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        if (reader.TokenType == JsonTokenType.Null)
-            return null;
-
-        string? enumString = reader.GetString();
-
-        return enumString switch
-        {
-            "none" => StatusEnum.None,
-            "starting" => StatusEnum.Starting,
-            "healthy" => StatusEnum.Healthy,
-            "unhealthy" => StatusEnum.Unhealthy,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, StatusEnum? value, JsonSerializerOptions options)
-    {
-        if (value == null)
-        {
-            writer.WriteNullValue();
-            return;
+            public override StatusEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                string? enumString = reader.GetString();
+                return enumString switch
+                {
+                    "none" => StatusEnum.None,
+                    "starting" => StatusEnum.Starting,
+                    "healthy" => StatusEnum.Healthy,
+                    "unhealthy" => StatusEnum.Unhealthy,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, StatusEnum value, JsonSerializerOptions options)
+            {
+                string enumString = value switch
+                {
+                    StatusEnum.None => "none",
+                    StatusEnum.Starting => "starting",
+                    StatusEnum.Healthy => "healthy",
+                    StatusEnum.Unhealthy => "unhealthy",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+                writer.WriteStringValue(enumString);
+            }
         }
-
-        string enumString = value.Value switch
+        
+        /// <summary>
+        /// A Json converter for nullable <see cref="StatusEnum"/>
+        /// </summary>
+        public class StatusEnumNullableJsonConverter : JsonConverter<StatusEnum?>
         {
-            StatusEnum.None => "none",
-            StatusEnum.Starting => "starting",
-            StatusEnum.Healthy => "healthy",
-            StatusEnum.Unhealthy => "unhealthy",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-
-        writer.WriteStringValue(enumString);
-    }
-}
+            public override StatusEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                if (reader.TokenType == JsonTokenType.Null)
+                    return null;
+        
+                string? enumString = reader.GetString();
+        
+                return enumString switch
+                {
+                    "none" => StatusEnum.None,
+                    "starting" => StatusEnum.Starting,
+                    "healthy" => StatusEnum.Healthy,
+                    "unhealthy" => StatusEnum.Unhealthy,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, StatusEnum? value, JsonSerializerOptions options)
+            {
+                if (value == null)
+                {
+                    writer.WriteNullValue();
+                    return;
+                }
+        
+                string enumString = value.Value switch
+                {
+                    StatusEnum.None => "none",
+                    StatusEnum.Starting => "starting",
+                    StatusEnum.Healthy => "healthy",
+                    StatusEnum.Unhealthy => "unhealthy",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+        
+                writer.WriteStringValue(enumString);
+            }
+        }
 
         /// <summary>
         /// Used to track the state of Status
@@ -152,7 +152,7 @@ public class StatusEnumNullableJsonConverter : JsonConverter<StatusEnum?>
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> FailingStreakOption { get; private set; }
+        public Option<ulong?> FailingStreakOption { get; private set; }
 
         /// <summary>
         /// FailingStreak is the number of consecutive failures
@@ -160,7 +160,7 @@ public class StatusEnumNullableJsonConverter : JsonConverter<StatusEnum?>
         /// <value>FailingStreak is the number of consecutive failures</value>
         /* <example>0</example> */
         [JsonPropertyName("FailingStreak")]
-        public int? FailingStreak { get { return this.FailingStreakOption; } set { this.FailingStreakOption = new(value); } }
+        public ulong? FailingStreak { get { return this.FailingStreakOption; } set { this.FailingStreakOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of Log

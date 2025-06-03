@@ -47,72 +47,72 @@ namespace DockerDotNet.Shared.Models
             Global = 2
         }
 
-/// <summary>
-/// A Json converter for type <see cref="ScopeEnum"/>
-/// </summary>
-public class ScopeEnumJsonConverter : JsonConverter<ScopeEnum>
-{
-    public override ScopeEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        string? enumString = reader.GetString();
-        return enumString switch
+        /// <summary>
+        /// A Json converter for type <see cref="ScopeEnum"/>
+        /// </summary>
+        public class ScopeEnumJsonConverter : JsonConverter<ScopeEnum>
         {
-            "local" => ScopeEnum.Local,
-            "global" => ScopeEnum.Global,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, ScopeEnum value, JsonSerializerOptions options)
-    {
-        string enumString = value switch
-        {
-            ScopeEnum.Local => "local",
-            ScopeEnum.Global => "global",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-        writer.WriteStringValue(enumString);
-    }
-}
-
-/// <summary>
-/// A Json converter for nullable <see cref="ScopeEnum"/>
-/// </summary>
-public class ScopeEnumNullableJsonConverter : JsonConverter<ScopeEnum?>
-{
-    public override ScopeEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        if (reader.TokenType == JsonTokenType.Null)
-            return null;
-
-        string? enumString = reader.GetString();
-
-        return enumString switch
-        {
-            "local" => ScopeEnum.Local,
-            "global" => ScopeEnum.Global,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, ScopeEnum? value, JsonSerializerOptions options)
-    {
-        if (value == null)
-        {
-            writer.WriteNullValue();
-            return;
+            public override ScopeEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                string? enumString = reader.GetString();
+                return enumString switch
+                {
+                    "local" => ScopeEnum.Local,
+                    "global" => ScopeEnum.Global,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, ScopeEnum value, JsonSerializerOptions options)
+            {
+                string enumString = value switch
+                {
+                    ScopeEnum.Local => "local",
+                    ScopeEnum.Global => "global",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+                writer.WriteStringValue(enumString);
+            }
         }
-
-        string enumString = value.Value switch
+        
+        /// <summary>
+        /// A Json converter for nullable <see cref="ScopeEnum"/>
+        /// </summary>
+        public class ScopeEnumNullableJsonConverter : JsonConverter<ScopeEnum?>
         {
-            ScopeEnum.Local => "local",
-            ScopeEnum.Global => "global",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-
-        writer.WriteStringValue(enumString);
-    }
-}
+            public override ScopeEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                if (reader.TokenType == JsonTokenType.Null)
+                    return null;
+        
+                string? enumString = reader.GetString();
+        
+                return enumString switch
+                {
+                    "local" => ScopeEnum.Local,
+                    "global" => ScopeEnum.Global,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, ScopeEnum? value, JsonSerializerOptions options)
+            {
+                if (value == null)
+                {
+                    writer.WriteNullValue();
+                    return;
+                }
+        
+                string enumString = value.Value switch
+                {
+                    ScopeEnum.Local => "local",
+                    ScopeEnum.Global => "global",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+        
+                writer.WriteStringValue(enumString);
+            }
+        }
 
         /// <summary>
         /// The level at which the volume exists. Either &#x60;global&#x60; for cluster-wide, or &#x60;local&#x60; for machine level. 

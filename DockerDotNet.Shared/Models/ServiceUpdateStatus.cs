@@ -51,76 +51,76 @@ namespace DockerDotNet.Shared.Models
             Completed = 3
         }
 
-/// <summary>
-/// A Json converter for type <see cref="StateEnum"/>
-/// </summary>
-public class StateEnumJsonConverter : JsonConverter<StateEnum>
-{
-    public override StateEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        string? enumString = reader.GetString();
-        return enumString switch
+        /// <summary>
+        /// A Json converter for type <see cref="StateEnum"/>
+        /// </summary>
+        public class StateEnumJsonConverter : JsonConverter<StateEnum>
         {
-            "updating" => StateEnum.Updating,
-            "paused" => StateEnum.Paused,
-            "completed" => StateEnum.Completed,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, StateEnum value, JsonSerializerOptions options)
-    {
-        string enumString = value switch
-        {
-            StateEnum.Updating => "updating",
-            StateEnum.Paused => "paused",
-            StateEnum.Completed => "completed",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-        writer.WriteStringValue(enumString);
-    }
-}
-
-/// <summary>
-/// A Json converter for nullable <see cref="StateEnum"/>
-/// </summary>
-public class StateEnumNullableJsonConverter : JsonConverter<StateEnum?>
-{
-    public override StateEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        if (reader.TokenType == JsonTokenType.Null)
-            return null;
-
-        string? enumString = reader.GetString();
-
-        return enumString switch
-        {
-            "updating" => StateEnum.Updating,
-            "paused" => StateEnum.Paused,
-            "completed" => StateEnum.Completed,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, StateEnum? value, JsonSerializerOptions options)
-    {
-        if (value == null)
-        {
-            writer.WriteNullValue();
-            return;
+            public override StateEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                string? enumString = reader.GetString();
+                return enumString switch
+                {
+                    "updating" => StateEnum.Updating,
+                    "paused" => StateEnum.Paused,
+                    "completed" => StateEnum.Completed,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, StateEnum value, JsonSerializerOptions options)
+            {
+                string enumString = value switch
+                {
+                    StateEnum.Updating => "updating",
+                    StateEnum.Paused => "paused",
+                    StateEnum.Completed => "completed",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+                writer.WriteStringValue(enumString);
+            }
         }
-
-        string enumString = value.Value switch
+        
+        /// <summary>
+        /// A Json converter for nullable <see cref="StateEnum"/>
+        /// </summary>
+        public class StateEnumNullableJsonConverter : JsonConverter<StateEnum?>
         {
-            StateEnum.Updating => "updating",
-            StateEnum.Paused => "paused",
-            StateEnum.Completed => "completed",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-
-        writer.WriteStringValue(enumString);
-    }
-}
+            public override StateEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                if (reader.TokenType == JsonTokenType.Null)
+                    return null;
+        
+                string? enumString = reader.GetString();
+        
+                return enumString switch
+                {
+                    "updating" => StateEnum.Updating,
+                    "paused" => StateEnum.Paused,
+                    "completed" => StateEnum.Completed,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, StateEnum? value, JsonSerializerOptions options)
+            {
+                if (value == null)
+                {
+                    writer.WriteNullValue();
+                    return;
+                }
+        
+                string enumString = value.Value switch
+                {
+                    StateEnum.Updating => "updating",
+                    StateEnum.Paused => "paused",
+                    StateEnum.Completed => "completed",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+        
+                writer.WriteStringValue(enumString);
+            }
+        }
 
         /// <summary>
         /// Used to track the state of State

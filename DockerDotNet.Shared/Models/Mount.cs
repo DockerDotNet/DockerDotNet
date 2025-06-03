@@ -67,88 +67,88 @@ namespace DockerDotNet.Shared.Models
             Cluster = 6
         }
 
-/// <summary>
-/// A Json converter for type <see cref="TypeEnum"/>
-/// </summary>
-public class TypeEnumJsonConverter : JsonConverter<TypeEnum>
-{
-    public override TypeEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        string? enumString = reader.GetString();
-        return enumString switch
+        /// <summary>
+        /// A Json converter for type <see cref="TypeEnum"/>
+        /// </summary>
+        public class TypeEnumJsonConverter : JsonConverter<TypeEnum>
         {
-            "bind" => TypeEnum.Bind,
-            "volume" => TypeEnum.Volume,
-            "image" => TypeEnum.Image,
-            "tmpfs" => TypeEnum.Tmpfs,
-            "npipe" => TypeEnum.Npipe,
-            "cluster" => TypeEnum.Cluster,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, TypeEnum value, JsonSerializerOptions options)
-    {
-        string enumString = value switch
-        {
-            TypeEnum.Bind => "bind",
-            TypeEnum.Volume => "volume",
-            TypeEnum.Image => "image",
-            TypeEnum.Tmpfs => "tmpfs",
-            TypeEnum.Npipe => "npipe",
-            TypeEnum.Cluster => "cluster",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-        writer.WriteStringValue(enumString);
-    }
-}
-
-/// <summary>
-/// A Json converter for nullable <see cref="TypeEnum"/>
-/// </summary>
-public class TypeEnumNullableJsonConverter : JsonConverter<TypeEnum?>
-{
-    public override TypeEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        if (reader.TokenType == JsonTokenType.Null)
-            return null;
-
-        string? enumString = reader.GetString();
-
-        return enumString switch
-        {
-            "bind" => TypeEnum.Bind,
-            "volume" => TypeEnum.Volume,
-            "image" => TypeEnum.Image,
-            "tmpfs" => TypeEnum.Tmpfs,
-            "npipe" => TypeEnum.Npipe,
-            "cluster" => TypeEnum.Cluster,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, TypeEnum? value, JsonSerializerOptions options)
-    {
-        if (value == null)
-        {
-            writer.WriteNullValue();
-            return;
+            public override TypeEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                string? enumString = reader.GetString();
+                return enumString switch
+                {
+                    "bind" => TypeEnum.Bind,
+                    "volume" => TypeEnum.Volume,
+                    "image" => TypeEnum.Image,
+                    "tmpfs" => TypeEnum.Tmpfs,
+                    "npipe" => TypeEnum.Npipe,
+                    "cluster" => TypeEnum.Cluster,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, TypeEnum value, JsonSerializerOptions options)
+            {
+                string enumString = value switch
+                {
+                    TypeEnum.Bind => "bind",
+                    TypeEnum.Volume => "volume",
+                    TypeEnum.Image => "image",
+                    TypeEnum.Tmpfs => "tmpfs",
+                    TypeEnum.Npipe => "npipe",
+                    TypeEnum.Cluster => "cluster",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+                writer.WriteStringValue(enumString);
+            }
         }
-
-        string enumString = value.Value switch
+        
+        /// <summary>
+        /// A Json converter for nullable <see cref="TypeEnum"/>
+        /// </summary>
+        public class TypeEnumNullableJsonConverter : JsonConverter<TypeEnum?>
         {
-            TypeEnum.Bind => "bind",
-            TypeEnum.Volume => "volume",
-            TypeEnum.Image => "image",
-            TypeEnum.Tmpfs => "tmpfs",
-            TypeEnum.Npipe => "npipe",
-            TypeEnum.Cluster => "cluster",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-
-        writer.WriteStringValue(enumString);
-    }
-}
+            public override TypeEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                if (reader.TokenType == JsonTokenType.Null)
+                    return null;
+        
+                string? enumString = reader.GetString();
+        
+                return enumString switch
+                {
+                    "bind" => TypeEnum.Bind,
+                    "volume" => TypeEnum.Volume,
+                    "image" => TypeEnum.Image,
+                    "tmpfs" => TypeEnum.Tmpfs,
+                    "npipe" => TypeEnum.Npipe,
+                    "cluster" => TypeEnum.Cluster,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, TypeEnum? value, JsonSerializerOptions options)
+            {
+                if (value == null)
+                {
+                    writer.WriteNullValue();
+                    return;
+                }
+        
+                string enumString = value.Value switch
+                {
+                    TypeEnum.Bind => "bind",
+                    TypeEnum.Volume => "volume",
+                    TypeEnum.Image => "image",
+                    TypeEnum.Tmpfs => "tmpfs",
+                    TypeEnum.Npipe => "npipe",
+                    TypeEnum.Cluster => "cluster",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+        
+                writer.WriteStringValue(enumString);
+            }
+        }
 
         /// <summary>
         /// Used to track the state of Type

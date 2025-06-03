@@ -35,7 +35,7 @@ namespace DockerDotNet.Shared.Models
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> PeriodsOption { get; private set; }
+        public Option<ulong?> PeriodsOption { get; private set; }
 
         /// <summary>
         /// Number of periods with throttling active. 
@@ -43,14 +43,14 @@ namespace DockerDotNet.Shared.Models
         /// <value>Number of periods with throttling active. </value>
         /* <example>0</example> */
         [JsonPropertyName("periods")]
-        public int? Periods { get { return this.PeriodsOption; } set { this.PeriodsOption = new(value); } }
+        public ulong? Periods { get { return this.PeriodsOption; } set { this.PeriodsOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of ThrottledPeriods
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> ThrottledPeriodsOption { get; private set; }
+        public Option<ulong?> ThrottledPeriodsOption { get; private set; }
 
         /// <summary>
         /// Number of periods when the container hit its throttling limit. 
@@ -58,14 +58,14 @@ namespace DockerDotNet.Shared.Models
         /// <value>Number of periods when the container hit its throttling limit. </value>
         /* <example>0</example> */
         [JsonPropertyName("throttled_periods")]
-        public int? ThrottledPeriods { get { return this.ThrottledPeriodsOption; } set { this.ThrottledPeriodsOption = new(value); } }
+        public ulong? ThrottledPeriods { get { return this.ThrottledPeriodsOption; } set { this.ThrottledPeriodsOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of ThrottledTime
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> ThrottledTimeOption { get; private set; }
+        public Option<ulong?> ThrottledTimeOption { get; private set; }
 
         /// <summary>
         /// Aggregated time (in nanoseconds) the container was throttled for. 
@@ -73,7 +73,7 @@ namespace DockerDotNet.Shared.Models
         /// <value>Aggregated time (in nanoseconds) the container was throttled for. </value>
         /* <example>0</example> */
         [JsonPropertyName("throttled_time")]
-        public int? ThrottledTime { get { return this.ThrottledTimeOption; } set { this.ThrottledTimeOption = new(value); } }
+        public ulong? ThrottledTime { get { return this.ThrottledTimeOption; } set { this.ThrottledTimeOption = new(value); } }
 
         /// <summary>
         /// Returns the string presentation of the object

@@ -198,7 +198,7 @@ namespace DockerDotNet.Shared.Models
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> RestartCountOption { get; private set; }
+        public Option<ulong?> RestartCountOption { get; private set; }
 
         /// <summary>
         /// Number of times the container was restarted since it was created, or since daemon was started.
@@ -206,7 +206,7 @@ namespace DockerDotNet.Shared.Models
         /// <value>Number of times the container was restarted since it was created, or since daemon was started.</value>
         /* <example>0</example> */
         [JsonPropertyName("RestartCount")]
-        public int? RestartCount { get { return this.RestartCountOption; } set { this.RestartCountOption = new(value); } }
+        public ulong? RestartCount { get { return this.RestartCountOption; } set { this.RestartCountOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of Driver

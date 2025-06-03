@@ -180,7 +180,7 @@ namespace DockerDotNet.Shared.Models
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> IPPrefixLenOption { get; private set; }
+        public Option<ulong?> IPPrefixLenOption { get; private set; }
 
         /// <summary>
         /// Mask length of the IPv4 address. 
@@ -188,7 +188,7 @@ namespace DockerDotNet.Shared.Models
         /// <value>Mask length of the IPv4 address. </value>
         /* <example>16</example> */
         [JsonPropertyName("IPPrefixLen")]
-        public int? IPPrefixLen { get { return this.IPPrefixLenOption; } set { this.IPPrefixLenOption = new(value); } }
+        public ulong? IPPrefixLen { get { return this.IPPrefixLenOption; } set { this.IPPrefixLenOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of IPv6Gateway

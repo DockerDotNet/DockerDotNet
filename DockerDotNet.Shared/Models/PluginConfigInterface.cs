@@ -47,72 +47,72 @@ namespace DockerDotNet.Shared.Models
             MobyPluginsHttpV1 = 2
         }
 
-/// <summary>
-/// A Json converter for type <see cref="ProtocolSchemeEnum"/>
-/// </summary>
-public class ProtocolSchemeEnumJsonConverter : JsonConverter<ProtocolSchemeEnum>
-{
-    public override ProtocolSchemeEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        string? enumString = reader.GetString();
-        return enumString switch
+        /// <summary>
+        /// A Json converter for type <see cref="ProtocolSchemeEnum"/>
+        /// </summary>
+        public class ProtocolSchemeEnumJsonConverter : JsonConverter<ProtocolSchemeEnum>
         {
-            "" => ProtocolSchemeEnum.Empty,
-            "moby.plugins.http/v1" => ProtocolSchemeEnum.MobyPluginsHttpV1,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, ProtocolSchemeEnum value, JsonSerializerOptions options)
-    {
-        string enumString = value switch
-        {
-            ProtocolSchemeEnum.Empty => "",
-            ProtocolSchemeEnum.MobyPluginsHttpV1 => "moby.plugins.http/v1",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-        writer.WriteStringValue(enumString);
-    }
-}
-
-/// <summary>
-/// A Json converter for nullable <see cref="ProtocolSchemeEnum"/>
-/// </summary>
-public class ProtocolSchemeEnumNullableJsonConverter : JsonConverter<ProtocolSchemeEnum?>
-{
-    public override ProtocolSchemeEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        if (reader.TokenType == JsonTokenType.Null)
-            return null;
-
-        string? enumString = reader.GetString();
-
-        return enumString switch
-        {
-            "" => ProtocolSchemeEnum.Empty,
-            "moby.plugins.http/v1" => ProtocolSchemeEnum.MobyPluginsHttpV1,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, ProtocolSchemeEnum? value, JsonSerializerOptions options)
-    {
-        if (value == null)
-        {
-            writer.WriteNullValue();
-            return;
+            public override ProtocolSchemeEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                string? enumString = reader.GetString();
+                return enumString switch
+                {
+                    "" => ProtocolSchemeEnum.Empty,
+                    "moby.plugins.http/v1" => ProtocolSchemeEnum.MobyPluginsHttpV1,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, ProtocolSchemeEnum value, JsonSerializerOptions options)
+            {
+                string enumString = value switch
+                {
+                    ProtocolSchemeEnum.Empty => "",
+                    ProtocolSchemeEnum.MobyPluginsHttpV1 => "moby.plugins.http/v1",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+                writer.WriteStringValue(enumString);
+            }
         }
-
-        string enumString = value.Value switch
+        
+        /// <summary>
+        /// A Json converter for nullable <see cref="ProtocolSchemeEnum"/>
+        /// </summary>
+        public class ProtocolSchemeEnumNullableJsonConverter : JsonConverter<ProtocolSchemeEnum?>
         {
-            ProtocolSchemeEnum.Empty => "",
-            ProtocolSchemeEnum.MobyPluginsHttpV1 => "moby.plugins.http/v1",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-
-        writer.WriteStringValue(enumString);
-    }
-}
+            public override ProtocolSchemeEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                if (reader.TokenType == JsonTokenType.Null)
+                    return null;
+        
+                string? enumString = reader.GetString();
+        
+                return enumString switch
+                {
+                    "" => ProtocolSchemeEnum.Empty,
+                    "moby.plugins.http/v1" => ProtocolSchemeEnum.MobyPluginsHttpV1,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, ProtocolSchemeEnum? value, JsonSerializerOptions options)
+            {
+                if (value == null)
+                {
+                    writer.WriteNullValue();
+                    return;
+                }
+        
+                string enumString = value.Value switch
+                {
+                    ProtocolSchemeEnum.Empty => "",
+                    ProtocolSchemeEnum.MobyPluginsHttpV1 => "moby.plugins.http/v1",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+        
+                writer.WriteStringValue(enumString);
+            }
+        }
 
         /// <summary>
         /// Used to track the state of ProtocolScheme

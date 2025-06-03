@@ -52,76 +52,76 @@ namespace DockerDotNet.Shared.Models
             None = 3
         }
 
-/// <summary>
-/// A Json converter for type <see cref="CgroupDriverEnum"/>
-/// </summary>
-public class CgroupDriverEnumJsonConverter : JsonConverter<CgroupDriverEnum>
-{
-    public override CgroupDriverEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        string? enumString = reader.GetString();
-        return enumString switch
+        /// <summary>
+        /// A Json converter for type <see cref="CgroupDriverEnum"/>
+        /// </summary>
+        public class CgroupDriverEnumJsonConverter : JsonConverter<CgroupDriverEnum>
         {
-            "cgroupfs" => CgroupDriverEnum.Cgroupfs,
-            "systemd" => CgroupDriverEnum.Systemd,
-            "none" => CgroupDriverEnum.None,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, CgroupDriverEnum value, JsonSerializerOptions options)
-    {
-        string enumString = value switch
-        {
-            CgroupDriverEnum.Cgroupfs => "cgroupfs",
-            CgroupDriverEnum.Systemd => "systemd",
-            CgroupDriverEnum.None => "none",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-        writer.WriteStringValue(enumString);
-    }
-}
-
-/// <summary>
-/// A Json converter for nullable <see cref="CgroupDriverEnum"/>
-/// </summary>
-public class CgroupDriverEnumNullableJsonConverter : JsonConverter<CgroupDriverEnum?>
-{
-    public override CgroupDriverEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        if (reader.TokenType == JsonTokenType.Null)
-            return null;
-
-        string? enumString = reader.GetString();
-
-        return enumString switch
-        {
-            "cgroupfs" => CgroupDriverEnum.Cgroupfs,
-            "systemd" => CgroupDriverEnum.Systemd,
-            "none" => CgroupDriverEnum.None,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, CgroupDriverEnum? value, JsonSerializerOptions options)
-    {
-        if (value == null)
-        {
-            writer.WriteNullValue();
-            return;
+            public override CgroupDriverEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                string? enumString = reader.GetString();
+                return enumString switch
+                {
+                    "cgroupfs" => CgroupDriverEnum.Cgroupfs,
+                    "systemd" => CgroupDriverEnum.Systemd,
+                    "none" => CgroupDriverEnum.None,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, CgroupDriverEnum value, JsonSerializerOptions options)
+            {
+                string enumString = value switch
+                {
+                    CgroupDriverEnum.Cgroupfs => "cgroupfs",
+                    CgroupDriverEnum.Systemd => "systemd",
+                    CgroupDriverEnum.None => "none",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+                writer.WriteStringValue(enumString);
+            }
         }
-
-        string enumString = value.Value switch
+        
+        /// <summary>
+        /// A Json converter for nullable <see cref="CgroupDriverEnum"/>
+        /// </summary>
+        public class CgroupDriverEnumNullableJsonConverter : JsonConverter<CgroupDriverEnum?>
         {
-            CgroupDriverEnum.Cgroupfs => "cgroupfs",
-            CgroupDriverEnum.Systemd => "systemd",
-            CgroupDriverEnum.None => "none",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-
-        writer.WriteStringValue(enumString);
-    }
-}
+            public override CgroupDriverEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                if (reader.TokenType == JsonTokenType.Null)
+                    return null;
+        
+                string? enumString = reader.GetString();
+        
+                return enumString switch
+                {
+                    "cgroupfs" => CgroupDriverEnum.Cgroupfs,
+                    "systemd" => CgroupDriverEnum.Systemd,
+                    "none" => CgroupDriverEnum.None,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, CgroupDriverEnum? value, JsonSerializerOptions options)
+            {
+                if (value == null)
+                {
+                    writer.WriteNullValue();
+                    return;
+                }
+        
+                string enumString = value.Value switch
+                {
+                    CgroupDriverEnum.Cgroupfs => "cgroupfs",
+                    CgroupDriverEnum.Systemd => "systemd",
+                    CgroupDriverEnum.None => "none",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+        
+                writer.WriteStringValue(enumString);
+            }
+        }
 
         /// <summary>
         /// Used to track the state of CgroupDriver
@@ -155,72 +155,72 @@ public class CgroupDriverEnumNullableJsonConverter : JsonConverter<CgroupDriverE
             _2 = 2
         }
 
-/// <summary>
-/// A Json converter for type <see cref="CgroupVersionEnum"/>
-/// </summary>
-public class CgroupVersionEnumJsonConverter : JsonConverter<CgroupVersionEnum>
-{
-    public override CgroupVersionEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        string? enumString = reader.GetString();
-        return enumString switch
+        /// <summary>
+        /// A Json converter for type <see cref="CgroupVersionEnum"/>
+        /// </summary>
+        public class CgroupVersionEnumJsonConverter : JsonConverter<CgroupVersionEnum>
         {
-            "1" => CgroupVersionEnum._1,
-            "2" => CgroupVersionEnum._2,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, CgroupVersionEnum value, JsonSerializerOptions options)
-    {
-        string enumString = value switch
-        {
-            CgroupVersionEnum._1 => "1",
-            CgroupVersionEnum._2 => "2",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-        writer.WriteStringValue(enumString);
-    }
-}
-
-/// <summary>
-/// A Json converter for nullable <see cref="CgroupVersionEnum"/>
-/// </summary>
-public class CgroupVersionEnumNullableJsonConverter : JsonConverter<CgroupVersionEnum?>
-{
-    public override CgroupVersionEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        if (reader.TokenType == JsonTokenType.Null)
-            return null;
-
-        string? enumString = reader.GetString();
-
-        return enumString switch
-        {
-            "1" => CgroupVersionEnum._1,
-            "2" => CgroupVersionEnum._2,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, CgroupVersionEnum? value, JsonSerializerOptions options)
-    {
-        if (value == null)
-        {
-            writer.WriteNullValue();
-            return;
+            public override CgroupVersionEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                string? enumString = reader.GetString();
+                return enumString switch
+                {
+                    "1" => CgroupVersionEnum._1,
+                    "2" => CgroupVersionEnum._2,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, CgroupVersionEnum value, JsonSerializerOptions options)
+            {
+                string enumString = value switch
+                {
+                    CgroupVersionEnum._1 => "1",
+                    CgroupVersionEnum._2 => "2",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+                writer.WriteStringValue(enumString);
+            }
         }
-
-        string enumString = value.Value switch
+        
+        /// <summary>
+        /// A Json converter for nullable <see cref="CgroupVersionEnum"/>
+        /// </summary>
+        public class CgroupVersionEnumNullableJsonConverter : JsonConverter<CgroupVersionEnum?>
         {
-            CgroupVersionEnum._1 => "1",
-            CgroupVersionEnum._2 => "2",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-
-        writer.WriteStringValue(enumString);
-    }
-}
+            public override CgroupVersionEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                if (reader.TokenType == JsonTokenType.Null)
+                    return null;
+        
+                string? enumString = reader.GetString();
+        
+                return enumString switch
+                {
+                    "1" => CgroupVersionEnum._1,
+                    "2" => CgroupVersionEnum._2,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, CgroupVersionEnum? value, JsonSerializerOptions options)
+            {
+                if (value == null)
+                {
+                    writer.WriteNullValue();
+                    return;
+                }
+        
+                string enumString = value.Value switch
+                {
+                    CgroupVersionEnum._1 => "1",
+                    CgroupVersionEnum._2 => "2",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+        
+                writer.WriteStringValue(enumString);
+            }
+        }
 
         /// <summary>
         /// Used to track the state of CgroupVersion
@@ -264,80 +264,80 @@ public class CgroupVersionEnumNullableJsonConverter : JsonConverter<CgroupVersio
             Empty = 4
         }
 
-/// <summary>
-/// A Json converter for type <see cref="IsolationEnum"/>
-/// </summary>
-public class IsolationEnumJsonConverter : JsonConverter<IsolationEnum>
-{
-    public override IsolationEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        string? enumString = reader.GetString();
-        return enumString switch
+        /// <summary>
+        /// A Json converter for type <see cref="IsolationEnum"/>
+        /// </summary>
+        public class IsolationEnumJsonConverter : JsonConverter<IsolationEnum>
         {
-            "default" => IsolationEnum.Default,
-            "hyperv" => IsolationEnum.Hyperv,
-            "process" => IsolationEnum.Process,
-            "" => IsolationEnum.Empty,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, IsolationEnum value, JsonSerializerOptions options)
-    {
-        string enumString = value switch
-        {
-            IsolationEnum.Default => "default",
-            IsolationEnum.Hyperv => "hyperv",
-            IsolationEnum.Process => "process",
-            IsolationEnum.Empty => "",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-        writer.WriteStringValue(enumString);
-    }
-}
-
-/// <summary>
-/// A Json converter for nullable <see cref="IsolationEnum"/>
-/// </summary>
-public class IsolationEnumNullableJsonConverter : JsonConverter<IsolationEnum?>
-{
-    public override IsolationEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        if (reader.TokenType == JsonTokenType.Null)
-            return null;
-
-        string? enumString = reader.GetString();
-
-        return enumString switch
-        {
-            "default" => IsolationEnum.Default,
-            "hyperv" => IsolationEnum.Hyperv,
-            "process" => IsolationEnum.Process,
-            "" => IsolationEnum.Empty,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, IsolationEnum? value, JsonSerializerOptions options)
-    {
-        if (value == null)
-        {
-            writer.WriteNullValue();
-            return;
+            public override IsolationEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                string? enumString = reader.GetString();
+                return enumString switch
+                {
+                    "default" => IsolationEnum.Default,
+                    "hyperv" => IsolationEnum.Hyperv,
+                    "process" => IsolationEnum.Process,
+                    "" => IsolationEnum.Empty,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, IsolationEnum value, JsonSerializerOptions options)
+            {
+                string enumString = value switch
+                {
+                    IsolationEnum.Default => "default",
+                    IsolationEnum.Hyperv => "hyperv",
+                    IsolationEnum.Process => "process",
+                    IsolationEnum.Empty => "",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+                writer.WriteStringValue(enumString);
+            }
         }
-
-        string enumString = value.Value switch
+        
+        /// <summary>
+        /// A Json converter for nullable <see cref="IsolationEnum"/>
+        /// </summary>
+        public class IsolationEnumNullableJsonConverter : JsonConverter<IsolationEnum?>
         {
-            IsolationEnum.Default => "default",
-            IsolationEnum.Hyperv => "hyperv",
-            IsolationEnum.Process => "process",
-            IsolationEnum.Empty => "",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-
-        writer.WriteStringValue(enumString);
-    }
-}
+            public override IsolationEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                if (reader.TokenType == JsonTokenType.Null)
+                    return null;
+        
+                string? enumString = reader.GetString();
+        
+                return enumString switch
+                {
+                    "default" => IsolationEnum.Default,
+                    "hyperv" => IsolationEnum.Hyperv,
+                    "process" => IsolationEnum.Process,
+                    "" => IsolationEnum.Empty,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, IsolationEnum? value, JsonSerializerOptions options)
+            {
+                if (value == null)
+                {
+                    writer.WriteNullValue();
+                    return;
+                }
+        
+                string enumString = value.Value switch
+                {
+                    IsolationEnum.Default => "default",
+                    IsolationEnum.Hyperv => "hyperv",
+                    IsolationEnum.Process => "process",
+                    IsolationEnum.Empty => "",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+        
+                writer.WriteStringValue(enumString);
+            }
+        }
 
         /// <summary>
         /// Used to track the state of Isolation
@@ -373,7 +373,7 @@ public class IsolationEnumNullableJsonConverter : JsonConverter<IsolationEnum?>
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> ContainersOption { get; private set; }
+        public Option<ulong?> ContainersOption { get; private set; }
 
         /// <summary>
         /// Total number of containers on the host.
@@ -381,14 +381,14 @@ public class IsolationEnumNullableJsonConverter : JsonConverter<IsolationEnum?>
         /// <value>Total number of containers on the host.</value>
         /* <example>14</example> */
         [JsonPropertyName("Containers")]
-        public int? Containers { get { return this.ContainersOption; } set { this.ContainersOption = new(value); } }
+        public ulong? Containers { get { return this.ContainersOption; } set { this.ContainersOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of ContainersRunning
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> ContainersRunningOption { get; private set; }
+        public Option<ulong?> ContainersRunningOption { get; private set; }
 
         /// <summary>
         /// Number of containers with status &#x60;\&quot;running\&quot;&#x60;. 
@@ -396,14 +396,14 @@ public class IsolationEnumNullableJsonConverter : JsonConverter<IsolationEnum?>
         /// <value>Number of containers with status &#x60;\&quot;running\&quot;&#x60;. </value>
         /* <example>3</example> */
         [JsonPropertyName("ContainersRunning")]
-        public int? ContainersRunning { get { return this.ContainersRunningOption; } set { this.ContainersRunningOption = new(value); } }
+        public ulong? ContainersRunning { get { return this.ContainersRunningOption; } set { this.ContainersRunningOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of ContainersPaused
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> ContainersPausedOption { get; private set; }
+        public Option<ulong?> ContainersPausedOption { get; private set; }
 
         /// <summary>
         /// Number of containers with status &#x60;\&quot;paused\&quot;&#x60;. 
@@ -411,14 +411,14 @@ public class IsolationEnumNullableJsonConverter : JsonConverter<IsolationEnum?>
         /// <value>Number of containers with status &#x60;\&quot;paused\&quot;&#x60;. </value>
         /* <example>1</example> */
         [JsonPropertyName("ContainersPaused")]
-        public int? ContainersPaused { get { return this.ContainersPausedOption; } set { this.ContainersPausedOption = new(value); } }
+        public ulong? ContainersPaused { get { return this.ContainersPausedOption; } set { this.ContainersPausedOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of ContainersStopped
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> ContainersStoppedOption { get; private set; }
+        public Option<ulong?> ContainersStoppedOption { get; private set; }
 
         /// <summary>
         /// Number of containers with status &#x60;\&quot;stopped\&quot;&#x60;. 
@@ -426,14 +426,14 @@ public class IsolationEnumNullableJsonConverter : JsonConverter<IsolationEnum?>
         /// <value>Number of containers with status &#x60;\&quot;stopped\&quot;&#x60;. </value>
         /* <example>10</example> */
         [JsonPropertyName("ContainersStopped")]
-        public int? ContainersStopped { get { return this.ContainersStoppedOption; } set { this.ContainersStoppedOption = new(value); } }
+        public ulong? ContainersStopped { get { return this.ContainersStoppedOption; } set { this.ContainersStoppedOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of Images
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> ImagesOption { get; private set; }
+        public Option<ulong?> ImagesOption { get; private set; }
 
         /// <summary>
         /// Total number of images on the host.  Both _tagged_ and _untagged_ (dangling) images are counted. 
@@ -441,7 +441,7 @@ public class IsolationEnumNullableJsonConverter : JsonConverter<IsolationEnum?>
         /// <value>Total number of images on the host.  Both _tagged_ and _untagged_ (dangling) images are counted. </value>
         /* <example>508</example> */
         [JsonPropertyName("Images")]
-        public int? Images { get { return this.ImagesOption; } set { this.ImagesOption = new(value); } }
+        public ulong? Images { get { return this.ImagesOption; } set { this.ImagesOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of Driver
@@ -700,7 +700,7 @@ public class IsolationEnumNullableJsonConverter : JsonConverter<IsolationEnum?>
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> NFdOption { get; private set; }
+        public Option<ulong?> NFdOption { get; private set; }
 
         /// <summary>
         /// The total number of file Descriptors in use by the daemon process.  This information is only returned if debug-mode is enabled. 
@@ -708,14 +708,14 @@ public class IsolationEnumNullableJsonConverter : JsonConverter<IsolationEnum?>
         /// <value>The total number of file Descriptors in use by the daemon process.  This information is only returned if debug-mode is enabled. </value>
         /* <example>64</example> */
         [JsonPropertyName("NFd")]
-        public int? NFd { get { return this.NFdOption; } set { this.NFdOption = new(value); } }
+        public ulong? NFd { get { return this.NFdOption; } set { this.NFdOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of NGoroutines
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> NGoroutinesOption { get; private set; }
+        public Option<ulong?> NGoroutinesOption { get; private set; }
 
         /// <summary>
         /// The  number of goroutines that currently exist.  This information is only returned if debug-mode is enabled. 
@@ -723,7 +723,7 @@ public class IsolationEnumNullableJsonConverter : JsonConverter<IsolationEnum?>
         /// <value>The  number of goroutines that currently exist.  This information is only returned if debug-mode is enabled. </value>
         /* <example>174</example> */
         [JsonPropertyName("NGoroutines")]
-        public int? NGoroutines { get { return this.NGoroutinesOption; } set { this.NGoroutinesOption = new(value); } }
+        public ulong? NGoroutines { get { return this.NGoroutinesOption; } set { this.NGoroutinesOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of SystemTime
@@ -759,7 +759,7 @@ public class IsolationEnumNullableJsonConverter : JsonConverter<IsolationEnum?>
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> NEventsListenerOption { get; private set; }
+        public Option<ulong?> NEventsListenerOption { get; private set; }
 
         /// <summary>
         /// Number of event listeners subscribed.
@@ -767,7 +767,7 @@ public class IsolationEnumNullableJsonConverter : JsonConverter<IsolationEnum?>
         /// <value>Number of event listeners subscribed.</value>
         /* <example>30</example> */
         [JsonPropertyName("NEventsListener")]
-        public int? NEventsListener { get { return this.NEventsListenerOption; } set { this.NEventsListenerOption = new(value); } }
+        public ulong? NEventsListener { get { return this.NEventsListenerOption; } set { this.NEventsListenerOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of KernelVersion
@@ -849,7 +849,7 @@ public class IsolationEnumNullableJsonConverter : JsonConverter<IsolationEnum?>
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> NCPUOption { get; private set; }
+        public Option<ulong?> NCPUOption { get; private set; }
 
         /// <summary>
         /// The number of logical CPUs usable by the daemon.  The number of available CPUs is checked by querying the operating system when the daemon starts. Changes to operating system CPU allocation after the daemon is started are not reflected. 
@@ -857,7 +857,7 @@ public class IsolationEnumNullableJsonConverter : JsonConverter<IsolationEnum?>
         /// <value>The number of logical CPUs usable by the daemon.  The number of available CPUs is checked by querying the operating system when the daemon starts. Changes to operating system CPU allocation after the daemon is started are not reflected. </value>
         /* <example>4</example> */
         [JsonPropertyName("NCPU")]
-        public int? NCPU { get { return this.NCPUOption; } set { this.NCPUOption = new(value); } }
+        public ulong? NCPU { get { return this.NCPUOption; } set { this.NCPUOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of MemTotal

@@ -35,28 +35,28 @@ namespace DockerDotNet.Shared.Models
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> UIDOption { get; private set; }
+        public Option<ulong?> UIDOption { get; private set; }
 
         /// <summary>
         /// Gets or Sets UID
         /// </summary>
         /* <example>1000</example> */
         [JsonPropertyName("UID")]
-        public int? UID { get { return this.UIDOption; } set { this.UIDOption = new(value); } }
+        public ulong? UID { get { return this.UIDOption; } set { this.UIDOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of GID
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> GIDOption { get; private set; }
+        public Option<ulong?> GIDOption { get; private set; }
 
         /// <summary>
         /// Gets or Sets GID
         /// </summary>
         /* <example>1000</example> */
         [JsonPropertyName("GID")]
-        public int? GID { get { return this.GIDOption; } set { this.GIDOption = new(value); } }
+        public ulong? GID { get { return this.GIDOption; } set { this.GIDOption = new(value); } }
 
         /// <summary>
         /// Returns the string presentation of the object

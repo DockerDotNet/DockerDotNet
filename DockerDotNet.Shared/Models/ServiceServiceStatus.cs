@@ -35,7 +35,7 @@ namespace DockerDotNet.Shared.Models
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> RunningTasksOption { get; private set; }
+        public Option<ulong?> RunningTasksOption { get; private set; }
 
         /// <summary>
         /// The number of tasks for the service currently in the Running state. 
@@ -43,14 +43,14 @@ namespace DockerDotNet.Shared.Models
         /// <value>The number of tasks for the service currently in the Running state. </value>
         /* <example>7</example> */
         [JsonPropertyName("RunningTasks")]
-        public int? RunningTasks { get { return this.RunningTasksOption; } set { this.RunningTasksOption = new(value); } }
+        public ulong? RunningTasks { get { return this.RunningTasksOption; } set { this.RunningTasksOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of DesiredTasks
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> DesiredTasksOption { get; private set; }
+        public Option<ulong?> DesiredTasksOption { get; private set; }
 
         /// <summary>
         /// The number of tasks for the service desired to be running. For replicated services, this is the replica count from the service spec. For global services, this is computed by taking count of all tasks for the service with a Desired State other than Shutdown. 
@@ -58,21 +58,21 @@ namespace DockerDotNet.Shared.Models
         /// <value>The number of tasks for the service desired to be running. For replicated services, this is the replica count from the service spec. For global services, this is computed by taking count of all tasks for the service with a Desired State other than Shutdown. </value>
         /* <example>10</example> */
         [JsonPropertyName("DesiredTasks")]
-        public int? DesiredTasks { get { return this.DesiredTasksOption; } set { this.DesiredTasksOption = new(value); } }
+        public ulong? DesiredTasks { get { return this.DesiredTasksOption; } set { this.DesiredTasksOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of CompletedTasks
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> CompletedTasksOption { get; private set; }
+        public Option<ulong?> CompletedTasksOption { get; private set; }
 
         /// <summary>
         /// The number of tasks for a job that are in the Completed state. This field must be cross-referenced with the service type, as the value of 0 may mean the service is not in a job mode, or it may mean the job-mode service has no tasks yet Completed. 
         /// </summary>
         /// <value>The number of tasks for a job that are in the Completed state. This field must be cross-referenced with the service type, as the value of 0 may mean the service is not in a job mode, or it may mean the job-mode service has no tasks yet Completed. </value>
         [JsonPropertyName("CompletedTasks")]
-        public int? CompletedTasks { get { return this.CompletedTasksOption; } set { this.CompletedTasksOption = new(value); } }
+        public ulong? CompletedTasks { get { return this.CompletedTasksOption; } set { this.CompletedTasksOption = new(value); } }
 
         /// <summary>
         /// Returns the string presentation of the object

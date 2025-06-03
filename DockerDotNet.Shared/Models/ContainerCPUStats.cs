@@ -48,7 +48,7 @@ namespace DockerDotNet.Shared.Models
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> SystemCpuUsageOption { get; private set; }
+        public Option<ulong?> SystemCpuUsageOption { get; private set; }
 
         /// <summary>
         /// System Usage.  This field is Linux-specific and omitted for Windows containers. 
@@ -56,14 +56,14 @@ namespace DockerDotNet.Shared.Models
         /// <value>System Usage.  This field is Linux-specific and omitted for Windows containers. </value>
         /* <example>5</example> */
         [JsonPropertyName("system_cpu_usage")]
-        public int? SystemCpuUsage { get { return this.SystemCpuUsageOption; } set { this.SystemCpuUsageOption = new(value); } }
+        public ulong? SystemCpuUsage { get { return this.SystemCpuUsageOption; } set { this.SystemCpuUsageOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of OnlineCpus
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> OnlineCpusOption { get; private set; }
+        public Option<ulong?> OnlineCpusOption { get; private set; }
 
         /// <summary>
         /// Number of online CPUs.  This field is Linux-specific and omitted for Windows containers. 
@@ -71,7 +71,7 @@ namespace DockerDotNet.Shared.Models
         /// <value>Number of online CPUs.  This field is Linux-specific and omitted for Windows containers. </value>
         /* <example>5</example> */
         [JsonPropertyName("online_cpus")]
-        public int? OnlineCpus { get { return this.OnlineCpusOption; } set { this.OnlineCpusOption = new(value); } }
+        public ulong? OnlineCpus { get { return this.OnlineCpusOption; } set { this.OnlineCpusOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of ThrottlingData

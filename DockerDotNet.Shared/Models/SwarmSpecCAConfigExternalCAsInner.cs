@@ -42,68 +42,68 @@ namespace DockerDotNet.Shared.Models
             Cfssl = 1
         }
 
-/// <summary>
-/// A Json converter for type <see cref="ProtocolEnum"/>
-/// </summary>
-public class ProtocolEnumJsonConverter : JsonConverter<ProtocolEnum>
-{
-    public override ProtocolEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        string? enumString = reader.GetString();
-        return enumString switch
+        /// <summary>
+        /// A Json converter for type <see cref="ProtocolEnum"/>
+        /// </summary>
+        public class ProtocolEnumJsonConverter : JsonConverter<ProtocolEnum>
         {
-            "cfssl" => ProtocolEnum.Cfssl,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, ProtocolEnum value, JsonSerializerOptions options)
-    {
-        string enumString = value switch
-        {
-            ProtocolEnum.Cfssl => "cfssl",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-        writer.WriteStringValue(enumString);
-    }
-}
-
-/// <summary>
-/// A Json converter for nullable <see cref="ProtocolEnum"/>
-/// </summary>
-public class ProtocolEnumNullableJsonConverter : JsonConverter<ProtocolEnum?>
-{
-    public override ProtocolEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        if (reader.TokenType == JsonTokenType.Null)
-            return null;
-
-        string? enumString = reader.GetString();
-
-        return enumString switch
-        {
-            "cfssl" => ProtocolEnum.Cfssl,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, ProtocolEnum? value, JsonSerializerOptions options)
-    {
-        if (value == null)
-        {
-            writer.WriteNullValue();
-            return;
+            public override ProtocolEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                string? enumString = reader.GetString();
+                return enumString switch
+                {
+                    "cfssl" => ProtocolEnum.Cfssl,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, ProtocolEnum value, JsonSerializerOptions options)
+            {
+                string enumString = value switch
+                {
+                    ProtocolEnum.Cfssl => "cfssl",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+                writer.WriteStringValue(enumString);
+            }
         }
-
-        string enumString = value.Value switch
+        
+        /// <summary>
+        /// A Json converter for nullable <see cref="ProtocolEnum"/>
+        /// </summary>
+        public class ProtocolEnumNullableJsonConverter : JsonConverter<ProtocolEnum?>
         {
-            ProtocolEnum.Cfssl => "cfssl",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-
-        writer.WriteStringValue(enumString);
-    }
-}
+            public override ProtocolEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                if (reader.TokenType == JsonTokenType.Null)
+                    return null;
+        
+                string? enumString = reader.GetString();
+        
+                return enumString switch
+                {
+                    "cfssl" => ProtocolEnum.Cfssl,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, ProtocolEnum? value, JsonSerializerOptions options)
+            {
+                if (value == null)
+                {
+                    writer.WriteNullValue();
+                    return;
+                }
+        
+                string enumString = value.Value switch
+                {
+                    ProtocolEnum.Cfssl => "cfssl",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+        
+                writer.WriteStringValue(enumString);
+            }
+        }
 
         /// <summary>
         /// Used to track the state of Protocol

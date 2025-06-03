@@ -60,86 +60,87 @@ namespace DockerDotNet.Shared.Models
         /// </summary>
         Locked = 6
     }
-/// <summary>
-/// A Json converter for type <see cref="LocalNodeState"/>
-/// </summary>
-public class LocalNodeStateJsonConverter : JsonConverter<LocalNodeState>
-{
-    public override LocalNodeState Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    
+    /// <summary>
+    /// A Json converter for type <see cref="LocalNodeState"/>
+    /// </summary>
+    public class LocalNodeStateJsonConverter : JsonConverter<LocalNodeState>
     {
-        string? enumString = reader.GetString();
-        return enumString switch
+        public override LocalNodeState Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            "" => LocalNodeState.Empty,
-            "inactive" => LocalNodeState.Inactive,
-            "pending" => LocalNodeState.Pending,
-            "active" => LocalNodeState.Active,
-            "error" => LocalNodeState.Error,
-            "locked" => LocalNodeState.Locked,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, LocalNodeState value, JsonSerializerOptions options)
-    {
-        string enumString = value switch
-        {
-            LocalNodeState.Empty => "",
-            LocalNodeState.Inactive => "inactive",
-            LocalNodeState.Pending => "pending",
-            LocalNodeState.Active => "active",
-            LocalNodeState.Error => "error",
-            LocalNodeState.Locked => "locked",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-        writer.WriteStringValue(enumString);
-    }
-}
-
-/// <summary>
-/// A Json converter for nullable <see cref="LocalNodeState"/>
-/// </summary>
-public class LocalNodeStateNullableJsonConverter : JsonConverter<LocalNodeState?>
-{
-    public override LocalNodeState? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        if (reader.TokenType == JsonTokenType.Null)
-            return null;
-
-        string? enumString = reader.GetString();
-
-        return enumString switch
-        {
-            "" => LocalNodeState.Empty,
-            "inactive" => LocalNodeState.Inactive,
-            "pending" => LocalNodeState.Pending,
-            "active" => LocalNodeState.Active,
-            "error" => LocalNodeState.Error,
-            "locked" => LocalNodeState.Locked,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, LocalNodeState? value, JsonSerializerOptions options)
-    {
-        if (value == null)
-        {
-            writer.WriteNullValue();
-            return;
+            string? enumString = reader.GetString();
+            return enumString switch
+            {
+                "" => LocalNodeState.Empty,
+                "inactive" => LocalNodeState.Inactive,
+                "pending" => LocalNodeState.Pending,
+                "active" => LocalNodeState.Active,
+                "error" => LocalNodeState.Error,
+                "locked" => LocalNodeState.Locked,
+                _ => throw new JsonException($"Unknown value: {enumString}")
+            };
         }
-
-        string enumString = value.Value switch
+    
+        public override void Write(Utf8JsonWriter writer, LocalNodeState value, JsonSerializerOptions options)
         {
-            LocalNodeState.Empty => "",
-            LocalNodeState.Inactive => "inactive",
-            LocalNodeState.Pending => "pending",
-            LocalNodeState.Active => "active",
-            LocalNodeState.Error => "error",
-            LocalNodeState.Locked => "locked",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-
-        writer.WriteStringValue(enumString);
+            string enumString = value switch
+            {
+                LocalNodeState.Empty => "",
+                LocalNodeState.Inactive => "inactive",
+                LocalNodeState.Pending => "pending",
+                LocalNodeState.Active => "active",
+                LocalNodeState.Error => "error",
+                LocalNodeState.Locked => "locked",
+                _ => throw new JsonException($"Unknown value: {value}")
+            };
+            writer.WriteStringValue(enumString);
+        }
     }
-}
+    
+    /// <summary>
+    /// A Json converter for nullable <see cref="LocalNodeState"/>
+    /// </summary>
+    public class LocalNodeStateNullableJsonConverter : JsonConverter<LocalNodeState?>
+    {
+        public override LocalNodeState? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            if (reader.TokenType == JsonTokenType.Null)
+                return null;
+    
+            string? enumString = reader.GetString();
+    
+            return enumString switch
+            {
+                "" => LocalNodeState.Empty,
+                "inactive" => LocalNodeState.Inactive,
+                "pending" => LocalNodeState.Pending,
+                "active" => LocalNodeState.Active,
+                "error" => LocalNodeState.Error,
+                "locked" => LocalNodeState.Locked,
+                _ => throw new JsonException($"Unknown value: {enumString}")
+            };
+        }
+    
+        public override void Write(Utf8JsonWriter writer, LocalNodeState? value, JsonSerializerOptions options)
+        {
+            if (value == null)
+            {
+                writer.WriteNullValue();
+                return;
+            }
+    
+            string enumString = value.Value switch
+            {
+                LocalNodeState.Empty => "",
+                LocalNodeState.Inactive => "inactive",
+                LocalNodeState.Pending => "pending",
+                LocalNodeState.Active => "active",
+                LocalNodeState.Error => "error",
+                LocalNodeState.Locked => "locked",
+                _ => throw new JsonException($"Unknown value: {value}")
+            };
+    
+            writer.WriteStringValue(enumString);
+        }
+    }
 }

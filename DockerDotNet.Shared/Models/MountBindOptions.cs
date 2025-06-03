@@ -67,88 +67,88 @@ namespace DockerDotNet.Shared.Models
             Rslave = 6
         }
 
-/// <summary>
-/// A Json converter for type <see cref="PropagationEnum"/>
-/// </summary>
-public class PropagationEnumJsonConverter : JsonConverter<PropagationEnum>
-{
-    public override PropagationEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        string? enumString = reader.GetString();
-        return enumString switch
+        /// <summary>
+        /// A Json converter for type <see cref="PropagationEnum"/>
+        /// </summary>
+        public class PropagationEnumJsonConverter : JsonConverter<PropagationEnum>
         {
-            "private" => PropagationEnum.Private,
-            "rprivate" => PropagationEnum.Rprivate,
-            "shared" => PropagationEnum.Shared,
-            "rshared" => PropagationEnum.Rshared,
-            "slave" => PropagationEnum.Slave,
-            "rslave" => PropagationEnum.Rslave,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, PropagationEnum value, JsonSerializerOptions options)
-    {
-        string enumString = value switch
-        {
-            PropagationEnum.Private => "private",
-            PropagationEnum.Rprivate => "rprivate",
-            PropagationEnum.Shared => "shared",
-            PropagationEnum.Rshared => "rshared",
-            PropagationEnum.Slave => "slave",
-            PropagationEnum.Rslave => "rslave",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-        writer.WriteStringValue(enumString);
-    }
-}
-
-/// <summary>
-/// A Json converter for nullable <see cref="PropagationEnum"/>
-/// </summary>
-public class PropagationEnumNullableJsonConverter : JsonConverter<PropagationEnum?>
-{
-    public override PropagationEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        if (reader.TokenType == JsonTokenType.Null)
-            return null;
-
-        string? enumString = reader.GetString();
-
-        return enumString switch
-        {
-            "private" => PropagationEnum.Private,
-            "rprivate" => PropagationEnum.Rprivate,
-            "shared" => PropagationEnum.Shared,
-            "rshared" => PropagationEnum.Rshared,
-            "slave" => PropagationEnum.Slave,
-            "rslave" => PropagationEnum.Rslave,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, PropagationEnum? value, JsonSerializerOptions options)
-    {
-        if (value == null)
-        {
-            writer.WriteNullValue();
-            return;
+            public override PropagationEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                string? enumString = reader.GetString();
+                return enumString switch
+                {
+                    "private" => PropagationEnum.Private,
+                    "rprivate" => PropagationEnum.Rprivate,
+                    "shared" => PropagationEnum.Shared,
+                    "rshared" => PropagationEnum.Rshared,
+                    "slave" => PropagationEnum.Slave,
+                    "rslave" => PropagationEnum.Rslave,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, PropagationEnum value, JsonSerializerOptions options)
+            {
+                string enumString = value switch
+                {
+                    PropagationEnum.Private => "private",
+                    PropagationEnum.Rprivate => "rprivate",
+                    PropagationEnum.Shared => "shared",
+                    PropagationEnum.Rshared => "rshared",
+                    PropagationEnum.Slave => "slave",
+                    PropagationEnum.Rslave => "rslave",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+                writer.WriteStringValue(enumString);
+            }
         }
-
-        string enumString = value.Value switch
+        
+        /// <summary>
+        /// A Json converter for nullable <see cref="PropagationEnum"/>
+        /// </summary>
+        public class PropagationEnumNullableJsonConverter : JsonConverter<PropagationEnum?>
         {
-            PropagationEnum.Private => "private",
-            PropagationEnum.Rprivate => "rprivate",
-            PropagationEnum.Shared => "shared",
-            PropagationEnum.Rshared => "rshared",
-            PropagationEnum.Slave => "slave",
-            PropagationEnum.Rslave => "rslave",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-
-        writer.WriteStringValue(enumString);
-    }
-}
+            public override PropagationEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                if (reader.TokenType == JsonTokenType.Null)
+                    return null;
+        
+                string? enumString = reader.GetString();
+        
+                return enumString switch
+                {
+                    "private" => PropagationEnum.Private,
+                    "rprivate" => PropagationEnum.Rprivate,
+                    "shared" => PropagationEnum.Shared,
+                    "rshared" => PropagationEnum.Rshared,
+                    "slave" => PropagationEnum.Slave,
+                    "rslave" => PropagationEnum.Rslave,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, PropagationEnum? value, JsonSerializerOptions options)
+            {
+                if (value == null)
+                {
+                    writer.WriteNullValue();
+                    return;
+                }
+        
+                string enumString = value.Value switch
+                {
+                    PropagationEnum.Private => "private",
+                    PropagationEnum.Rprivate => "rprivate",
+                    PropagationEnum.Shared => "shared",
+                    PropagationEnum.Rshared => "rshared",
+                    PropagationEnum.Slave => "slave",
+                    PropagationEnum.Rslave => "rslave",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+        
+                writer.WriteStringValue(enumString);
+            }
+        }
 
         /// <summary>
         /// Used to track the state of Propagation

@@ -121,7 +121,7 @@ namespace DockerDotNet.Shared.Models
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> NumProcsOption { get; private set; }
+        public Option<ulong?> NumProcsOption { get; private set; }
 
         /// <summary>
         /// The number of processors on the system.  This field is Windows-specific and always zero for Linux containers. 
@@ -129,7 +129,7 @@ namespace DockerDotNet.Shared.Models
         /// <value>The number of processors on the system.  This field is Windows-specific and always zero for Linux containers. </value>
         /* <example>16</example> */
         [JsonPropertyName("num_procs")]
-        public int? NumProcs { get { return this.NumProcsOption; } set { this.NumProcsOption = new(value); } }
+        public ulong? NumProcs { get { return this.NumProcsOption; } set { this.NumProcsOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of StorageStats

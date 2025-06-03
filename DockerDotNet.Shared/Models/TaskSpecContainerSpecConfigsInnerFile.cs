@@ -77,14 +77,14 @@ namespace DockerDotNet.Shared.Models
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> ModeOption { get; private set; }
+        public Option<ulong?> ModeOption { get; private set; }
 
         /// <summary>
         /// Mode represents the FileMode of the file.
         /// </summary>
         /// <value>Mode represents the FileMode of the file.</value>
         [JsonPropertyName("Mode")]
-        public int? Mode { get { return this.ModeOption; } set { this.ModeOption = new(value); } }
+        public ulong? Mode { get { return this.ModeOption; } set { this.ModeOption = new(value); } }
 
         /// <summary>
         /// Returns the string presentation of the object

@@ -120,7 +120,7 @@ namespace DockerDotNet.Shared.Models
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> NodesOption { get; private set; }
+        public Option<ulong?> NodesOption { get; private set; }
 
         /// <summary>
         /// Total number of nodes in the swarm.
@@ -128,14 +128,14 @@ namespace DockerDotNet.Shared.Models
         /// <value>Total number of nodes in the swarm.</value>
         /* <example>4</example> */
         [JsonPropertyName("Nodes")]
-        public int? Nodes { get { return this.NodesOption; } set { this.NodesOption = new(value); } }
+        public ulong? Nodes { get { return this.NodesOption; } set { this.NodesOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of Managers
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> ManagersOption { get; private set; }
+        public Option<ulong?> ManagersOption { get; private set; }
 
         /// <summary>
         /// Total number of managers in the swarm.
@@ -143,7 +143,7 @@ namespace DockerDotNet.Shared.Models
         /// <value>Total number of managers in the swarm.</value>
         /* <example>3</example> */
         [JsonPropertyName("Managers")]
-        public int? Managers { get { return this.ManagersOption; } set { this.ManagersOption = new(value); } }
+        public ulong? Managers { get { return this.ManagersOption; } set { this.ManagersOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of Cluster

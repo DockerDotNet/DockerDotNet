@@ -77,14 +77,14 @@ namespace DockerDotNet.Shared.Models
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> RetriesOption { get; private set; }
+        public Option<ulong?> RetriesOption { get; private set; }
 
         /// <summary>
         /// The number of consecutive failures needed to consider a container as unhealthy. 0 means inherit. 
         /// </summary>
         /// <value>The number of consecutive failures needed to consider a container as unhealthy. 0 means inherit. </value>
         [JsonPropertyName("Retries")]
-        public int? Retries { get { return this.RetriesOption; } set { this.RetriesOption = new(value); } }
+        public ulong? Retries { get { return this.RetriesOption; } set { this.RetriesOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of StartPeriod

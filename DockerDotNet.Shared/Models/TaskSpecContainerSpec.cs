@@ -57,80 +57,80 @@ namespace DockerDotNet.Shared.Models
             Empty = 4
         }
 
-/// <summary>
-/// A Json converter for type <see cref="IsolationEnum"/>
-/// </summary>
-public class IsolationEnumJsonConverter : JsonConverter<IsolationEnum>
-{
-    public override IsolationEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        string? enumString = reader.GetString();
-        return enumString switch
+        /// <summary>
+        /// A Json converter for type <see cref="IsolationEnum"/>
+        /// </summary>
+        public class IsolationEnumJsonConverter : JsonConverter<IsolationEnum>
         {
-            "default" => IsolationEnum.Default,
-            "process" => IsolationEnum.Process,
-            "hyperv" => IsolationEnum.Hyperv,
-            "" => IsolationEnum.Empty,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, IsolationEnum value, JsonSerializerOptions options)
-    {
-        string enumString = value switch
-        {
-            IsolationEnum.Default => "default",
-            IsolationEnum.Process => "process",
-            IsolationEnum.Hyperv => "hyperv",
-            IsolationEnum.Empty => "",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-        writer.WriteStringValue(enumString);
-    }
-}
-
-/// <summary>
-/// A Json converter for nullable <see cref="IsolationEnum"/>
-/// </summary>
-public class IsolationEnumNullableJsonConverter : JsonConverter<IsolationEnum?>
-{
-    public override IsolationEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        if (reader.TokenType == JsonTokenType.Null)
-            return null;
-
-        string? enumString = reader.GetString();
-
-        return enumString switch
-        {
-            "default" => IsolationEnum.Default,
-            "process" => IsolationEnum.Process,
-            "hyperv" => IsolationEnum.Hyperv,
-            "" => IsolationEnum.Empty,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, IsolationEnum? value, JsonSerializerOptions options)
-    {
-        if (value == null)
-        {
-            writer.WriteNullValue();
-            return;
+            public override IsolationEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                string? enumString = reader.GetString();
+                return enumString switch
+                {
+                    "default" => IsolationEnum.Default,
+                    "process" => IsolationEnum.Process,
+                    "hyperv" => IsolationEnum.Hyperv,
+                    "" => IsolationEnum.Empty,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, IsolationEnum value, JsonSerializerOptions options)
+            {
+                string enumString = value switch
+                {
+                    IsolationEnum.Default => "default",
+                    IsolationEnum.Process => "process",
+                    IsolationEnum.Hyperv => "hyperv",
+                    IsolationEnum.Empty => "",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+                writer.WriteStringValue(enumString);
+            }
         }
-
-        string enumString = value.Value switch
+        
+        /// <summary>
+        /// A Json converter for nullable <see cref="IsolationEnum"/>
+        /// </summary>
+        public class IsolationEnumNullableJsonConverter : JsonConverter<IsolationEnum?>
         {
-            IsolationEnum.Default => "default",
-            IsolationEnum.Process => "process",
-            IsolationEnum.Hyperv => "hyperv",
-            IsolationEnum.Empty => "",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-
-        writer.WriteStringValue(enumString);
-    }
-}
+            public override IsolationEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                if (reader.TokenType == JsonTokenType.Null)
+                    return null;
+        
+                string? enumString = reader.GetString();
+        
+                return enumString switch
+                {
+                    "default" => IsolationEnum.Default,
+                    "process" => IsolationEnum.Process,
+                    "hyperv" => IsolationEnum.Hyperv,
+                    "" => IsolationEnum.Empty,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, IsolationEnum? value, JsonSerializerOptions options)
+            {
+                if (value == null)
+                {
+                    writer.WriteNullValue();
+                    return;
+                }
+        
+                string enumString = value.Value switch
+                {
+                    IsolationEnum.Default => "default",
+                    IsolationEnum.Process => "process",
+                    IsolationEnum.Hyperv => "hyperv",
+                    IsolationEnum.Empty => "",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+        
+                writer.WriteStringValue(enumString);
+            }
+        }
 
         /// <summary>
         /// Used to track the state of Isolation

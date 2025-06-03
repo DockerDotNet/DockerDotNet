@@ -35,7 +35,7 @@ namespace DockerDotNet.Shared.Models
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> SnapshotIntervalOption { get; private set; }
+        public Option<ulong?> SnapshotIntervalOption { get; private set; }
 
         /// <summary>
         /// The number of log entries between snapshots.
@@ -43,28 +43,28 @@ namespace DockerDotNet.Shared.Models
         /// <value>The number of log entries between snapshots.</value>
         /* <example>10000</example> */
         [JsonPropertyName("SnapshotInterval")]
-        public int? SnapshotInterval { get { return this.SnapshotIntervalOption; } set { this.SnapshotIntervalOption = new(value); } }
+        public ulong? SnapshotInterval { get { return this.SnapshotIntervalOption; } set { this.SnapshotIntervalOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of KeepOldSnapshots
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> KeepOldSnapshotsOption { get; private set; }
+        public Option<ulong?> KeepOldSnapshotsOption { get; private set; }
 
         /// <summary>
         /// The number of snapshots to keep beyond the current snapshot. 
         /// </summary>
         /// <value>The number of snapshots to keep beyond the current snapshot. </value>
         [JsonPropertyName("KeepOldSnapshots")]
-        public int? KeepOldSnapshots { get { return this.KeepOldSnapshotsOption; } set { this.KeepOldSnapshotsOption = new(value); } }
+        public ulong? KeepOldSnapshots { get { return this.KeepOldSnapshotsOption; } set { this.KeepOldSnapshotsOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of LogEntriesForSlowFollowers
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> LogEntriesForSlowFollowersOption { get; private set; }
+        public Option<ulong?> LogEntriesForSlowFollowersOption { get; private set; }
 
         /// <summary>
         /// The number of log entries to keep around to sync up slow followers after a snapshot is created. 
@@ -72,14 +72,14 @@ namespace DockerDotNet.Shared.Models
         /// <value>The number of log entries to keep around to sync up slow followers after a snapshot is created. </value>
         /* <example>500</example> */
         [JsonPropertyName("LogEntriesForSlowFollowers")]
-        public int? LogEntriesForSlowFollowers { get { return this.LogEntriesForSlowFollowersOption; } set { this.LogEntriesForSlowFollowersOption = new(value); } }
+        public ulong? LogEntriesForSlowFollowers { get { return this.LogEntriesForSlowFollowersOption; } set { this.LogEntriesForSlowFollowersOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of ElectionTick
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> ElectionTickOption { get; private set; }
+        public Option<ulong?> ElectionTickOption { get; private set; }
 
         /// <summary>
         /// The number of ticks that a follower will wait for a message from the leader before becoming a candidate and starting an election. &#x60;ElectionTick&#x60; must be greater than &#x60;HeartbeatTick&#x60;.  A tick currently defaults to one second, so these translate directly to seconds currently, but this is NOT guaranteed. 
@@ -87,14 +87,14 @@ namespace DockerDotNet.Shared.Models
         /// <value>The number of ticks that a follower will wait for a message from the leader before becoming a candidate and starting an election. &#x60;ElectionTick&#x60; must be greater than &#x60;HeartbeatTick&#x60;.  A tick currently defaults to one second, so these translate directly to seconds currently, but this is NOT guaranteed. </value>
         /* <example>3</example> */
         [JsonPropertyName("ElectionTick")]
-        public int? ElectionTick { get { return this.ElectionTickOption; } set { this.ElectionTickOption = new(value); } }
+        public ulong? ElectionTick { get { return this.ElectionTickOption; } set { this.ElectionTickOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of HeartbeatTick
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> HeartbeatTickOption { get; private set; }
+        public Option<ulong?> HeartbeatTickOption { get; private set; }
 
         /// <summary>
         /// The number of ticks between heartbeats. Every HeartbeatTick ticks, the leader will send a heartbeat to the followers.  A tick currently defaults to one second, so these translate directly to seconds currently, but this is NOT guaranteed. 
@@ -102,7 +102,7 @@ namespace DockerDotNet.Shared.Models
         /// <value>The number of ticks between heartbeats. Every HeartbeatTick ticks, the leader will send a heartbeat to the followers.  A tick currently defaults to one second, so these translate directly to seconds currently, but this is NOT guaranteed. </value>
         /* <example>1</example> */
         [JsonPropertyName("HeartbeatTick")]
-        public int? HeartbeatTick { get { return this.HeartbeatTickOption; } set { this.HeartbeatTickOption = new(value); } }
+        public ulong? HeartbeatTick { get { return this.HeartbeatTickOption; } set { this.HeartbeatTickOption = new(value); } }
 
         /// <summary>
         /// Returns the string presentation of the object

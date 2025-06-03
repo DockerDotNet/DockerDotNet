@@ -48,26 +48,26 @@ namespace DockerDotNet.Shared.Models
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> PIDOption { get; private set; }
+        public Option<ulong?> PIDOption { get; private set; }
 
         /// <summary>
         /// Gets or Sets PID
         /// </summary>
         [JsonPropertyName("PID")]
-        public int? PID { get { return this.PIDOption; } set { this.PIDOption = new(value); } }
+        public ulong? PID { get { return this.PIDOption; } set { this.PIDOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of ExitCode
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> ExitCodeOption { get; private set; }
+        public Option<ulong?> ExitCodeOption { get; private set; }
 
         /// <summary>
         /// Gets or Sets ExitCode
         /// </summary>
         [JsonPropertyName("ExitCode")]
-        public int? ExitCode { get { return this.ExitCodeOption; } set { this.ExitCodeOption = new(value); } }
+        public ulong? ExitCode { get { return this.ExitCodeOption; } set { this.ExitCodeOption = new(value); } }
 
         /// <summary>
         /// Returns the string presentation of the object

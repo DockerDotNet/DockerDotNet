@@ -92,108 +92,108 @@ namespace DockerDotNet.Shared.Models
             Volume = 11
         }
 
-/// <summary>
-/// A Json converter for type <see cref="TypeEnum"/>
-/// </summary>
-public class TypeEnumJsonConverter : JsonConverter<TypeEnum>
-{
-    public override TypeEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        string? enumString = reader.GetString();
-        return enumString switch
+        /// <summary>
+        /// A Json converter for type <see cref="TypeEnum"/>
+        /// </summary>
+        public class TypeEnumJsonConverter : JsonConverter<TypeEnum>
         {
-            "builder" => TypeEnum.Builder,
-            "config" => TypeEnum.Config,
-            "container" => TypeEnum.Container,
-            "daemon" => TypeEnum.Daemon,
-            "image" => TypeEnum.Image,
-            "network" => TypeEnum.Network,
-            "node" => TypeEnum.Node,
-            "plugin" => TypeEnum.Plugin,
-            "secret" => TypeEnum.Secret,
-            "service" => TypeEnum.Service,
-            "volume" => TypeEnum.Volume,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, TypeEnum value, JsonSerializerOptions options)
-    {
-        string enumString = value switch
-        {
-            TypeEnum.Builder => "builder",
-            TypeEnum.Config => "config",
-            TypeEnum.Container => "container",
-            TypeEnum.Daemon => "daemon",
-            TypeEnum.Image => "image",
-            TypeEnum.Network => "network",
-            TypeEnum.Node => "node",
-            TypeEnum.Plugin => "plugin",
-            TypeEnum.Secret => "secret",
-            TypeEnum.Service => "service",
-            TypeEnum.Volume => "volume",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-        writer.WriteStringValue(enumString);
-    }
-}
-
-/// <summary>
-/// A Json converter for nullable <see cref="TypeEnum"/>
-/// </summary>
-public class TypeEnumNullableJsonConverter : JsonConverter<TypeEnum?>
-{
-    public override TypeEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        if (reader.TokenType == JsonTokenType.Null)
-            return null;
-
-        string? enumString = reader.GetString();
-
-        return enumString switch
-        {
-            "builder" => TypeEnum.Builder,
-            "config" => TypeEnum.Config,
-            "container" => TypeEnum.Container,
-            "daemon" => TypeEnum.Daemon,
-            "image" => TypeEnum.Image,
-            "network" => TypeEnum.Network,
-            "node" => TypeEnum.Node,
-            "plugin" => TypeEnum.Plugin,
-            "secret" => TypeEnum.Secret,
-            "service" => TypeEnum.Service,
-            "volume" => TypeEnum.Volume,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, TypeEnum? value, JsonSerializerOptions options)
-    {
-        if (value == null)
-        {
-            writer.WriteNullValue();
-            return;
+            public override TypeEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                string? enumString = reader.GetString();
+                return enumString switch
+                {
+                    "builder" => TypeEnum.Builder,
+                    "config" => TypeEnum.Config,
+                    "container" => TypeEnum.Container,
+                    "daemon" => TypeEnum.Daemon,
+                    "image" => TypeEnum.Image,
+                    "network" => TypeEnum.Network,
+                    "node" => TypeEnum.Node,
+                    "plugin" => TypeEnum.Plugin,
+                    "secret" => TypeEnum.Secret,
+                    "service" => TypeEnum.Service,
+                    "volume" => TypeEnum.Volume,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, TypeEnum value, JsonSerializerOptions options)
+            {
+                string enumString = value switch
+                {
+                    TypeEnum.Builder => "builder",
+                    TypeEnum.Config => "config",
+                    TypeEnum.Container => "container",
+                    TypeEnum.Daemon => "daemon",
+                    TypeEnum.Image => "image",
+                    TypeEnum.Network => "network",
+                    TypeEnum.Node => "node",
+                    TypeEnum.Plugin => "plugin",
+                    TypeEnum.Secret => "secret",
+                    TypeEnum.Service => "service",
+                    TypeEnum.Volume => "volume",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+                writer.WriteStringValue(enumString);
+            }
         }
-
-        string enumString = value.Value switch
+        
+        /// <summary>
+        /// A Json converter for nullable <see cref="TypeEnum"/>
+        /// </summary>
+        public class TypeEnumNullableJsonConverter : JsonConverter<TypeEnum?>
         {
-            TypeEnum.Builder => "builder",
-            TypeEnum.Config => "config",
-            TypeEnum.Container => "container",
-            TypeEnum.Daemon => "daemon",
-            TypeEnum.Image => "image",
-            TypeEnum.Network => "network",
-            TypeEnum.Node => "node",
-            TypeEnum.Plugin => "plugin",
-            TypeEnum.Secret => "secret",
-            TypeEnum.Service => "service",
-            TypeEnum.Volume => "volume",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-
-        writer.WriteStringValue(enumString);
-    }
-}
+            public override TypeEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                if (reader.TokenType == JsonTokenType.Null)
+                    return null;
+        
+                string? enumString = reader.GetString();
+        
+                return enumString switch
+                {
+                    "builder" => TypeEnum.Builder,
+                    "config" => TypeEnum.Config,
+                    "container" => TypeEnum.Container,
+                    "daemon" => TypeEnum.Daemon,
+                    "image" => TypeEnum.Image,
+                    "network" => TypeEnum.Network,
+                    "node" => TypeEnum.Node,
+                    "plugin" => TypeEnum.Plugin,
+                    "secret" => TypeEnum.Secret,
+                    "service" => TypeEnum.Service,
+                    "volume" => TypeEnum.Volume,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, TypeEnum? value, JsonSerializerOptions options)
+            {
+                if (value == null)
+                {
+                    writer.WriteNullValue();
+                    return;
+                }
+        
+                string enumString = value.Value switch
+                {
+                    TypeEnum.Builder => "builder",
+                    TypeEnum.Config => "config",
+                    TypeEnum.Container => "container",
+                    TypeEnum.Daemon => "daemon",
+                    TypeEnum.Image => "image",
+                    TypeEnum.Network => "network",
+                    TypeEnum.Node => "node",
+                    TypeEnum.Plugin => "plugin",
+                    TypeEnum.Secret => "secret",
+                    TypeEnum.Service => "service",
+                    TypeEnum.Volume => "volume",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+        
+                writer.WriteStringValue(enumString);
+            }
+        }
 
         /// <summary>
         /// Used to track the state of Type
@@ -227,72 +227,72 @@ public class TypeEnumNullableJsonConverter : JsonConverter<TypeEnum?>
             Swarm = 2
         }
 
-/// <summary>
-/// A Json converter for type <see cref="ScopeEnum"/>
-/// </summary>
-public class ScopeEnumJsonConverter : JsonConverter<ScopeEnum>
-{
-    public override ScopeEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        string? enumString = reader.GetString();
-        return enumString switch
+        /// <summary>
+        /// A Json converter for type <see cref="ScopeEnum"/>
+        /// </summary>
+        public class ScopeEnumJsonConverter : JsonConverter<ScopeEnum>
         {
-            "local" => ScopeEnum.Local,
-            "swarm" => ScopeEnum.Swarm,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, ScopeEnum value, JsonSerializerOptions options)
-    {
-        string enumString = value switch
-        {
-            ScopeEnum.Local => "local",
-            ScopeEnum.Swarm => "swarm",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-        writer.WriteStringValue(enumString);
-    }
-}
-
-/// <summary>
-/// A Json converter for nullable <see cref="ScopeEnum"/>
-/// </summary>
-public class ScopeEnumNullableJsonConverter : JsonConverter<ScopeEnum?>
-{
-    public override ScopeEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        if (reader.TokenType == JsonTokenType.Null)
-            return null;
-
-        string? enumString = reader.GetString();
-
-        return enumString switch
-        {
-            "local" => ScopeEnum.Local,
-            "swarm" => ScopeEnum.Swarm,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, ScopeEnum? value, JsonSerializerOptions options)
-    {
-        if (value == null)
-        {
-            writer.WriteNullValue();
-            return;
+            public override ScopeEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                string? enumString = reader.GetString();
+                return enumString switch
+                {
+                    "local" => ScopeEnum.Local,
+                    "swarm" => ScopeEnum.Swarm,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, ScopeEnum value, JsonSerializerOptions options)
+            {
+                string enumString = value switch
+                {
+                    ScopeEnum.Local => "local",
+                    ScopeEnum.Swarm => "swarm",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+                writer.WriteStringValue(enumString);
+            }
         }
-
-        string enumString = value.Value switch
+        
+        /// <summary>
+        /// A Json converter for nullable <see cref="ScopeEnum"/>
+        /// </summary>
+        public class ScopeEnumNullableJsonConverter : JsonConverter<ScopeEnum?>
         {
-            ScopeEnum.Local => "local",
-            ScopeEnum.Swarm => "swarm",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-
-        writer.WriteStringValue(enumString);
-    }
-}
+            public override ScopeEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                if (reader.TokenType == JsonTokenType.Null)
+                    return null;
+        
+                string? enumString = reader.GetString();
+        
+                return enumString switch
+                {
+                    "local" => ScopeEnum.Local,
+                    "swarm" => ScopeEnum.Swarm,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, ScopeEnum? value, JsonSerializerOptions options)
+            {
+                if (value == null)
+                {
+                    writer.WriteNullValue();
+                    return;
+                }
+        
+                string enumString = value.Value switch
+                {
+                    ScopeEnum.Local => "local",
+                    ScopeEnum.Swarm => "swarm",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+        
+                writer.WriteStringValue(enumString);
+            }
+        }
 
         /// <summary>
         /// Used to track the state of Scope

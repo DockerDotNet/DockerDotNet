@@ -77,7 +77,7 @@ namespace DockerDotNet.Shared.Models
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<List<int>?> ConsoleSizeOption { get; private set; }
+        public Option<List<ulong>?> ConsoleSizeOption { get; private set; }
 
         /// <summary>
         /// Initial console size, as an &#x60;[height, width]&#x60; array.
@@ -85,7 +85,7 @@ namespace DockerDotNet.Shared.Models
         /// <value>Initial console size, as an &#x60;[height, width]&#x60; array.</value>
         /* <example>[80, 64]</example> */
         [JsonPropertyName("ConsoleSize")]
-        public List<int>? ConsoleSize { get { return this.ConsoleSizeOption; } set { this.ConsoleSizeOption = new(value); } }
+        public List<ulong>? ConsoleSize { get { return this.ConsoleSizeOption; } set { this.ConsoleSizeOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of DetachKeys

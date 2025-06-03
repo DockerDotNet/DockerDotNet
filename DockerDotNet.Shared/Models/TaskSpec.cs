@@ -113,14 +113,14 @@ namespace DockerDotNet.Shared.Models
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> ForceUpdateOption { get; private set; }
+        public Option<ulong?> ForceUpdateOption { get; private set; }
 
         /// <summary>
         /// A counter that triggers an update even if no relevant parameters have been changed. 
         /// </summary>
         /// <value>A counter that triggers an update even if no relevant parameters have been changed. </value>
         [JsonPropertyName("ForceUpdate")]
-        public int? ForceUpdate { get { return this.ForceUpdateOption; } set { this.ForceUpdateOption = new(value); } }
+        public ulong? ForceUpdate { get { return this.ForceUpdateOption; } set { this.ForceUpdateOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of Runtime

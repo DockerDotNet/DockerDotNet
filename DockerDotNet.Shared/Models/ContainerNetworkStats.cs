@@ -35,7 +35,7 @@ namespace DockerDotNet.Shared.Models
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> RxBytesOption { get; private set; }
+        public Option<ulong?> RxBytesOption { get; private set; }
 
         /// <summary>
         /// Bytes received. Windows and Linux. 
@@ -43,14 +43,14 @@ namespace DockerDotNet.Shared.Models
         /// <value>Bytes received. Windows and Linux. </value>
         /* <example>5338</example> */
         [JsonPropertyName("rx_bytes")]
-        public int? RxBytes { get { return this.RxBytesOption; } set { this.RxBytesOption = new(value); } }
+        public ulong? RxBytes { get { return this.RxBytesOption; } set { this.RxBytesOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of RxPackets
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> RxPacketsOption { get; private set; }
+        public Option<ulong?> RxPacketsOption { get; private set; }
 
         /// <summary>
         /// Packets received. Windows and Linux. 
@@ -58,14 +58,14 @@ namespace DockerDotNet.Shared.Models
         /// <value>Packets received. Windows and Linux. </value>
         /* <example>36</example> */
         [JsonPropertyName("rx_packets")]
-        public int? RxPackets { get { return this.RxPacketsOption; } set { this.RxPacketsOption = new(value); } }
+        public ulong? RxPackets { get { return this.RxPacketsOption; } set { this.RxPacketsOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of RxErrors
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> RxErrorsOption { get; private set; }
+        public Option<ulong?> RxErrorsOption { get; private set; }
 
         /// <summary>
         /// Received errors. Not used on Windows.  This field is Linux-specific and always zero for Windows containers. 
@@ -73,14 +73,14 @@ namespace DockerDotNet.Shared.Models
         /// <value>Received errors. Not used on Windows.  This field is Linux-specific and always zero for Windows containers. </value>
         /* <example>0</example> */
         [JsonPropertyName("rx_errors")]
-        public int? RxErrors { get { return this.RxErrorsOption; } set { this.RxErrorsOption = new(value); } }
+        public ulong? RxErrors { get { return this.RxErrorsOption; } set { this.RxErrorsOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of RxDropped
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> RxDroppedOption { get; private set; }
+        public Option<ulong?> RxDroppedOption { get; private set; }
 
         /// <summary>
         /// Incoming packets dropped. Windows and Linux. 
@@ -88,14 +88,14 @@ namespace DockerDotNet.Shared.Models
         /// <value>Incoming packets dropped. Windows and Linux. </value>
         /* <example>0</example> */
         [JsonPropertyName("rx_dropped")]
-        public int? RxDropped { get { return this.RxDroppedOption; } set { this.RxDroppedOption = new(value); } }
+        public ulong? RxDropped { get { return this.RxDroppedOption; } set { this.RxDroppedOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of TxBytes
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> TxBytesOption { get; private set; }
+        public Option<ulong?> TxBytesOption { get; private set; }
 
         /// <summary>
         /// Bytes sent. Windows and Linux. 
@@ -103,14 +103,14 @@ namespace DockerDotNet.Shared.Models
         /// <value>Bytes sent. Windows and Linux. </value>
         /* <example>1200</example> */
         [JsonPropertyName("tx_bytes")]
-        public int? TxBytes { get { return this.TxBytesOption; } set { this.TxBytesOption = new(value); } }
+        public ulong? TxBytes { get { return this.TxBytesOption; } set { this.TxBytesOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of TxPackets
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> TxPacketsOption { get; private set; }
+        public Option<ulong?> TxPacketsOption { get; private set; }
 
         /// <summary>
         /// Packets sent. Windows and Linux. 
@@ -118,14 +118,14 @@ namespace DockerDotNet.Shared.Models
         /// <value>Packets sent. Windows and Linux. </value>
         /* <example>12</example> */
         [JsonPropertyName("tx_packets")]
-        public int? TxPackets { get { return this.TxPacketsOption; } set { this.TxPacketsOption = new(value); } }
+        public ulong? TxPackets { get { return this.TxPacketsOption; } set { this.TxPacketsOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of TxErrors
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> TxErrorsOption { get; private set; }
+        public Option<ulong?> TxErrorsOption { get; private set; }
 
         /// <summary>
         /// Sent errors. Not used on Windows.  This field is Linux-specific and always zero for Windows containers. 
@@ -133,14 +133,14 @@ namespace DockerDotNet.Shared.Models
         /// <value>Sent errors. Not used on Windows.  This field is Linux-specific and always zero for Windows containers. </value>
         /* <example>0</example> */
         [JsonPropertyName("tx_errors")]
-        public int? TxErrors { get { return this.TxErrorsOption; } set { this.TxErrorsOption = new(value); } }
+        public ulong? TxErrors { get { return this.TxErrorsOption; } set { this.TxErrorsOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of TxDropped
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> TxDroppedOption { get; private set; }
+        public Option<ulong?> TxDroppedOption { get; private set; }
 
         /// <summary>
         /// Outgoing packets dropped. Windows and Linux. 
@@ -148,7 +148,7 @@ namespace DockerDotNet.Shared.Models
         /// <value>Outgoing packets dropped. Windows and Linux. </value>
         /* <example>0</example> */
         [JsonPropertyName("tx_dropped")]
-        public int? TxDropped { get { return this.TxDroppedOption; } set { this.TxDroppedOption = new(value); } }
+        public ulong? TxDropped { get { return this.TxDroppedOption; } set { this.TxDroppedOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of EndpointId

@@ -57,80 +57,80 @@ namespace DockerDotNet.Shared.Models
             PendingControllerUnpublish = 4
         }
 
-/// <summary>
-/// A Json converter for type <see cref="StateEnum"/>
-/// </summary>
-public class StateEnumJsonConverter : JsonConverter<StateEnum>
-{
-    public override StateEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        string? enumString = reader.GetString();
-        return enumString switch
+        /// <summary>
+        /// A Json converter for type <see cref="StateEnum"/>
+        /// </summary>
+        public class StateEnumJsonConverter : JsonConverter<StateEnum>
         {
-            "pending-publish" => StateEnum.PendingPublish,
-            "published" => StateEnum.Published,
-            "pending-node-unpublish" => StateEnum.PendingNodeUnpublish,
-            "pending-controller-unpublish" => StateEnum.PendingControllerUnpublish,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, StateEnum value, JsonSerializerOptions options)
-    {
-        string enumString = value switch
-        {
-            StateEnum.PendingPublish => "pending-publish",
-            StateEnum.Published => "published",
-            StateEnum.PendingNodeUnpublish => "pending-node-unpublish",
-            StateEnum.PendingControllerUnpublish => "pending-controller-unpublish",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-        writer.WriteStringValue(enumString);
-    }
-}
-
-/// <summary>
-/// A Json converter for nullable <see cref="StateEnum"/>
-/// </summary>
-public class StateEnumNullableJsonConverter : JsonConverter<StateEnum?>
-{
-    public override StateEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        if (reader.TokenType == JsonTokenType.Null)
-            return null;
-
-        string? enumString = reader.GetString();
-
-        return enumString switch
-        {
-            "pending-publish" => StateEnum.PendingPublish,
-            "published" => StateEnum.Published,
-            "pending-node-unpublish" => StateEnum.PendingNodeUnpublish,
-            "pending-controller-unpublish" => StateEnum.PendingControllerUnpublish,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, StateEnum? value, JsonSerializerOptions options)
-    {
-        if (value == null)
-        {
-            writer.WriteNullValue();
-            return;
+            public override StateEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                string? enumString = reader.GetString();
+                return enumString switch
+                {
+                    "pending-publish" => StateEnum.PendingPublish,
+                    "published" => StateEnum.Published,
+                    "pending-node-unpublish" => StateEnum.PendingNodeUnpublish,
+                    "pending-controller-unpublish" => StateEnum.PendingControllerUnpublish,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, StateEnum value, JsonSerializerOptions options)
+            {
+                string enumString = value switch
+                {
+                    StateEnum.PendingPublish => "pending-publish",
+                    StateEnum.Published => "published",
+                    StateEnum.PendingNodeUnpublish => "pending-node-unpublish",
+                    StateEnum.PendingControllerUnpublish => "pending-controller-unpublish",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+                writer.WriteStringValue(enumString);
+            }
         }
-
-        string enumString = value.Value switch
+        
+        /// <summary>
+        /// A Json converter for nullable <see cref="StateEnum"/>
+        /// </summary>
+        public class StateEnumNullableJsonConverter : JsonConverter<StateEnum?>
         {
-            StateEnum.PendingPublish => "pending-publish",
-            StateEnum.Published => "published",
-            StateEnum.PendingNodeUnpublish => "pending-node-unpublish",
-            StateEnum.PendingControllerUnpublish => "pending-controller-unpublish",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-
-        writer.WriteStringValue(enumString);
-    }
-}
+            public override StateEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                if (reader.TokenType == JsonTokenType.Null)
+                    return null;
+        
+                string? enumString = reader.GetString();
+        
+                return enumString switch
+                {
+                    "pending-publish" => StateEnum.PendingPublish,
+                    "published" => StateEnum.Published,
+                    "pending-node-unpublish" => StateEnum.PendingNodeUnpublish,
+                    "pending-controller-unpublish" => StateEnum.PendingControllerUnpublish,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, StateEnum? value, JsonSerializerOptions options)
+            {
+                if (value == null)
+                {
+                    writer.WriteNullValue();
+                    return;
+                }
+        
+                string enumString = value.Value switch
+                {
+                    StateEnum.PendingPublish => "pending-publish",
+                    StateEnum.Published => "published",
+                    StateEnum.PendingNodeUnpublish => "pending-node-unpublish",
+                    StateEnum.PendingControllerUnpublish => "pending-controller-unpublish",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+        
+                writer.WriteStringValue(enumString);
+            }
+        }
 
         /// <summary>
         /// Used to track the state of State

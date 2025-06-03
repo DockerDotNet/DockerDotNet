@@ -67,88 +67,88 @@ namespace DockerDotNet.Shared.Models
             Regular = 6
         }
 
-/// <summary>
-/// A Json converter for type <see cref="TypeEnum"/>
-/// </summary>
-public class TypeEnumJsonConverter : JsonConverter<TypeEnum>
-{
-    public override TypeEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        string? enumString = reader.GetString();
-        return enumString switch
+        /// <summary>
+        /// A Json converter for type <see cref="TypeEnum"/>
+        /// </summary>
+        public class TypeEnumJsonConverter : JsonConverter<TypeEnum>
         {
-            "internal" => TypeEnum.Internal,
-            "frontend" => TypeEnum.Frontend,
-            "source.local" => TypeEnum.SourceLocal,
-            "source.git.checkout" => TypeEnum.SourceGitCheckout,
-            "exec.cachemount" => TypeEnum.ExecCachemount,
-            "regular" => TypeEnum.Regular,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, TypeEnum value, JsonSerializerOptions options)
-    {
-        string enumString = value switch
-        {
-            TypeEnum.Internal => "internal",
-            TypeEnum.Frontend => "frontend",
-            TypeEnum.SourceLocal => "source.local",
-            TypeEnum.SourceGitCheckout => "source.git.checkout",
-            TypeEnum.ExecCachemount => "exec.cachemount",
-            TypeEnum.Regular => "regular",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-        writer.WriteStringValue(enumString);
-    }
-}
-
-/// <summary>
-/// A Json converter for nullable <see cref="TypeEnum"/>
-/// </summary>
-public class TypeEnumNullableJsonConverter : JsonConverter<TypeEnum?>
-{
-    public override TypeEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        if (reader.TokenType == JsonTokenType.Null)
-            return null;
-
-        string? enumString = reader.GetString();
-
-        return enumString switch
-        {
-            "internal" => TypeEnum.Internal,
-            "frontend" => TypeEnum.Frontend,
-            "source.local" => TypeEnum.SourceLocal,
-            "source.git.checkout" => TypeEnum.SourceGitCheckout,
-            "exec.cachemount" => TypeEnum.ExecCachemount,
-            "regular" => TypeEnum.Regular,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, TypeEnum? value, JsonSerializerOptions options)
-    {
-        if (value == null)
-        {
-            writer.WriteNullValue();
-            return;
+            public override TypeEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                string? enumString = reader.GetString();
+                return enumString switch
+                {
+                    "internal" => TypeEnum.Internal,
+                    "frontend" => TypeEnum.Frontend,
+                    "source.local" => TypeEnum.SourceLocal,
+                    "source.git.checkout" => TypeEnum.SourceGitCheckout,
+                    "exec.cachemount" => TypeEnum.ExecCachemount,
+                    "regular" => TypeEnum.Regular,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, TypeEnum value, JsonSerializerOptions options)
+            {
+                string enumString = value switch
+                {
+                    TypeEnum.Internal => "internal",
+                    TypeEnum.Frontend => "frontend",
+                    TypeEnum.SourceLocal => "source.local",
+                    TypeEnum.SourceGitCheckout => "source.git.checkout",
+                    TypeEnum.ExecCachemount => "exec.cachemount",
+                    TypeEnum.Regular => "regular",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+                writer.WriteStringValue(enumString);
+            }
         }
-
-        string enumString = value.Value switch
+        
+        /// <summary>
+        /// A Json converter for nullable <see cref="TypeEnum"/>
+        /// </summary>
+        public class TypeEnumNullableJsonConverter : JsonConverter<TypeEnum?>
         {
-            TypeEnum.Internal => "internal",
-            TypeEnum.Frontend => "frontend",
-            TypeEnum.SourceLocal => "source.local",
-            TypeEnum.SourceGitCheckout => "source.git.checkout",
-            TypeEnum.ExecCachemount => "exec.cachemount",
-            TypeEnum.Regular => "regular",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-
-        writer.WriteStringValue(enumString);
-    }
-}
+            public override TypeEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                if (reader.TokenType == JsonTokenType.Null)
+                    return null;
+        
+                string? enumString = reader.GetString();
+        
+                return enumString switch
+                {
+                    "internal" => TypeEnum.Internal,
+                    "frontend" => TypeEnum.Frontend,
+                    "source.local" => TypeEnum.SourceLocal,
+                    "source.git.checkout" => TypeEnum.SourceGitCheckout,
+                    "exec.cachemount" => TypeEnum.ExecCachemount,
+                    "regular" => TypeEnum.Regular,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, TypeEnum? value, JsonSerializerOptions options)
+            {
+                if (value == null)
+                {
+                    writer.WriteNullValue();
+                    return;
+                }
+        
+                string enumString = value.Value switch
+                {
+                    TypeEnum.Internal => "internal",
+                    TypeEnum.Frontend => "frontend",
+                    TypeEnum.SourceLocal => "source.local",
+                    TypeEnum.SourceGitCheckout => "source.git.checkout",
+                    TypeEnum.ExecCachemount => "exec.cachemount",
+                    TypeEnum.Regular => "regular",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+        
+                writer.WriteStringValue(enumString);
+            }
+        }
 
         /// <summary>
         /// Used to track the state of Type
@@ -259,7 +259,7 @@ public class TypeEnumNullableJsonConverter : JsonConverter<TypeEnum?>
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> SizeOption { get; private set; }
+        public Option<ulong?> SizeOption { get; private set; }
 
         /// <summary>
         /// Amount of disk space used by the build cache (in bytes). 
@@ -267,7 +267,7 @@ public class TypeEnumNullableJsonConverter : JsonConverter<TypeEnum?>
         /// <value>Amount of disk space used by the build cache (in bytes). </value>
         /* <example>51</example> */
         [JsonPropertyName("Size")]
-        public int? Size { get { return this.SizeOption; } set { this.SizeOption = new(value); } }
+        public ulong? Size { get { return this.SizeOption; } set { this.SizeOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of CreatedAt
@@ -304,14 +304,14 @@ public class TypeEnumNullableJsonConverter : JsonConverter<TypeEnum?>
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> UsageCountOption { get; private set; }
+        public Option<ulong?> UsageCountOption { get; private set; }
 
         /// <summary>
         /// Gets or Sets UsageCount
         /// </summary>
         /* <example>26</example> */
         [JsonPropertyName("UsageCount")]
-        public int? UsageCount { get { return this.UsageCountOption; } set { this.UsageCountOption = new(value); } }
+        public ulong? UsageCount { get { return this.UsageCountOption; } set { this.UsageCountOption = new(value); } }
 
         /// <summary>
         /// Returns the string presentation of the object

@@ -35,7 +35,7 @@ namespace DockerDotNet.Shared.Models
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> UsageOption { get; private set; }
+        public Option<ulong?> UsageOption { get; private set; }
 
         /// <summary>
         /// Current &#x60;res_counter&#x60; usage for memory.  This field is Linux-specific and omitted for Windows containers. 
@@ -43,14 +43,14 @@ namespace DockerDotNet.Shared.Models
         /// <value>Current &#x60;res_counter&#x60; usage for memory.  This field is Linux-specific and omitted for Windows containers. </value>
         /* <example>0</example> */
         [JsonPropertyName("usage")]
-        public int? Usage { get { return this.UsageOption; } set { this.UsageOption = new(value); } }
+        public ulong? Usage { get { return this.UsageOption; } set { this.UsageOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of MaxUsage
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> MaxUsageOption { get; private set; }
+        public Option<ulong?> MaxUsageOption { get; private set; }
 
         /// <summary>
         /// Maximum usage ever recorded.  This field is Linux-specific and only supported on cgroups v1. It is omitted when using cgroups v2 and for Windows containers. 
@@ -58,14 +58,14 @@ namespace DockerDotNet.Shared.Models
         /// <value>Maximum usage ever recorded.  This field is Linux-specific and only supported on cgroups v1. It is omitted when using cgroups v2 and for Windows containers. </value>
         /* <example>0</example> */
         [JsonPropertyName("max_usage")]
-        public int? MaxUsage { get { return this.MaxUsageOption; } set { this.MaxUsageOption = new(value); } }
+        public ulong? MaxUsage { get { return this.MaxUsageOption; } set { this.MaxUsageOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of Stats
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<Dictionary<string, int>?> StatsOption { get; private set; }
+        public Option<Dictionary<string, ulong>?> StatsOption { get; private set; }
 
         /// <summary>
         /// All the stats exported via memory.stat. when using cgroups v2.  This field is Linux-specific and omitted for Windows containers. 
@@ -73,14 +73,14 @@ namespace DockerDotNet.Shared.Models
         /// <value>All the stats exported via memory.stat. when using cgroups v2.  This field is Linux-specific and omitted for Windows containers. </value>
         /* <example>{&quot;active_anon&quot;:1572864,&quot;active_file&quot;:5115904,&quot;anon&quot;:1572864,&quot;anon_thp&quot;:0,&quot;file&quot;:7626752,&quot;file_dirty&quot;:0,&quot;file_mapped&quot;:2723840,&quot;file_writeback&quot;:0,&quot;inactive_anon&quot;:0,&quot;inactive_file&quot;:2510848,&quot;kernel_stack&quot;:16384,&quot;pgactivate&quot;:0,&quot;pgdeactivate&quot;:0,&quot;pgfault&quot;:2042,&quot;pglazyfree&quot;:0,&quot;pglazyfreed&quot;:0,&quot;pgmajfault&quot;:45,&quot;pgrefill&quot;:0,&quot;pgscan&quot;:0,&quot;pgsteal&quot;:0,&quot;shmem&quot;:0,&quot;slab&quot;:1180928,&quot;slab_reclaimable&quot;:725576,&quot;slab_unreclaimable&quot;:455352,&quot;sock&quot;:0,&quot;thp_collapse_alloc&quot;:0,&quot;thp_fault_alloc&quot;:1,&quot;unevictable&quot;:0,&quot;workingset_activate&quot;:0,&quot;workingset_nodereclaim&quot;:0,&quot;workingset_refault&quot;:0}</example> */
         [JsonPropertyName("stats")]
-        public Dictionary<string, int>? Stats { get { return this.StatsOption; } set { this.StatsOption = new(value); } }
+        public Dictionary<string, ulong>? Stats { get { return this.StatsOption; } set { this.StatsOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of Failcnt
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> FailcntOption { get; private set; }
+        public Option<ulong?> FailcntOption { get; private set; }
 
         /// <summary>
         /// Number of times memory usage hits limits.  This field is Linux-specific and only supported on cgroups v1. It is omitted when using cgroups v2 and for Windows containers. 
@@ -88,14 +88,14 @@ namespace DockerDotNet.Shared.Models
         /// <value>Number of times memory usage hits limits.  This field is Linux-specific and only supported on cgroups v1. It is omitted when using cgroups v2 and for Windows containers. </value>
         /* <example>0</example> */
         [JsonPropertyName("failcnt")]
-        public int? Failcnt { get { return this.FailcntOption; } set { this.FailcntOption = new(value); } }
+        public ulong? Failcnt { get { return this.FailcntOption; } set { this.FailcntOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of Limit
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> LimitOption { get; private set; }
+        public Option<ulong?> LimitOption { get; private set; }
 
         /// <summary>
         /// This field is Linux-specific and omitted for Windows containers. 
@@ -103,14 +103,14 @@ namespace DockerDotNet.Shared.Models
         /// <value>This field is Linux-specific and omitted for Windows containers. </value>
         /* <example>8217579520</example> */
         [JsonPropertyName("limit")]
-        public int? Limit { get { return this.LimitOption; } set { this.LimitOption = new(value); } }
+        public ulong? Limit { get { return this.LimitOption; } set { this.LimitOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of Commitbytes
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> CommitbytesOption { get; private set; }
+        public Option<ulong?> CommitbytesOption { get; private set; }
 
         /// <summary>
         /// Committed bytes.  This field is Windows-specific and omitted for Linux containers. 
@@ -118,14 +118,14 @@ namespace DockerDotNet.Shared.Models
         /// <value>Committed bytes.  This field is Windows-specific and omitted for Linux containers. </value>
         /* <example>0</example> */
         [JsonPropertyName("commitbytes")]
-        public int? Commitbytes { get { return this.CommitbytesOption; } set { this.CommitbytesOption = new(value); } }
+        public ulong? Commitbytes { get { return this.CommitbytesOption; } set { this.CommitbytesOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of Commitpeakbytes
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> CommitpeakbytesOption { get; private set; }
+        public Option<ulong?> CommitpeakbytesOption { get; private set; }
 
         /// <summary>
         /// Peak committed bytes.  This field is Windows-specific and omitted for Linux containers. 
@@ -133,14 +133,14 @@ namespace DockerDotNet.Shared.Models
         /// <value>Peak committed bytes.  This field is Windows-specific and omitted for Linux containers. </value>
         /* <example>0</example> */
         [JsonPropertyName("commitpeakbytes")]
-        public int? Commitpeakbytes { get { return this.CommitpeakbytesOption; } set { this.CommitpeakbytesOption = new(value); } }
+        public ulong? Commitpeakbytes { get { return this.CommitpeakbytesOption; } set { this.CommitpeakbytesOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of Privateworkingset
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> PrivateworkingsetOption { get; private set; }
+        public Option<ulong?> PrivateworkingsetOption { get; private set; }
 
         /// <summary>
         /// Private working set.  This field is Windows-specific and omitted for Linux containers. 
@@ -148,7 +148,7 @@ namespace DockerDotNet.Shared.Models
         /// <value>Private working set.  This field is Windows-specific and omitted for Linux containers. </value>
         /* <example>0</example> */
         [JsonPropertyName("privateworkingset")]
-        public int? Privateworkingset { get { return this.PrivateworkingsetOption; } set { this.PrivateworkingsetOption = new(value); } }
+        public ulong? Privateworkingset { get { return this.PrivateworkingsetOption; } set { this.PrivateworkingsetOption = new(value); } }
 
         /// <summary>
         /// Returns the string presentation of the object

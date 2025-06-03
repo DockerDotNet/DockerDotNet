@@ -47,72 +47,72 @@ namespace DockerDotNet.Shared.Models
             Multi = 2
         }
 
-/// <summary>
-/// A Json converter for type <see cref="ScopeEnum"/>
-/// </summary>
-public class ScopeEnumJsonConverter : JsonConverter<ScopeEnum>
-{
-    public override ScopeEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        string? enumString = reader.GetString();
-        return enumString switch
+        /// <summary>
+        /// A Json converter for type <see cref="ScopeEnum"/>
+        /// </summary>
+        public class ScopeEnumJsonConverter : JsonConverter<ScopeEnum>
         {
-            "single" => ScopeEnum.Single,
-            "multi" => ScopeEnum.Multi,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, ScopeEnum value, JsonSerializerOptions options)
-    {
-        string enumString = value switch
-        {
-            ScopeEnum.Single => "single",
-            ScopeEnum.Multi => "multi",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-        writer.WriteStringValue(enumString);
-    }
-}
-
-/// <summary>
-/// A Json converter for nullable <see cref="ScopeEnum"/>
-/// </summary>
-public class ScopeEnumNullableJsonConverter : JsonConverter<ScopeEnum?>
-{
-    public override ScopeEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        if (reader.TokenType == JsonTokenType.Null)
-            return null;
-
-        string? enumString = reader.GetString();
-
-        return enumString switch
-        {
-            "single" => ScopeEnum.Single,
-            "multi" => ScopeEnum.Multi,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, ScopeEnum? value, JsonSerializerOptions options)
-    {
-        if (value == null)
-        {
-            writer.WriteNullValue();
-            return;
+            public override ScopeEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                string? enumString = reader.GetString();
+                return enumString switch
+                {
+                    "single" => ScopeEnum.Single,
+                    "multi" => ScopeEnum.Multi,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, ScopeEnum value, JsonSerializerOptions options)
+            {
+                string enumString = value switch
+                {
+                    ScopeEnum.Single => "single",
+                    ScopeEnum.Multi => "multi",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+                writer.WriteStringValue(enumString);
+            }
         }
-
-        string enumString = value.Value switch
+        
+        /// <summary>
+        /// A Json converter for nullable <see cref="ScopeEnum"/>
+        /// </summary>
+        public class ScopeEnumNullableJsonConverter : JsonConverter<ScopeEnum?>
         {
-            ScopeEnum.Single => "single",
-            ScopeEnum.Multi => "multi",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-
-        writer.WriteStringValue(enumString);
-    }
-}
+            public override ScopeEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                if (reader.TokenType == JsonTokenType.Null)
+                    return null;
+        
+                string? enumString = reader.GetString();
+        
+                return enumString switch
+                {
+                    "single" => ScopeEnum.Single,
+                    "multi" => ScopeEnum.Multi,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, ScopeEnum? value, JsonSerializerOptions options)
+            {
+                if (value == null)
+                {
+                    writer.WriteNullValue();
+                    return;
+                }
+        
+                string enumString = value.Value switch
+                {
+                    ScopeEnum.Single => "single",
+                    ScopeEnum.Multi => "multi",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+        
+                writer.WriteStringValue(enumString);
+            }
+        }
 
         /// <summary>
         /// Used to track the state of Scope
@@ -155,80 +155,80 @@ public class ScopeEnumNullableJsonConverter : JsonConverter<ScopeEnum?>
             All = 4
         }
 
-/// <summary>
-/// A Json converter for type <see cref="SharingEnum"/>
-/// </summary>
-public class SharingEnumJsonConverter : JsonConverter<SharingEnum>
-{
-    public override SharingEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        string? enumString = reader.GetString();
-        return enumString switch
+        /// <summary>
+        /// A Json converter for type <see cref="SharingEnum"/>
+        /// </summary>
+        public class SharingEnumJsonConverter : JsonConverter<SharingEnum>
         {
-            "none" => SharingEnum.None,
-            "readonly" => SharingEnum.Readonly,
-            "onewriter" => SharingEnum.Onewriter,
-            "all" => SharingEnum.All,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, SharingEnum value, JsonSerializerOptions options)
-    {
-        string enumString = value switch
-        {
-            SharingEnum.None => "none",
-            SharingEnum.Readonly => "readonly",
-            SharingEnum.Onewriter => "onewriter",
-            SharingEnum.All => "all",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-        writer.WriteStringValue(enumString);
-    }
-}
-
-/// <summary>
-/// A Json converter for nullable <see cref="SharingEnum"/>
-/// </summary>
-public class SharingEnumNullableJsonConverter : JsonConverter<SharingEnum?>
-{
-    public override SharingEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        if (reader.TokenType == JsonTokenType.Null)
-            return null;
-
-        string? enumString = reader.GetString();
-
-        return enumString switch
-        {
-            "none" => SharingEnum.None,
-            "readonly" => SharingEnum.Readonly,
-            "onewriter" => SharingEnum.Onewriter,
-            "all" => SharingEnum.All,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, SharingEnum? value, JsonSerializerOptions options)
-    {
-        if (value == null)
-        {
-            writer.WriteNullValue();
-            return;
+            public override SharingEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                string? enumString = reader.GetString();
+                return enumString switch
+                {
+                    "none" => SharingEnum.None,
+                    "readonly" => SharingEnum.Readonly,
+                    "onewriter" => SharingEnum.Onewriter,
+                    "all" => SharingEnum.All,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, SharingEnum value, JsonSerializerOptions options)
+            {
+                string enumString = value switch
+                {
+                    SharingEnum.None => "none",
+                    SharingEnum.Readonly => "readonly",
+                    SharingEnum.Onewriter => "onewriter",
+                    SharingEnum.All => "all",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+                writer.WriteStringValue(enumString);
+            }
         }
-
-        string enumString = value.Value switch
+        
+        /// <summary>
+        /// A Json converter for nullable <see cref="SharingEnum"/>
+        /// </summary>
+        public class SharingEnumNullableJsonConverter : JsonConverter<SharingEnum?>
         {
-            SharingEnum.None => "none",
-            SharingEnum.Readonly => "readonly",
-            SharingEnum.Onewriter => "onewriter",
-            SharingEnum.All => "all",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-
-        writer.WriteStringValue(enumString);
-    }
-}
+            public override SharingEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                if (reader.TokenType == JsonTokenType.Null)
+                    return null;
+        
+                string? enumString = reader.GetString();
+        
+                return enumString switch
+                {
+                    "none" => SharingEnum.None,
+                    "readonly" => SharingEnum.Readonly,
+                    "onewriter" => SharingEnum.Onewriter,
+                    "all" => SharingEnum.All,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, SharingEnum? value, JsonSerializerOptions options)
+            {
+                if (value == null)
+                {
+                    writer.WriteNullValue();
+                    return;
+                }
+        
+                string enumString = value.Value switch
+                {
+                    SharingEnum.None => "none",
+                    SharingEnum.Readonly => "readonly",
+                    SharingEnum.Onewriter => "onewriter",
+                    SharingEnum.All => "all",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+        
+                writer.WriteStringValue(enumString);
+            }
+        }
 
         /// <summary>
         /// Used to track the state of Sharing
@@ -266,76 +266,76 @@ public class SharingEnumNullableJsonConverter : JsonConverter<SharingEnum?>
             Drain = 3
         }
 
-/// <summary>
-/// A Json converter for type <see cref="AvailabilityEnum"/>
-/// </summary>
-public class AvailabilityEnumJsonConverter : JsonConverter<AvailabilityEnum>
-{
-    public override AvailabilityEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        string? enumString = reader.GetString();
-        return enumString switch
+        /// <summary>
+        /// A Json converter for type <see cref="AvailabilityEnum"/>
+        /// </summary>
+        public class AvailabilityEnumJsonConverter : JsonConverter<AvailabilityEnum>
         {
-            "active" => AvailabilityEnum.Active,
-            "pause" => AvailabilityEnum.Pause,
-            "drain" => AvailabilityEnum.Drain,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, AvailabilityEnum value, JsonSerializerOptions options)
-    {
-        string enumString = value switch
-        {
-            AvailabilityEnum.Active => "active",
-            AvailabilityEnum.Pause => "pause",
-            AvailabilityEnum.Drain => "drain",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-        writer.WriteStringValue(enumString);
-    }
-}
-
-/// <summary>
-/// A Json converter for nullable <see cref="AvailabilityEnum"/>
-/// </summary>
-public class AvailabilityEnumNullableJsonConverter : JsonConverter<AvailabilityEnum?>
-{
-    public override AvailabilityEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        if (reader.TokenType == JsonTokenType.Null)
-            return null;
-
-        string? enumString = reader.GetString();
-
-        return enumString switch
-        {
-            "active" => AvailabilityEnum.Active,
-            "pause" => AvailabilityEnum.Pause,
-            "drain" => AvailabilityEnum.Drain,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, AvailabilityEnum? value, JsonSerializerOptions options)
-    {
-        if (value == null)
-        {
-            writer.WriteNullValue();
-            return;
+            public override AvailabilityEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                string? enumString = reader.GetString();
+                return enumString switch
+                {
+                    "active" => AvailabilityEnum.Active,
+                    "pause" => AvailabilityEnum.Pause,
+                    "drain" => AvailabilityEnum.Drain,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, AvailabilityEnum value, JsonSerializerOptions options)
+            {
+                string enumString = value switch
+                {
+                    AvailabilityEnum.Active => "active",
+                    AvailabilityEnum.Pause => "pause",
+                    AvailabilityEnum.Drain => "drain",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+                writer.WriteStringValue(enumString);
+            }
         }
-
-        string enumString = value.Value switch
+        
+        /// <summary>
+        /// A Json converter for nullable <see cref="AvailabilityEnum"/>
+        /// </summary>
+        public class AvailabilityEnumNullableJsonConverter : JsonConverter<AvailabilityEnum?>
         {
-            AvailabilityEnum.Active => "active",
-            AvailabilityEnum.Pause => "pause",
-            AvailabilityEnum.Drain => "drain",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-
-        writer.WriteStringValue(enumString);
-    }
-}
+            public override AvailabilityEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                if (reader.TokenType == JsonTokenType.Null)
+                    return null;
+        
+                string? enumString = reader.GetString();
+        
+                return enumString switch
+                {
+                    "active" => AvailabilityEnum.Active,
+                    "pause" => AvailabilityEnum.Pause,
+                    "drain" => AvailabilityEnum.Drain,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, AvailabilityEnum? value, JsonSerializerOptions options)
+            {
+                if (value == null)
+                {
+                    writer.WriteNullValue();
+                    return;
+                }
+        
+                string enumString = value.Value switch
+                {
+                    AvailabilityEnum.Active => "active",
+                    AvailabilityEnum.Pause => "pause",
+                    AvailabilityEnum.Drain => "drain",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+        
+                writer.WriteStringValue(enumString);
+            }
+        }
 
         /// <summary>
         /// Used to track the state of Availability

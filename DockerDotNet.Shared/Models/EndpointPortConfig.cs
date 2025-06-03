@@ -51,76 +51,76 @@ namespace DockerDotNet.Shared.Models
             Sctp = 3
         }
 
-/// <summary>
-/// A Json converter for type <see cref="ProtocolEnum"/>
-/// </summary>
-public class ProtocolEnumJsonConverter : JsonConverter<ProtocolEnum>
-{
-    public override ProtocolEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        string? enumString = reader.GetString();
-        return enumString switch
+        /// <summary>
+        /// A Json converter for type <see cref="ProtocolEnum"/>
+        /// </summary>
+        public class ProtocolEnumJsonConverter : JsonConverter<ProtocolEnum>
         {
-            "tcp" => ProtocolEnum.Tcp,
-            "udp" => ProtocolEnum.Udp,
-            "sctp" => ProtocolEnum.Sctp,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, ProtocolEnum value, JsonSerializerOptions options)
-    {
-        string enumString = value switch
-        {
-            ProtocolEnum.Tcp => "tcp",
-            ProtocolEnum.Udp => "udp",
-            ProtocolEnum.Sctp => "sctp",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-        writer.WriteStringValue(enumString);
-    }
-}
-
-/// <summary>
-/// A Json converter for nullable <see cref="ProtocolEnum"/>
-/// </summary>
-public class ProtocolEnumNullableJsonConverter : JsonConverter<ProtocolEnum?>
-{
-    public override ProtocolEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        if (reader.TokenType == JsonTokenType.Null)
-            return null;
-
-        string? enumString = reader.GetString();
-
-        return enumString switch
-        {
-            "tcp" => ProtocolEnum.Tcp,
-            "udp" => ProtocolEnum.Udp,
-            "sctp" => ProtocolEnum.Sctp,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, ProtocolEnum? value, JsonSerializerOptions options)
-    {
-        if (value == null)
-        {
-            writer.WriteNullValue();
-            return;
+            public override ProtocolEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                string? enumString = reader.GetString();
+                return enumString switch
+                {
+                    "tcp" => ProtocolEnum.Tcp,
+                    "udp" => ProtocolEnum.Udp,
+                    "sctp" => ProtocolEnum.Sctp,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, ProtocolEnum value, JsonSerializerOptions options)
+            {
+                string enumString = value switch
+                {
+                    ProtocolEnum.Tcp => "tcp",
+                    ProtocolEnum.Udp => "udp",
+                    ProtocolEnum.Sctp => "sctp",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+                writer.WriteStringValue(enumString);
+            }
         }
-
-        string enumString = value.Value switch
+        
+        /// <summary>
+        /// A Json converter for nullable <see cref="ProtocolEnum"/>
+        /// </summary>
+        public class ProtocolEnumNullableJsonConverter : JsonConverter<ProtocolEnum?>
         {
-            ProtocolEnum.Tcp => "tcp",
-            ProtocolEnum.Udp => "udp",
-            ProtocolEnum.Sctp => "sctp",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-
-        writer.WriteStringValue(enumString);
-    }
-}
+            public override ProtocolEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                if (reader.TokenType == JsonTokenType.Null)
+                    return null;
+        
+                string? enumString = reader.GetString();
+        
+                return enumString switch
+                {
+                    "tcp" => ProtocolEnum.Tcp,
+                    "udp" => ProtocolEnum.Udp,
+                    "sctp" => ProtocolEnum.Sctp,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, ProtocolEnum? value, JsonSerializerOptions options)
+            {
+                if (value == null)
+                {
+                    writer.WriteNullValue();
+                    return;
+                }
+        
+                string enumString = value.Value switch
+                {
+                    ProtocolEnum.Tcp => "tcp",
+                    ProtocolEnum.Udp => "udp",
+                    ProtocolEnum.Sctp => "sctp",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+        
+                writer.WriteStringValue(enumString);
+            }
+        }
 
         /// <summary>
         /// Used to track the state of Protocol
@@ -152,72 +152,72 @@ public class ProtocolEnumNullableJsonConverter : JsonConverter<ProtocolEnum?>
             Host = 2
         }
 
-/// <summary>
-/// A Json converter for type <see cref="PublishModeEnum"/>
-/// </summary>
-public class PublishModeEnumJsonConverter : JsonConverter<PublishModeEnum>
-{
-    public override PublishModeEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        string? enumString = reader.GetString();
-        return enumString switch
+        /// <summary>
+        /// A Json converter for type <see cref="PublishModeEnum"/>
+        /// </summary>
+        public class PublishModeEnumJsonConverter : JsonConverter<PublishModeEnum>
         {
-            "ingress" => PublishModeEnum.Ingress,
-            "host" => PublishModeEnum.Host,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, PublishModeEnum value, JsonSerializerOptions options)
-    {
-        string enumString = value switch
-        {
-            PublishModeEnum.Ingress => "ingress",
-            PublishModeEnum.Host => "host",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-        writer.WriteStringValue(enumString);
-    }
-}
-
-/// <summary>
-/// A Json converter for nullable <see cref="PublishModeEnum"/>
-/// </summary>
-public class PublishModeEnumNullableJsonConverter : JsonConverter<PublishModeEnum?>
-{
-    public override PublishModeEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        if (reader.TokenType == JsonTokenType.Null)
-            return null;
-
-        string? enumString = reader.GetString();
-
-        return enumString switch
-        {
-            "ingress" => PublishModeEnum.Ingress,
-            "host" => PublishModeEnum.Host,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, PublishModeEnum? value, JsonSerializerOptions options)
-    {
-        if (value == null)
-        {
-            writer.WriteNullValue();
-            return;
+            public override PublishModeEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                string? enumString = reader.GetString();
+                return enumString switch
+                {
+                    "ingress" => PublishModeEnum.Ingress,
+                    "host" => PublishModeEnum.Host,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, PublishModeEnum value, JsonSerializerOptions options)
+            {
+                string enumString = value switch
+                {
+                    PublishModeEnum.Ingress => "ingress",
+                    PublishModeEnum.Host => "host",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+                writer.WriteStringValue(enumString);
+            }
         }
-
-        string enumString = value.Value switch
+        
+        /// <summary>
+        /// A Json converter for nullable <see cref="PublishModeEnum"/>
+        /// </summary>
+        public class PublishModeEnumNullableJsonConverter : JsonConverter<PublishModeEnum?>
         {
-            PublishModeEnum.Ingress => "ingress",
-            PublishModeEnum.Host => "host",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-
-        writer.WriteStringValue(enumString);
-    }
-}
+            public override PublishModeEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                if (reader.TokenType == JsonTokenType.Null)
+                    return null;
+        
+                string? enumString = reader.GetString();
+        
+                return enumString switch
+                {
+                    "ingress" => PublishModeEnum.Ingress,
+                    "host" => PublishModeEnum.Host,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, PublishModeEnum? value, JsonSerializerOptions options)
+            {
+                if (value == null)
+                {
+                    writer.WriteNullValue();
+                    return;
+                }
+        
+                string enumString = value.Value switch
+                {
+                    PublishModeEnum.Ingress => "ingress",
+                    PublishModeEnum.Host => "host",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+        
+                writer.WriteStringValue(enumString);
+            }
+        }
 
         /// <summary>
         /// Used to track the state of PublishMode
@@ -252,28 +252,28 @@ public class PublishModeEnumNullableJsonConverter : JsonConverter<PublishModeEnu
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> TargetPortOption { get; private set; }
+        public Option<ulong?> TargetPortOption { get; private set; }
 
         /// <summary>
         /// The port inside the container.
         /// </summary>
         /// <value>The port inside the container.</value>
         [JsonPropertyName("TargetPort")]
-        public int? TargetPort { get { return this.TargetPortOption; } set { this.TargetPortOption = new(value); } }
+        public ulong? TargetPort { get { return this.TargetPortOption; } set { this.TargetPortOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of PublishedPort
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> PublishedPortOption { get; private set; }
+        public Option<ulong?> PublishedPortOption { get; private set; }
 
         /// <summary>
         /// The port on the swarm hosts.
         /// </summary>
         /// <value>The port on the swarm hosts.</value>
         [JsonPropertyName("PublishedPort")]
-        public int? PublishedPort { get { return this.PublishedPortOption; } set { this.PublishedPortOption = new(value); } }
+        public ulong? PublishedPort { get { return this.PublishedPortOption; } set { this.PublishedPortOption = new(value); } }
 
         /// <summary>
         /// Returns the string presentation of the object

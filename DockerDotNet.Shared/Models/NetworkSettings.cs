@@ -94,14 +94,14 @@ namespace DockerDotNet.Shared.Models
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> LinkLocalIPv6PrefixLenOption { get; private set; }
+        public Option<ulong?> LinkLocalIPv6PrefixLenOption { get; private set; }
 
         /// <summary>
         /// Prefix length of the IPv6 unicast address.  Deprecated: This field is never set and will be removed in a future release. 
         /// </summary>
         /// <value>Prefix length of the IPv6 unicast address.  Deprecated: This field is never set and will be removed in a future release. </value>
         [JsonPropertyName("LinkLocalIPv6PrefixLen")]
-        public int? LinkLocalIPv6PrefixLen { get { return this.LinkLocalIPv6PrefixLenOption; } set { this.LinkLocalIPv6PrefixLenOption = new(value); } }
+        public ulong? LinkLocalIPv6PrefixLen { get { return this.LinkLocalIPv6PrefixLenOption; } set { this.LinkLocalIPv6PrefixLenOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of Ports
@@ -211,7 +211,7 @@ namespace DockerDotNet.Shared.Models
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> GlobalIPv6PrefixLenOption { get; private set; }
+        public Option<ulong?> GlobalIPv6PrefixLenOption { get; private set; }
 
         /// <summary>
         /// Mask length of the global IPv6 address.  &lt;p&gt;&lt;br /&gt;&lt;/p&gt;  &gt; **Deprecated**: This field is only propagated when attached to the &gt; default \&quot;bridge\&quot; network. Use the information from the \&quot;bridge\&quot; &gt; network inside the &#x60;Networks&#x60; map instead, which contains the same &gt; information. This field was deprecated in Docker 1.9 and is scheduled &gt; to be removed in Docker 17.12.0 
@@ -219,7 +219,7 @@ namespace DockerDotNet.Shared.Models
         /// <value>Mask length of the global IPv6 address.  &lt;p&gt;&lt;br /&gt;&lt;/p&gt;  &gt; **Deprecated**: This field is only propagated when attached to the &gt; default \&quot;bridge\&quot; network. Use the information from the \&quot;bridge\&quot; &gt; network inside the &#x60;Networks&#x60; map instead, which contains the same &gt; information. This field was deprecated in Docker 1.9 and is scheduled &gt; to be removed in Docker 17.12.0 </value>
         /* <example>64</example> */
         [JsonPropertyName("GlobalIPv6PrefixLen")]
-        public int? GlobalIPv6PrefixLen { get { return this.GlobalIPv6PrefixLenOption; } set { this.GlobalIPv6PrefixLenOption = new(value); } }
+        public ulong? GlobalIPv6PrefixLen { get { return this.GlobalIPv6PrefixLenOption; } set { this.GlobalIPv6PrefixLenOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of IPAddress
@@ -241,7 +241,7 @@ namespace DockerDotNet.Shared.Models
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> IPPrefixLenOption { get; private set; }
+        public Option<ulong?> IPPrefixLenOption { get; private set; }
 
         /// <summary>
         /// Mask length of the IPv4 address.  &lt;p&gt;&lt;br /&gt;&lt;/p&gt;  &gt; **Deprecated**: This field is only propagated when attached to the &gt; default \&quot;bridge\&quot; network. Use the information from the \&quot;bridge\&quot; &gt; network inside the &#x60;Networks&#x60; map instead, which contains the same &gt; information. This field was deprecated in Docker 1.9 and is scheduled &gt; to be removed in Docker 17.12.0 
@@ -249,7 +249,7 @@ namespace DockerDotNet.Shared.Models
         /// <value>Mask length of the IPv4 address.  &lt;p&gt;&lt;br /&gt;&lt;/p&gt;  &gt; **Deprecated**: This field is only propagated when attached to the &gt; default \&quot;bridge\&quot; network. Use the information from the \&quot;bridge\&quot; &gt; network inside the &#x60;Networks&#x60; map instead, which contains the same &gt; information. This field was deprecated in Docker 1.9 and is scheduled &gt; to be removed in Docker 17.12.0 </value>
         /* <example>16</example> */
         [JsonPropertyName("IPPrefixLen")]
-        public int? IPPrefixLen { get { return this.IPPrefixLenOption; } set { this.IPPrefixLenOption = new(value); } }
+        public ulong? IPPrefixLen { get { return this.IPPrefixLenOption; } set { this.IPPrefixLenOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of IPv6Gateway

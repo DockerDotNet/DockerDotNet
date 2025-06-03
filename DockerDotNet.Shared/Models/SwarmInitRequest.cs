@@ -77,14 +77,14 @@ namespace DockerDotNet.Shared.Models
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> DataPathPortOption { get; private set; }
+        public Option<ulong?> DataPathPortOption { get; private set; }
 
         /// <summary>
         /// DataPathPort specifies the data path port number for data traffic. Acceptable port range is 1024 to 49151. if no port is set or is set to 0, default port 4789 will be used. 
         /// </summary>
         /// <value>DataPathPort specifies the data path port number for data traffic. Acceptable port range is 1024 to 49151. if no port is set or is set to 0, default port 4789 will be used. </value>
         [JsonPropertyName("DataPathPort")]
-        public int? DataPathPort { get { return this.DataPathPortOption; } set { this.DataPathPortOption = new(value); } }
+        public ulong? DataPathPort { get { return this.DataPathPortOption; } set { this.DataPathPortOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of DefaultAddrPool
@@ -119,14 +119,14 @@ namespace DockerDotNet.Shared.Models
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> SubnetSizeOption { get; private set; }
+        public Option<ulong?> SubnetSizeOption { get; private set; }
 
         /// <summary>
         /// SubnetSize specifies the subnet size of the networks created from the default subnet pool. 
         /// </summary>
         /// <value>SubnetSize specifies the subnet size of the networks created from the default subnet pool. </value>
         [JsonPropertyName("SubnetSize")]
-        public int? SubnetSize { get { return this.SubnetSizeOption; } set { this.SubnetSizeOption = new(value); } }
+        public ulong? SubnetSize { get { return this.SubnetSizeOption; } set { this.SubnetSizeOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of Spec

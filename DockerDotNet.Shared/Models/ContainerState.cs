@@ -72,92 +72,92 @@ namespace DockerDotNet.Shared.Models
             Dead = 7
         }
 
-/// <summary>
-/// A Json converter for type <see cref="StatusEnum"/>
-/// </summary>
-public class StatusEnumJsonConverter : JsonConverter<StatusEnum>
-{
-    public override StatusEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        string? enumString = reader.GetString();
-        return enumString switch
+        /// <summary>
+        /// A Json converter for type <see cref="StatusEnum"/>
+        /// </summary>
+        public class StatusEnumJsonConverter : JsonConverter<StatusEnum>
         {
-            "created" => StatusEnum.Created,
-            "running" => StatusEnum.Running,
-            "paused" => StatusEnum.Paused,
-            "restarting" => StatusEnum.Restarting,
-            "removing" => StatusEnum.Removing,
-            "exited" => StatusEnum.Exited,
-            "dead" => StatusEnum.Dead,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, StatusEnum value, JsonSerializerOptions options)
-    {
-        string enumString = value switch
-        {
-            StatusEnum.Created => "created",
-            StatusEnum.Running => "running",
-            StatusEnum.Paused => "paused",
-            StatusEnum.Restarting => "restarting",
-            StatusEnum.Removing => "removing",
-            StatusEnum.Exited => "exited",
-            StatusEnum.Dead => "dead",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-        writer.WriteStringValue(enumString);
-    }
-}
-
-/// <summary>
-/// A Json converter for nullable <see cref="StatusEnum"/>
-/// </summary>
-public class StatusEnumNullableJsonConverter : JsonConverter<StatusEnum?>
-{
-    public override StatusEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        if (reader.TokenType == JsonTokenType.Null)
-            return null;
-
-        string? enumString = reader.GetString();
-
-        return enumString switch
-        {
-            "created" => StatusEnum.Created,
-            "running" => StatusEnum.Running,
-            "paused" => StatusEnum.Paused,
-            "restarting" => StatusEnum.Restarting,
-            "removing" => StatusEnum.Removing,
-            "exited" => StatusEnum.Exited,
-            "dead" => StatusEnum.Dead,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, StatusEnum? value, JsonSerializerOptions options)
-    {
-        if (value == null)
-        {
-            writer.WriteNullValue();
-            return;
+            public override StatusEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                string? enumString = reader.GetString();
+                return enumString switch
+                {
+                    "created" => StatusEnum.Created,
+                    "running" => StatusEnum.Running,
+                    "paused" => StatusEnum.Paused,
+                    "restarting" => StatusEnum.Restarting,
+                    "removing" => StatusEnum.Removing,
+                    "exited" => StatusEnum.Exited,
+                    "dead" => StatusEnum.Dead,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, StatusEnum value, JsonSerializerOptions options)
+            {
+                string enumString = value switch
+                {
+                    StatusEnum.Created => "created",
+                    StatusEnum.Running => "running",
+                    StatusEnum.Paused => "paused",
+                    StatusEnum.Restarting => "restarting",
+                    StatusEnum.Removing => "removing",
+                    StatusEnum.Exited => "exited",
+                    StatusEnum.Dead => "dead",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+                writer.WriteStringValue(enumString);
+            }
         }
-
-        string enumString = value.Value switch
+        
+        /// <summary>
+        /// A Json converter for nullable <see cref="StatusEnum"/>
+        /// </summary>
+        public class StatusEnumNullableJsonConverter : JsonConverter<StatusEnum?>
         {
-            StatusEnum.Created => "created",
-            StatusEnum.Running => "running",
-            StatusEnum.Paused => "paused",
-            StatusEnum.Restarting => "restarting",
-            StatusEnum.Removing => "removing",
-            StatusEnum.Exited => "exited",
-            StatusEnum.Dead => "dead",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-
-        writer.WriteStringValue(enumString);
-    }
-}
+            public override StatusEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                if (reader.TokenType == JsonTokenType.Null)
+                    return null;
+        
+                string? enumString = reader.GetString();
+        
+                return enumString switch
+                {
+                    "created" => StatusEnum.Created,
+                    "running" => StatusEnum.Running,
+                    "paused" => StatusEnum.Paused,
+                    "restarting" => StatusEnum.Restarting,
+                    "removing" => StatusEnum.Removing,
+                    "exited" => StatusEnum.Exited,
+                    "dead" => StatusEnum.Dead,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, StatusEnum? value, JsonSerializerOptions options)
+            {
+                if (value == null)
+                {
+                    writer.WriteNullValue();
+                    return;
+                }
+        
+                string enumString = value.Value switch
+                {
+                    StatusEnum.Created => "created",
+                    StatusEnum.Running => "running",
+                    StatusEnum.Paused => "paused",
+                    StatusEnum.Restarting => "restarting",
+                    StatusEnum.Removing => "removing",
+                    StatusEnum.Exited => "exited",
+                    StatusEnum.Dead => "dead",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+        
+                writer.WriteStringValue(enumString);
+            }
+        }
 
         /// <summary>
         /// Used to track the state of Status
@@ -253,7 +253,7 @@ public class StatusEnumNullableJsonConverter : JsonConverter<StatusEnum?>
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> PidOption { get; private set; }
+        public Option<ulong?> PidOption { get; private set; }
 
         /// <summary>
         /// The process ID of this container
@@ -261,14 +261,14 @@ public class StatusEnumNullableJsonConverter : JsonConverter<StatusEnum?>
         /// <value>The process ID of this container</value>
         /* <example>1234</example> */
         [JsonPropertyName("Pid")]
-        public int? Pid { get { return this.PidOption; } set { this.PidOption = new(value); } }
+        public ulong? Pid { get { return this.PidOption; } set { this.PidOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of ExitCode
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> ExitCodeOption { get; private set; }
+        public Option<ulong?> ExitCodeOption { get; private set; }
 
         /// <summary>
         /// The last exit code of this container
@@ -276,7 +276,7 @@ public class StatusEnumNullableJsonConverter : JsonConverter<StatusEnum?>
         /// <value>The last exit code of this container</value>
         /* <example>0</example> */
         [JsonPropertyName("ExitCode")]
-        public int? ExitCode { get { return this.ExitCodeOption; } set { this.ExitCodeOption = new(value); } }
+        public ulong? ExitCode { get { return this.ExitCodeOption; } set { this.ExitCodeOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of Error

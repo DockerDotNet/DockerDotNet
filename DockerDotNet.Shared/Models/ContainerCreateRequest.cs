@@ -368,14 +368,14 @@ namespace DockerDotNet.Shared.Models
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> StopTimeoutOption { get; private set; }
+        public Option<ulong?> StopTimeoutOption { get; private set; }
 
         /// <summary>
         /// Timeout to stop a container in seconds.
         /// </summary>
         /// <value>Timeout to stop a container in seconds.</value>
         [JsonPropertyName("StopTimeout")]
-        public int? StopTimeout { get { return this.StopTimeoutOption; } set { this.StopTimeoutOption = new(value); } }
+        public ulong? StopTimeout { get { return this.StopTimeoutOption; } set { this.StopTimeoutOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of Shell

@@ -48,13 +48,13 @@ namespace DockerDotNet.Shared.Models
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> WeightOption { get; private set; }
+        public Option<ulong?> WeightOption { get; private set; }
 
         /// <summary>
         /// Gets or Sets Weight
         /// </summary>
         [JsonPropertyName("Weight")]
-        public int? Weight { get { return this.WeightOption; } set { this.WeightOption = new(value); } }
+        public ulong? Weight { get { return this.WeightOption; } set { this.WeightOption = new(value); } }
 
         /// <summary>
         /// Returns the string presentation of the object

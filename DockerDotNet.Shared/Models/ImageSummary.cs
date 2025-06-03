@@ -67,7 +67,7 @@ namespace DockerDotNet.Shared.Models
         /// <value>Date and time at which the image was created as a Unix timestamp (number of seconds since EPOCH). </value>
         /* <example>1644009612</example> */
         [JsonPropertyName("Created")]
-        public int Created { get; set; }
+        public ulong Created { get; set; }
 
         /// <summary>
         /// Total size of the image including all layers it is composed of. 
@@ -99,7 +99,7 @@ namespace DockerDotNet.Shared.Models
         /// <value>Number of containers using this image. Includes both stopped and running containers.  This size is not calculated by default, and depends on which API endpoint is used. &#x60;-1&#x60; indicates that the value has not been set / calculated. </value>
         /* <example>2</example> */
         [JsonPropertyName("Containers")]
-        public int Containers { get; set; }
+        public ulong Containers { get; set; }
 
         /// <summary>
         /// Used to track the state of VirtualSize

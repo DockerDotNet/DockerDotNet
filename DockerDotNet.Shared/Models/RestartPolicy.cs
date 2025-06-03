@@ -62,84 +62,84 @@ namespace DockerDotNet.Shared.Models
             OnFailure = 5
         }
 
-/// <summary>
-/// A Json converter for type <see cref="NameEnum"/>
-/// </summary>
-public class NameEnumJsonConverter : JsonConverter<NameEnum>
-{
-    public override NameEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        string? enumString = reader.GetString();
-        return enumString switch
+        /// <summary>
+        /// A Json converter for type <see cref="NameEnum"/>
+        /// </summary>
+        public class NameEnumJsonConverter : JsonConverter<NameEnum>
         {
-            "" => NameEnum.Empty,
-            "no" => NameEnum.No,
-            "always" => NameEnum.Always,
-            "unless-stopped" => NameEnum.UnlessStopped,
-            "on-failure" => NameEnum.OnFailure,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, NameEnum value, JsonSerializerOptions options)
-    {
-        string enumString = value switch
-        {
-            NameEnum.Empty => "",
-            NameEnum.No => "no",
-            NameEnum.Always => "always",
-            NameEnum.UnlessStopped => "unless-stopped",
-            NameEnum.OnFailure => "on-failure",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-        writer.WriteStringValue(enumString);
-    }
-}
-
-/// <summary>
-/// A Json converter for nullable <see cref="NameEnum"/>
-/// </summary>
-public class NameEnumNullableJsonConverter : JsonConverter<NameEnum?>
-{
-    public override NameEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        if (reader.TokenType == JsonTokenType.Null)
-            return null;
-
-        string? enumString = reader.GetString();
-
-        return enumString switch
-        {
-            "" => NameEnum.Empty,
-            "no" => NameEnum.No,
-            "always" => NameEnum.Always,
-            "unless-stopped" => NameEnum.UnlessStopped,
-            "on-failure" => NameEnum.OnFailure,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, NameEnum? value, JsonSerializerOptions options)
-    {
-        if (value == null)
-        {
-            writer.WriteNullValue();
-            return;
+            public override NameEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                string? enumString = reader.GetString();
+                return enumString switch
+                {
+                    "" => NameEnum.Empty,
+                    "no" => NameEnum.No,
+                    "always" => NameEnum.Always,
+                    "unless-stopped" => NameEnum.UnlessStopped,
+                    "on-failure" => NameEnum.OnFailure,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, NameEnum value, JsonSerializerOptions options)
+            {
+                string enumString = value switch
+                {
+                    NameEnum.Empty => "",
+                    NameEnum.No => "no",
+                    NameEnum.Always => "always",
+                    NameEnum.UnlessStopped => "unless-stopped",
+                    NameEnum.OnFailure => "on-failure",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+                writer.WriteStringValue(enumString);
+            }
         }
-
-        string enumString = value.Value switch
+        
+        /// <summary>
+        /// A Json converter for nullable <see cref="NameEnum"/>
+        /// </summary>
+        public class NameEnumNullableJsonConverter : JsonConverter<NameEnum?>
         {
-            NameEnum.Empty => "",
-            NameEnum.No => "no",
-            NameEnum.Always => "always",
-            NameEnum.UnlessStopped => "unless-stopped",
-            NameEnum.OnFailure => "on-failure",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-
-        writer.WriteStringValue(enumString);
-    }
-}
+            public override NameEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                if (reader.TokenType == JsonTokenType.Null)
+                    return null;
+        
+                string? enumString = reader.GetString();
+        
+                return enumString switch
+                {
+                    "" => NameEnum.Empty,
+                    "no" => NameEnum.No,
+                    "always" => NameEnum.Always,
+                    "unless-stopped" => NameEnum.UnlessStopped,
+                    "on-failure" => NameEnum.OnFailure,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, NameEnum? value, JsonSerializerOptions options)
+            {
+                if (value == null)
+                {
+                    writer.WriteNullValue();
+                    return;
+                }
+        
+                string enumString = value.Value switch
+                {
+                    NameEnum.Empty => "",
+                    NameEnum.No => "no",
+                    NameEnum.Always => "always",
+                    NameEnum.UnlessStopped => "unless-stopped",
+                    NameEnum.OnFailure => "on-failure",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+        
+                writer.WriteStringValue(enumString);
+            }
+        }
 
         /// <summary>
         /// Used to track the state of Name
@@ -160,14 +160,14 @@ public class NameEnumNullableJsonConverter : JsonConverter<NameEnum?>
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> MaximumRetryCountOption { get; private set; }
+        public Option<ulong?> MaximumRetryCountOption { get; private set; }
 
         /// <summary>
         /// If &#x60;on-failure&#x60; is used, the number of times to retry before giving up. 
         /// </summary>
         /// <value>If &#x60;on-failure&#x60; is used, the number of times to retry before giving up. </value>
         [JsonPropertyName("MaximumRetryCount")]
-        public int? MaximumRetryCount { get { return this.MaximumRetryCountOption; } set { this.MaximumRetryCountOption = new(value); } }
+        public ulong? MaximumRetryCount { get { return this.MaximumRetryCountOption; } set { this.MaximumRetryCountOption = new(value); } }
 
         /// <summary>
         /// Returns the string presentation of the object

@@ -50,7 +50,7 @@ namespace DockerDotNet.Shared.Models
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> SizeOption { get; private set; }
+        public Option<ulong?> SizeOption { get; private set; }
 
         /// <summary>
         /// The network pool size
@@ -58,7 +58,7 @@ namespace DockerDotNet.Shared.Models
         /// <value>The network pool size</value>
         /* <example>24</example> */
         [JsonPropertyName("Size")]
-        public int? Size { get { return this.SizeOption; } set { this.SizeOption = new(value); } }
+        public ulong? Size { get { return this.SizeOption; } set { this.SizeOption = new(value); } }
 
         /// <summary>
         /// Returns the string presentation of the object

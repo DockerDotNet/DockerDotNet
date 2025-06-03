@@ -35,13 +35,13 @@ namespace DockerDotNet.Shared.Models
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> CodeOption { get; private set; }
+        public Option<ulong?> CodeOption { get; private set; }
 
         /// <summary>
         /// Gets or Sets Code
         /// </summary>
         [JsonPropertyName("code")]
-        public int? Code { get { return this.CodeOption; } set { this.CodeOption = new(value); } }
+        public ulong? Code { get { return this.CodeOption; } set { this.CodeOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of Message

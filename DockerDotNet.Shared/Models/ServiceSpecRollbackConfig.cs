@@ -47,72 +47,72 @@ namespace DockerDotNet.Shared.Models
             Pause = 2
         }
 
-/// <summary>
-/// A Json converter for type <see cref="FailureActionEnum"/>
-/// </summary>
-public class FailureActionEnumJsonConverter : JsonConverter<FailureActionEnum>
-{
-    public override FailureActionEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        string? enumString = reader.GetString();
-        return enumString switch
+        /// <summary>
+        /// A Json converter for type <see cref="FailureActionEnum"/>
+        /// </summary>
+        public class FailureActionEnumJsonConverter : JsonConverter<FailureActionEnum>
         {
-            "continue" => FailureActionEnum.Continue,
-            "pause" => FailureActionEnum.Pause,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, FailureActionEnum value, JsonSerializerOptions options)
-    {
-        string enumString = value switch
-        {
-            FailureActionEnum.Continue => "continue",
-            FailureActionEnum.Pause => "pause",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-        writer.WriteStringValue(enumString);
-    }
-}
-
-/// <summary>
-/// A Json converter for nullable <see cref="FailureActionEnum"/>
-/// </summary>
-public class FailureActionEnumNullableJsonConverter : JsonConverter<FailureActionEnum?>
-{
-    public override FailureActionEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        if (reader.TokenType == JsonTokenType.Null)
-            return null;
-
-        string? enumString = reader.GetString();
-
-        return enumString switch
-        {
-            "continue" => FailureActionEnum.Continue,
-            "pause" => FailureActionEnum.Pause,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, FailureActionEnum? value, JsonSerializerOptions options)
-    {
-        if (value == null)
-        {
-            writer.WriteNullValue();
-            return;
+            public override FailureActionEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                string? enumString = reader.GetString();
+                return enumString switch
+                {
+                    "continue" => FailureActionEnum.Continue,
+                    "pause" => FailureActionEnum.Pause,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, FailureActionEnum value, JsonSerializerOptions options)
+            {
+                string enumString = value switch
+                {
+                    FailureActionEnum.Continue => "continue",
+                    FailureActionEnum.Pause => "pause",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+                writer.WriteStringValue(enumString);
+            }
         }
-
-        string enumString = value.Value switch
+        
+        /// <summary>
+        /// A Json converter for nullable <see cref="FailureActionEnum"/>
+        /// </summary>
+        public class FailureActionEnumNullableJsonConverter : JsonConverter<FailureActionEnum?>
         {
-            FailureActionEnum.Continue => "continue",
-            FailureActionEnum.Pause => "pause",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-
-        writer.WriteStringValue(enumString);
-    }
-}
+            public override FailureActionEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                if (reader.TokenType == JsonTokenType.Null)
+                    return null;
+        
+                string? enumString = reader.GetString();
+        
+                return enumString switch
+                {
+                    "continue" => FailureActionEnum.Continue,
+                    "pause" => FailureActionEnum.Pause,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, FailureActionEnum? value, JsonSerializerOptions options)
+            {
+                if (value == null)
+                {
+                    writer.WriteNullValue();
+                    return;
+                }
+        
+                string enumString = value.Value switch
+                {
+                    FailureActionEnum.Continue => "continue",
+                    FailureActionEnum.Pause => "pause",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+        
+                writer.WriteStringValue(enumString);
+            }
+        }
 
         /// <summary>
         /// Used to track the state of FailureAction
@@ -145,72 +145,72 @@ public class FailureActionEnumNullableJsonConverter : JsonConverter<FailureActio
             StartFirst = 2
         }
 
-/// <summary>
-/// A Json converter for type <see cref="OrderEnum"/>
-/// </summary>
-public class OrderEnumJsonConverter : JsonConverter<OrderEnum>
-{
-    public override OrderEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        string? enumString = reader.GetString();
-        return enumString switch
+        /// <summary>
+        /// A Json converter for type <see cref="OrderEnum"/>
+        /// </summary>
+        public class OrderEnumJsonConverter : JsonConverter<OrderEnum>
         {
-            "stop-first" => OrderEnum.StopFirst,
-            "start-first" => OrderEnum.StartFirst,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, OrderEnum value, JsonSerializerOptions options)
-    {
-        string enumString = value switch
-        {
-            OrderEnum.StopFirst => "stop-first",
-            OrderEnum.StartFirst => "start-first",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-        writer.WriteStringValue(enumString);
-    }
-}
-
-/// <summary>
-/// A Json converter for nullable <see cref="OrderEnum"/>
-/// </summary>
-public class OrderEnumNullableJsonConverter : JsonConverter<OrderEnum?>
-{
-    public override OrderEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        if (reader.TokenType == JsonTokenType.Null)
-            return null;
-
-        string? enumString = reader.GetString();
-
-        return enumString switch
-        {
-            "stop-first" => OrderEnum.StopFirst,
-            "start-first" => OrderEnum.StartFirst,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, OrderEnum? value, JsonSerializerOptions options)
-    {
-        if (value == null)
-        {
-            writer.WriteNullValue();
-            return;
+            public override OrderEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                string? enumString = reader.GetString();
+                return enumString switch
+                {
+                    "stop-first" => OrderEnum.StopFirst,
+                    "start-first" => OrderEnum.StartFirst,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, OrderEnum value, JsonSerializerOptions options)
+            {
+                string enumString = value switch
+                {
+                    OrderEnum.StopFirst => "stop-first",
+                    OrderEnum.StartFirst => "start-first",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+                writer.WriteStringValue(enumString);
+            }
         }
-
-        string enumString = value.Value switch
+        
+        /// <summary>
+        /// A Json converter for nullable <see cref="OrderEnum"/>
+        /// </summary>
+        public class OrderEnumNullableJsonConverter : JsonConverter<OrderEnum?>
         {
-            OrderEnum.StopFirst => "stop-first",
-            OrderEnum.StartFirst => "start-first",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-
-        writer.WriteStringValue(enumString);
-    }
-}
+            public override OrderEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                if (reader.TokenType == JsonTokenType.Null)
+                    return null;
+        
+                string? enumString = reader.GetString();
+        
+                return enumString switch
+                {
+                    "stop-first" => OrderEnum.StopFirst,
+                    "start-first" => OrderEnum.StartFirst,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, OrderEnum? value, JsonSerializerOptions options)
+            {
+                if (value == null)
+                {
+                    writer.WriteNullValue();
+                    return;
+                }
+        
+                string enumString = value.Value switch
+                {
+                    OrderEnum.StopFirst => "stop-first",
+                    OrderEnum.StartFirst => "start-first",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+        
+                writer.WriteStringValue(enumString);
+            }
+        }
 
         /// <summary>
         /// Used to track the state of Order

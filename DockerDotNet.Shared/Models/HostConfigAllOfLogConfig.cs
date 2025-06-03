@@ -87,104 +87,104 @@ namespace DockerDotNet.Shared.Models
             None = 10
         }
 
-/// <summary>
-/// A Json converter for type <see cref="TypeEnum"/>
-/// </summary>
-public class TypeEnumJsonConverter : JsonConverter<TypeEnum>
-{
-    public override TypeEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        string? enumString = reader.GetString();
-        return enumString switch
+        /// <summary>
+        /// A Json converter for type <see cref="TypeEnum"/>
+        /// </summary>
+        public class TypeEnumJsonConverter : JsonConverter<TypeEnum>
         {
-            "local" => TypeEnum.Local,
-            "json-file" => TypeEnum.JsonFile,
-            "syslog" => TypeEnum.Syslog,
-            "journald" => TypeEnum.Journald,
-            "gelf" => TypeEnum.Gelf,
-            "fluentd" => TypeEnum.Fluentd,
-            "awslogs" => TypeEnum.Awslogs,
-            "splunk" => TypeEnum.Splunk,
-            "etwlogs" => TypeEnum.Etwlogs,
-            "none" => TypeEnum.None,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, TypeEnum value, JsonSerializerOptions options)
-    {
-        string enumString = value switch
-        {
-            TypeEnum.Local => "local",
-            TypeEnum.JsonFile => "json-file",
-            TypeEnum.Syslog => "syslog",
-            TypeEnum.Journald => "journald",
-            TypeEnum.Gelf => "gelf",
-            TypeEnum.Fluentd => "fluentd",
-            TypeEnum.Awslogs => "awslogs",
-            TypeEnum.Splunk => "splunk",
-            TypeEnum.Etwlogs => "etwlogs",
-            TypeEnum.None => "none",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-        writer.WriteStringValue(enumString);
-    }
-}
-
-/// <summary>
-/// A Json converter for nullable <see cref="TypeEnum"/>
-/// </summary>
-public class TypeEnumNullableJsonConverter : JsonConverter<TypeEnum?>
-{
-    public override TypeEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        if (reader.TokenType == JsonTokenType.Null)
-            return null;
-
-        string? enumString = reader.GetString();
-
-        return enumString switch
-        {
-            "local" => TypeEnum.Local,
-            "json-file" => TypeEnum.JsonFile,
-            "syslog" => TypeEnum.Syslog,
-            "journald" => TypeEnum.Journald,
-            "gelf" => TypeEnum.Gelf,
-            "fluentd" => TypeEnum.Fluentd,
-            "awslogs" => TypeEnum.Awslogs,
-            "splunk" => TypeEnum.Splunk,
-            "etwlogs" => TypeEnum.Etwlogs,
-            "none" => TypeEnum.None,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, TypeEnum? value, JsonSerializerOptions options)
-    {
-        if (value == null)
-        {
-            writer.WriteNullValue();
-            return;
+            public override TypeEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                string? enumString = reader.GetString();
+                return enumString switch
+                {
+                    "local" => TypeEnum.Local,
+                    "json-file" => TypeEnum.JsonFile,
+                    "syslog" => TypeEnum.Syslog,
+                    "journald" => TypeEnum.Journald,
+                    "gelf" => TypeEnum.Gelf,
+                    "fluentd" => TypeEnum.Fluentd,
+                    "awslogs" => TypeEnum.Awslogs,
+                    "splunk" => TypeEnum.Splunk,
+                    "etwlogs" => TypeEnum.Etwlogs,
+                    "none" => TypeEnum.None,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, TypeEnum value, JsonSerializerOptions options)
+            {
+                string enumString = value switch
+                {
+                    TypeEnum.Local => "local",
+                    TypeEnum.JsonFile => "json-file",
+                    TypeEnum.Syslog => "syslog",
+                    TypeEnum.Journald => "journald",
+                    TypeEnum.Gelf => "gelf",
+                    TypeEnum.Fluentd => "fluentd",
+                    TypeEnum.Awslogs => "awslogs",
+                    TypeEnum.Splunk => "splunk",
+                    TypeEnum.Etwlogs => "etwlogs",
+                    TypeEnum.None => "none",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+                writer.WriteStringValue(enumString);
+            }
         }
-
-        string enumString = value.Value switch
+        
+        /// <summary>
+        /// A Json converter for nullable <see cref="TypeEnum"/>
+        /// </summary>
+        public class TypeEnumNullableJsonConverter : JsonConverter<TypeEnum?>
         {
-            TypeEnum.Local => "local",
-            TypeEnum.JsonFile => "json-file",
-            TypeEnum.Syslog => "syslog",
-            TypeEnum.Journald => "journald",
-            TypeEnum.Gelf => "gelf",
-            TypeEnum.Fluentd => "fluentd",
-            TypeEnum.Awslogs => "awslogs",
-            TypeEnum.Splunk => "splunk",
-            TypeEnum.Etwlogs => "etwlogs",
-            TypeEnum.None => "none",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-
-        writer.WriteStringValue(enumString);
-    }
-}
+            public override TypeEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                if (reader.TokenType == JsonTokenType.Null)
+                    return null;
+        
+                string? enumString = reader.GetString();
+        
+                return enumString switch
+                {
+                    "local" => TypeEnum.Local,
+                    "json-file" => TypeEnum.JsonFile,
+                    "syslog" => TypeEnum.Syslog,
+                    "journald" => TypeEnum.Journald,
+                    "gelf" => TypeEnum.Gelf,
+                    "fluentd" => TypeEnum.Fluentd,
+                    "awslogs" => TypeEnum.Awslogs,
+                    "splunk" => TypeEnum.Splunk,
+                    "etwlogs" => TypeEnum.Etwlogs,
+                    "none" => TypeEnum.None,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, TypeEnum? value, JsonSerializerOptions options)
+            {
+                if (value == null)
+                {
+                    writer.WriteNullValue();
+                    return;
+                }
+        
+                string enumString = value.Value switch
+                {
+                    TypeEnum.Local => "local",
+                    TypeEnum.JsonFile => "json-file",
+                    TypeEnum.Syslog => "syslog",
+                    TypeEnum.Journald => "journald",
+                    TypeEnum.Gelf => "gelf",
+                    TypeEnum.Fluentd => "fluentd",
+                    TypeEnum.Awslogs => "awslogs",
+                    TypeEnum.Splunk => "splunk",
+                    TypeEnum.Etwlogs => "etwlogs",
+                    TypeEnum.None => "none",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+        
+                writer.WriteStringValue(enumString);
+            }
+        }
 
         /// <summary>
         /// Used to track the state of Type

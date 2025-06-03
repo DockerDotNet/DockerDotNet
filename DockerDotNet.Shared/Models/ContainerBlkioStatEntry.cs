@@ -35,28 +35,28 @@ namespace DockerDotNet.Shared.Models
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> MajorOption { get; private set; }
+        public Option<ulong?> MajorOption { get; private set; }
 
         /// <summary>
         /// Gets or Sets Major
         /// </summary>
         /* <example>254</example> */
         [JsonPropertyName("major")]
-        public int? Major { get { return this.MajorOption; } set { this.MajorOption = new(value); } }
+        public ulong? Major { get { return this.MajorOption; } set { this.MajorOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of Minor
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> MinorOption { get; private set; }
+        public Option<ulong?> MinorOption { get; private set; }
 
         /// <summary>
         /// Gets or Sets Minor
         /// </summary>
         /* <example>0</example> */
         [JsonPropertyName("minor")]
-        public int? Minor { get { return this.MinorOption; } set { this.MinorOption = new(value); } }
+        public ulong? Minor { get { return this.MinorOption; } set { this.MinorOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of Op
@@ -77,14 +77,14 @@ namespace DockerDotNet.Shared.Models
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> ValueOption { get; private set; }
+        public Option<ulong?> ValueOption { get; private set; }
 
         /// <summary>
         /// Gets or Sets Value
         /// </summary>
         /* <example>7593984</example> */
         [JsonPropertyName("value")]
-        public int? Value { get { return this.ValueOption; } set { this.ValueOption = new(value); } }
+        public ulong? Value { get { return this.ValueOption; } set { this.ValueOption = new(value); } }
 
         /// <summary>
         /// Returns the string presentation of the object

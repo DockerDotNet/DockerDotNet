@@ -45,74 +45,75 @@ namespace DockerDotNet.Shared.Models
         /// </summary>
         Reachable
     }
-/// <summary>
-/// A Json converter for type <see cref="Reachability"/>
-/// </summary>
-public class ReachabilityJsonConverter : JsonConverter<Reachability>
-{
-    public override Reachability Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    
+    /// <summary>
+    /// A Json converter for type <see cref="Reachability"/>
+    /// </summary>
+    public class ReachabilityJsonConverter : JsonConverter<Reachability>
     {
-        string? enumString = reader.GetString();
-        return enumString switch
+        public override Reachability Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            "unknown" => Reachability.Unknown,
-            "unreachable" => Reachability.Unreachable,
-            "reachable" => Reachability.Reachable,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, Reachability value, JsonSerializerOptions options)
-    {
-        string enumString = value switch
-        {
-            Reachability.Unknown => "unknown",
-            Reachability.Unreachable => "unreachable",
-            Reachability.Reachable => "reachable",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-        writer.WriteStringValue(enumString);
-    }
-}
-
-/// <summary>
-/// A Json converter for nullable <see cref="Reachability"/>
-/// </summary>
-public class ReachabilityNullableJsonConverter : JsonConverter<Reachability?>
-{
-    public override Reachability? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        if (reader.TokenType == JsonTokenType.Null)
-            return null;
-
-        string? enumString = reader.GetString();
-
-        return enumString switch
-        {
-            "unknown" => Reachability.Unknown,
-            "unreachable" => Reachability.Unreachable,
-            "reachable" => Reachability.Reachable,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, Reachability? value, JsonSerializerOptions options)
-    {
-        if (value == null)
-        {
-            writer.WriteNullValue();
-            return;
+            string? enumString = reader.GetString();
+            return enumString switch
+            {
+                "unknown" => Reachability.Unknown,
+                "unreachable" => Reachability.Unreachable,
+                "reachable" => Reachability.Reachable,
+                _ => throw new JsonException($"Unknown value: {enumString}")
+            };
         }
-
-        string enumString = value.Value switch
+    
+        public override void Write(Utf8JsonWriter writer, Reachability value, JsonSerializerOptions options)
         {
-            Reachability.Unknown => "unknown",
-            Reachability.Unreachable => "unreachable",
-            Reachability.Reachable => "reachable",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-
-        writer.WriteStringValue(enumString);
+            string enumString = value switch
+            {
+                Reachability.Unknown => "unknown",
+                Reachability.Unreachable => "unreachable",
+                Reachability.Reachable => "reachable",
+                _ => throw new JsonException($"Unknown value: {value}")
+            };
+            writer.WriteStringValue(enumString);
+        }
     }
-}
+    
+    /// <summary>
+    /// A Json converter for nullable <see cref="Reachability"/>
+    /// </summary>
+    public class ReachabilityNullableJsonConverter : JsonConverter<Reachability?>
+    {
+        public override Reachability? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            if (reader.TokenType == JsonTokenType.Null)
+                return null;
+    
+            string? enumString = reader.GetString();
+    
+            return enumString switch
+            {
+                "unknown" => Reachability.Unknown,
+                "unreachable" => Reachability.Unreachable,
+                "reachable" => Reachability.Reachable,
+                _ => throw new JsonException($"Unknown value: {enumString}")
+            };
+        }
+    
+        public override void Write(Utf8JsonWriter writer, Reachability? value, JsonSerializerOptions options)
+        {
+            if (value == null)
+            {
+                writer.WriteNullValue();
+                return;
+            }
+    
+            string enumString = value.Value switch
+            {
+                Reachability.Unknown => "unknown",
+                Reachability.Unreachable => "unreachable",
+                Reachability.Reachable => "reachable",
+                _ => throw new JsonException($"Unknown value: {value}")
+            };
+    
+            writer.WriteStringValue(enumString);
+        }
+    }
 }

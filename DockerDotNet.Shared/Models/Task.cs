@@ -156,13 +156,13 @@ namespace DockerDotNet.Shared.Models
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> SlotOption { get; private set; }
+        public Option<ulong?> SlotOption { get; private set; }
 
         /// <summary>
         /// Gets or Sets Slot
         /// </summary>
         [JsonPropertyName("Slot")]
-        public int? Slot { get { return this.SlotOption; } set { this.SlotOption = new(value); } }
+        public ulong? Slot { get { return this.SlotOption; } set { this.SlotOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of NodeID

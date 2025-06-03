@@ -47,72 +47,72 @@ namespace DockerDotNet.Shared.Models
             Manager = 2
         }
 
-/// <summary>
-/// A Json converter for type <see cref="RoleEnum"/>
-/// </summary>
-public class RoleEnumJsonConverter : JsonConverter<RoleEnum>
-{
-    public override RoleEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        string? enumString = reader.GetString();
-        return enumString switch
+        /// <summary>
+        /// A Json converter for type <see cref="RoleEnum"/>
+        /// </summary>
+        public class RoleEnumJsonConverter : JsonConverter<RoleEnum>
         {
-            "worker" => RoleEnum.Worker,
-            "manager" => RoleEnum.Manager,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, RoleEnum value, JsonSerializerOptions options)
-    {
-        string enumString = value switch
-        {
-            RoleEnum.Worker => "worker",
-            RoleEnum.Manager => "manager",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-        writer.WriteStringValue(enumString);
-    }
-}
-
-/// <summary>
-/// A Json converter for nullable <see cref="RoleEnum"/>
-/// </summary>
-public class RoleEnumNullableJsonConverter : JsonConverter<RoleEnum?>
-{
-    public override RoleEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        if (reader.TokenType == JsonTokenType.Null)
-            return null;
-
-        string? enumString = reader.GetString();
-
-        return enumString switch
-        {
-            "worker" => RoleEnum.Worker,
-            "manager" => RoleEnum.Manager,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, RoleEnum? value, JsonSerializerOptions options)
-    {
-        if (value == null)
-        {
-            writer.WriteNullValue();
-            return;
+            public override RoleEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                string? enumString = reader.GetString();
+                return enumString switch
+                {
+                    "worker" => RoleEnum.Worker,
+                    "manager" => RoleEnum.Manager,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, RoleEnum value, JsonSerializerOptions options)
+            {
+                string enumString = value switch
+                {
+                    RoleEnum.Worker => "worker",
+                    RoleEnum.Manager => "manager",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+                writer.WriteStringValue(enumString);
+            }
         }
-
-        string enumString = value.Value switch
+        
+        /// <summary>
+        /// A Json converter for nullable <see cref="RoleEnum"/>
+        /// </summary>
+        public class RoleEnumNullableJsonConverter : JsonConverter<RoleEnum?>
         {
-            RoleEnum.Worker => "worker",
-            RoleEnum.Manager => "manager",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-
-        writer.WriteStringValue(enumString);
-    }
-}
+            public override RoleEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                if (reader.TokenType == JsonTokenType.Null)
+                    return null;
+        
+                string? enumString = reader.GetString();
+        
+                return enumString switch
+                {
+                    "worker" => RoleEnum.Worker,
+                    "manager" => RoleEnum.Manager,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, RoleEnum? value, JsonSerializerOptions options)
+            {
+                if (value == null)
+                {
+                    writer.WriteNullValue();
+                    return;
+                }
+        
+                string enumString = value.Value switch
+                {
+                    RoleEnum.Worker => "worker",
+                    RoleEnum.Manager => "manager",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+        
+                writer.WriteStringValue(enumString);
+            }
+        }
 
         /// <summary>
         /// Used to track the state of Role
@@ -151,76 +151,76 @@ public class RoleEnumNullableJsonConverter : JsonConverter<RoleEnum?>
             Drain = 3
         }
 
-/// <summary>
-/// A Json converter for type <see cref="AvailabilityEnum"/>
-/// </summary>
-public class AvailabilityEnumJsonConverter : JsonConverter<AvailabilityEnum>
-{
-    public override AvailabilityEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        string? enumString = reader.GetString();
-        return enumString switch
+        /// <summary>
+        /// A Json converter for type <see cref="AvailabilityEnum"/>
+        /// </summary>
+        public class AvailabilityEnumJsonConverter : JsonConverter<AvailabilityEnum>
         {
-            "active" => AvailabilityEnum.Active,
-            "pause" => AvailabilityEnum.Pause,
-            "drain" => AvailabilityEnum.Drain,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, AvailabilityEnum value, JsonSerializerOptions options)
-    {
-        string enumString = value switch
-        {
-            AvailabilityEnum.Active => "active",
-            AvailabilityEnum.Pause => "pause",
-            AvailabilityEnum.Drain => "drain",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-        writer.WriteStringValue(enumString);
-    }
-}
-
-/// <summary>
-/// A Json converter for nullable <see cref="AvailabilityEnum"/>
-/// </summary>
-public class AvailabilityEnumNullableJsonConverter : JsonConverter<AvailabilityEnum?>
-{
-    public override AvailabilityEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        if (reader.TokenType == JsonTokenType.Null)
-            return null;
-
-        string? enumString = reader.GetString();
-
-        return enumString switch
-        {
-            "active" => AvailabilityEnum.Active,
-            "pause" => AvailabilityEnum.Pause,
-            "drain" => AvailabilityEnum.Drain,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, AvailabilityEnum? value, JsonSerializerOptions options)
-    {
-        if (value == null)
-        {
-            writer.WriteNullValue();
-            return;
+            public override AvailabilityEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                string? enumString = reader.GetString();
+                return enumString switch
+                {
+                    "active" => AvailabilityEnum.Active,
+                    "pause" => AvailabilityEnum.Pause,
+                    "drain" => AvailabilityEnum.Drain,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, AvailabilityEnum value, JsonSerializerOptions options)
+            {
+                string enumString = value switch
+                {
+                    AvailabilityEnum.Active => "active",
+                    AvailabilityEnum.Pause => "pause",
+                    AvailabilityEnum.Drain => "drain",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+                writer.WriteStringValue(enumString);
+            }
         }
-
-        string enumString = value.Value switch
+        
+        /// <summary>
+        /// A Json converter for nullable <see cref="AvailabilityEnum"/>
+        /// </summary>
+        public class AvailabilityEnumNullableJsonConverter : JsonConverter<AvailabilityEnum?>
         {
-            AvailabilityEnum.Active => "active",
-            AvailabilityEnum.Pause => "pause",
-            AvailabilityEnum.Drain => "drain",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-
-        writer.WriteStringValue(enumString);
-    }
-}
+            public override AvailabilityEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                if (reader.TokenType == JsonTokenType.Null)
+                    return null;
+        
+                string? enumString = reader.GetString();
+        
+                return enumString switch
+                {
+                    "active" => AvailabilityEnum.Active,
+                    "pause" => AvailabilityEnum.Pause,
+                    "drain" => AvailabilityEnum.Drain,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, AvailabilityEnum? value, JsonSerializerOptions options)
+            {
+                if (value == null)
+                {
+                    writer.WriteNullValue();
+                    return;
+                }
+        
+                string enumString = value.Value switch
+                {
+                    AvailabilityEnum.Active => "active",
+                    AvailabilityEnum.Pause => "pause",
+                    AvailabilityEnum.Drain => "drain",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+        
+                writer.WriteStringValue(enumString);
+            }
+        }
 
         /// <summary>
         /// Used to track the state of Availability

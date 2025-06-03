@@ -35,7 +35,7 @@ namespace DockerDotNet.Shared.Models
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> TotalUsageOption { get; private set; }
+        public Option<ulong?> TotalUsageOption { get; private set; }
 
         /// <summary>
         /// Total CPU time consumed in nanoseconds (Linux) or 100&#39;s of nanoseconds (Windows). 
@@ -43,28 +43,28 @@ namespace DockerDotNet.Shared.Models
         /// <value>Total CPU time consumed in nanoseconds (Linux) or 100&#39;s of nanoseconds (Windows). </value>
         /* <example>29912000</example> */
         [JsonPropertyName("total_usage")]
-        public int? TotalUsage { get { return this.TotalUsageOption; } set { this.TotalUsageOption = new(value); } }
+        public ulong? TotalUsage { get { return this.TotalUsageOption; } set { this.TotalUsageOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of PercpuUsage
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<List<int>?> PercpuUsageOption { get; private set; }
+        public Option<List<ulong>?> PercpuUsageOption { get; private set; }
 
         /// <summary>
         /// Total CPU time (in nanoseconds) consumed per core (Linux).  This field is Linux-specific when using cgroups v1. It is omitted when using cgroups v2 and Windows containers. 
         /// </summary>
         /// <value>Total CPU time (in nanoseconds) consumed per core (Linux).  This field is Linux-specific when using cgroups v1. It is omitted when using cgroups v2 and Windows containers. </value>
         [JsonPropertyName("percpu_usage")]
-        public List<int>? PercpuUsage { get { return this.PercpuUsageOption; } set { this.PercpuUsageOption = new(value); } }
+        public List<ulong>? PercpuUsage { get { return this.PercpuUsageOption; } set { this.PercpuUsageOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of UsageInKernelmode
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> UsageInKernelmodeOption { get; private set; }
+        public Option<ulong?> UsageInKernelmodeOption { get; private set; }
 
         /// <summary>
         /// Time (in nanoseconds) spent by tasks of the cgroup in kernel mode (Linux), or time spent (in 100&#39;s of nanoseconds) by all container processes in kernel mode (Windows).  Not populated for Windows containers using Hyper-V isolation. 
@@ -72,14 +72,14 @@ namespace DockerDotNet.Shared.Models
         /// <value>Time (in nanoseconds) spent by tasks of the cgroup in kernel mode (Linux), or time spent (in 100&#39;s of nanoseconds) by all container processes in kernel mode (Windows).  Not populated for Windows containers using Hyper-V isolation. </value>
         /* <example>21994000</example> */
         [JsonPropertyName("usage_in_kernelmode")]
-        public int? UsageInKernelmode { get { return this.UsageInKernelmodeOption; } set { this.UsageInKernelmodeOption = new(value); } }
+        public ulong? UsageInKernelmode { get { return this.UsageInKernelmodeOption; } set { this.UsageInKernelmodeOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of UsageInUsermode
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> UsageInUsermodeOption { get; private set; }
+        public Option<ulong?> UsageInUsermodeOption { get; private set; }
 
         /// <summary>
         /// Time (in nanoseconds) spent by tasks of the cgroup in user mode (Linux), or time spent (in 100&#39;s of nanoseconds) by all container processes in kernel mode (Windows).  Not populated for Windows containers using Hyper-V isolation. 
@@ -87,7 +87,7 @@ namespace DockerDotNet.Shared.Models
         /// <value>Time (in nanoseconds) spent by tasks of the cgroup in user mode (Linux), or time spent (in 100&#39;s of nanoseconds) by all container processes in kernel mode (Windows).  Not populated for Windows containers using Hyper-V isolation. </value>
         /* <example>7918000</example> */
         [JsonPropertyName("usage_in_usermode")]
-        public int? UsageInUsermode { get { return this.UsageInUsermodeOption; } set { this.UsageInUsermodeOption = new(value); } }
+        public ulong? UsageInUsermode { get { return this.UsageInUsermodeOption; } set { this.UsageInUsermodeOption = new(value); } }
 
         /// <summary>
         /// Returns the string presentation of the object

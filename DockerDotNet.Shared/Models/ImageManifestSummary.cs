@@ -52,76 +52,76 @@ namespace DockerDotNet.Shared.Models
             Unknown = 3
         }
 
-/// <summary>
-/// A Json converter for type <see cref="KindEnum"/>
-/// </summary>
-public class KindEnumJsonConverter : JsonConverter<KindEnum>
-{
-    public override KindEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        string? enumString = reader.GetString();
-        return enumString switch
+        /// <summary>
+        /// A Json converter for type <see cref="KindEnum"/>
+        /// </summary>
+        public class KindEnumJsonConverter : JsonConverter<KindEnum>
         {
-            "image" => KindEnum.Image,
-            "attestation" => KindEnum.Attestation,
-            "unknown" => KindEnum.Unknown,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, KindEnum value, JsonSerializerOptions options)
-    {
-        string enumString = value switch
-        {
-            KindEnum.Image => "image",
-            KindEnum.Attestation => "attestation",
-            KindEnum.Unknown => "unknown",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-        writer.WriteStringValue(enumString);
-    }
-}
-
-/// <summary>
-/// A Json converter for nullable <see cref="KindEnum"/>
-/// </summary>
-public class KindEnumNullableJsonConverter : JsonConverter<KindEnum?>
-{
-    public override KindEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        if (reader.TokenType == JsonTokenType.Null)
-            return null;
-
-        string? enumString = reader.GetString();
-
-        return enumString switch
-        {
-            "image" => KindEnum.Image,
-            "attestation" => KindEnum.Attestation,
-            "unknown" => KindEnum.Unknown,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, KindEnum? value, JsonSerializerOptions options)
-    {
-        if (value == null)
-        {
-            writer.WriteNullValue();
-            return;
+            public override KindEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                string? enumString = reader.GetString();
+                return enumString switch
+                {
+                    "image" => KindEnum.Image,
+                    "attestation" => KindEnum.Attestation,
+                    "unknown" => KindEnum.Unknown,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, KindEnum value, JsonSerializerOptions options)
+            {
+                string enumString = value switch
+                {
+                    KindEnum.Image => "image",
+                    KindEnum.Attestation => "attestation",
+                    KindEnum.Unknown => "unknown",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+                writer.WriteStringValue(enumString);
+            }
         }
-
-        string enumString = value.Value switch
+        
+        /// <summary>
+        /// A Json converter for nullable <see cref="KindEnum"/>
+        /// </summary>
+        public class KindEnumNullableJsonConverter : JsonConverter<KindEnum?>
         {
-            KindEnum.Image => "image",
-            KindEnum.Attestation => "attestation",
-            KindEnum.Unknown => "unknown",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-
-        writer.WriteStringValue(enumString);
-    }
-}
+            public override KindEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                if (reader.TokenType == JsonTokenType.Null)
+                    return null;
+        
+                string? enumString = reader.GetString();
+        
+                return enumString switch
+                {
+                    "image" => KindEnum.Image,
+                    "attestation" => KindEnum.Attestation,
+                    "unknown" => KindEnum.Unknown,
+                    _ => throw new JsonException($"Unknown value: {enumString}")
+                };
+            }
+        
+            public override void Write(Utf8JsonWriter writer, KindEnum? value, JsonSerializerOptions options)
+            {
+                if (value == null)
+                {
+                    writer.WriteNullValue();
+                    return;
+                }
+        
+                string enumString = value.Value switch
+                {
+                    KindEnum.Image => "image",
+                    KindEnum.Attestation => "attestation",
+                    KindEnum.Unknown => "unknown",
+                    _ => throw new JsonException($"Unknown value: {value}")
+                };
+        
+                writer.WriteStringValue(enumString);
+            }
+        }
 
         /// <summary>
         /// The kind of the manifest.  kind         | description - -- -- -- -- -- --|- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- image        | Image manifest that can be used to start a container. attestation  | Attestation manifest produced by the Buildkit builder for a specific image manifest. 

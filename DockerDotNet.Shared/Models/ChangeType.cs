@@ -45,74 +45,75 @@ namespace DockerDotNet.Shared.Models
         /// </summary>
         NUMBER_2 = 2
     }
-/// <summary>
-/// A Json converter for type <see cref="ChangeType"/>
-/// </summary>
-public class ChangeTypeJsonConverter : JsonConverter<ChangeType>
-{
-    public override ChangeType Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    
+    /// <summary>
+    /// A Json converter for type <see cref="ChangeType"/>
+    /// </summary>
+    public class ChangeTypeJsonConverter : JsonConverter<ChangeType>
     {
-        string? enumString = reader.GetString();
-        return enumString switch
+        public override ChangeType Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            "0" => ChangeType.NUMBER_0,
-            "1" => ChangeType.NUMBER_1,
-            "2" => ChangeType.NUMBER_2,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, ChangeType value, JsonSerializerOptions options)
-    {
-        string enumString = value switch
-        {
-            ChangeType.NUMBER_0 => "0",
-            ChangeType.NUMBER_1 => "1",
-            ChangeType.NUMBER_2 => "2",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-        writer.WriteStringValue(enumString);
-    }
-}
-
-/// <summary>
-/// A Json converter for nullable <see cref="ChangeType"/>
-/// </summary>
-public class ChangeTypeNullableJsonConverter : JsonConverter<ChangeType?>
-{
-    public override ChangeType? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        if (reader.TokenType == JsonTokenType.Null)
-            return null;
-
-        string? enumString = reader.GetString();
-
-        return enumString switch
-        {
-            "0" => ChangeType.NUMBER_0,
-            "1" => ChangeType.NUMBER_1,
-            "2" => ChangeType.NUMBER_2,
-            _ => throw new JsonException($"Unknown value: {enumString}")
-        };
-    }
-
-    public override void Write(Utf8JsonWriter writer, ChangeType? value, JsonSerializerOptions options)
-    {
-        if (value == null)
-        {
-            writer.WriteNullValue();
-            return;
+            string? enumString = reader.GetString();
+            return enumString switch
+            {
+                "0" => ChangeType.NUMBER_0,
+                "1" => ChangeType.NUMBER_1,
+                "2" => ChangeType.NUMBER_2,
+                _ => throw new JsonException($"Unknown value: {enumString}")
+            };
         }
-
-        string enumString = value.Value switch
+    
+        public override void Write(Utf8JsonWriter writer, ChangeType value, JsonSerializerOptions options)
         {
-            ChangeType.NUMBER_0 => "0",
-            ChangeType.NUMBER_1 => "1",
-            ChangeType.NUMBER_2 => "2",
-            _ => throw new JsonException($"Unknown value: {value}")
-        };
-
-        writer.WriteStringValue(enumString);
+            string enumString = value switch
+            {
+                ChangeType.NUMBER_0 => "0",
+                ChangeType.NUMBER_1 => "1",
+                ChangeType.NUMBER_2 => "2",
+                _ => throw new JsonException($"Unknown value: {value}")
+            };
+            writer.WriteStringValue(enumString);
+        }
     }
-}
+    
+    /// <summary>
+    /// A Json converter for nullable <see cref="ChangeType"/>
+    /// </summary>
+    public class ChangeTypeNullableJsonConverter : JsonConverter<ChangeType?>
+    {
+        public override ChangeType? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            if (reader.TokenType == JsonTokenType.Null)
+                return null;
+    
+            string? enumString = reader.GetString();
+    
+            return enumString switch
+            {
+                "0" => ChangeType.NUMBER_0,
+                "1" => ChangeType.NUMBER_1,
+                "2" => ChangeType.NUMBER_2,
+                _ => throw new JsonException($"Unknown value: {enumString}")
+            };
+        }
+    
+        public override void Write(Utf8JsonWriter writer, ChangeType? value, JsonSerializerOptions options)
+        {
+            if (value == null)
+            {
+                writer.WriteNullValue();
+                return;
+            }
+    
+            string enumString = value.Value switch
+            {
+                ChangeType.NUMBER_0 => "0",
+                ChangeType.NUMBER_1 => "1",
+                ChangeType.NUMBER_2 => "2",
+                _ => throw new JsonException($"Unknown value: {value}")
+            };
+    
+            writer.WriteStringValue(enumString);
+        }
+    }
 }

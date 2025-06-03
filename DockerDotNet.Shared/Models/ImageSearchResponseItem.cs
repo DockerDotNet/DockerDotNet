@@ -89,13 +89,13 @@ namespace DockerDotNet.Shared.Models
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> StarCountOption { get; private set; }
+        public Option<ulong?> StarCountOption { get; private set; }
 
         /// <summary>
         /// Gets or Sets StarCount
         /// </summary>
         [JsonPropertyName("star_count")]
-        public int? StarCount { get { return this.StarCountOption; } set { this.StarCountOption = new(value); } }
+        public ulong? StarCount { get { return this.StarCountOption; } set { this.StarCountOption = new(value); } }
 
         /// <summary>
         /// Returns the string presentation of the object

@@ -49,28 +49,28 @@ namespace DockerDotNet.Shared.Models
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> SoftOption { get; private set; }
+        public Option<ulong?> SoftOption { get; private set; }
 
         /// <summary>
         /// Soft limit
         /// </summary>
         /// <value>Soft limit</value>
         [JsonPropertyName("Soft")]
-        public int? Soft { get { return this.SoftOption; } set { this.SoftOption = new(value); } }
+        public ulong? Soft { get { return this.SoftOption; } set { this.SoftOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of Hard
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> HardOption { get; private set; }
+        public Option<ulong?> HardOption { get; private set; }
 
         /// <summary>
         /// Hard limit
         /// </summary>
         /// <value>Hard limit</value>
         [JsonPropertyName("Hard")]
-        public int? Hard { get { return this.HardOption; } set { this.HardOption = new(value); } }
+        public ulong? Hard { get { return this.HardOption; } set { this.HardOption = new(value); } }
 
         /// <summary>
         /// Returns the string presentation of the object

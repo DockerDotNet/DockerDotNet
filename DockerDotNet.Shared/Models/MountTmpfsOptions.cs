@@ -49,14 +49,14 @@ namespace DockerDotNet.Shared.Models
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> ModeOption { get; private set; }
+        public Option<ulong?> ModeOption { get; private set; }
 
         /// <summary>
         /// The permission mode for the tmpfs mount in an integer.
         /// </summary>
         /// <value>The permission mode for the tmpfs mount in an integer.</value>
         [JsonPropertyName("Mode")]
-        public int? Mode { get { return this.ModeOption; } set { this.ModeOption = new(value); } }
+        public ulong? Mode { get { return this.ModeOption; } set { this.ModeOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of Options

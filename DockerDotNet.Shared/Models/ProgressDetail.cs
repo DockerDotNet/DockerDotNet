@@ -35,26 +35,26 @@ namespace DockerDotNet.Shared.Models
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> CurrentOption { get; private set; }
+        public Option<ulong?> CurrentOption { get; private set; }
 
         /// <summary>
         /// Gets or Sets Current
         /// </summary>
         [JsonPropertyName("current")]
-        public int? Current { get { return this.CurrentOption; } set { this.CurrentOption = new(value); } }
+        public ulong? Current { get { return this.CurrentOption; } set { this.CurrentOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of Total
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> TotalOption { get; private set; }
+        public Option<ulong?> TotalOption { get; private set; }
 
         /// <summary>
         /// Gets or Sets Total
         /// </summary>
         [JsonPropertyName("total")]
-        public int? Total { get { return this.TotalOption; } set { this.TotalOption = new(value); } }
+        public ulong? Total { get { return this.TotalOption; } set { this.TotalOption = new(value); } }
 
         /// <summary>
         /// Returns the string presentation of the object

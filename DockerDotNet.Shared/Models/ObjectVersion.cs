@@ -35,14 +35,14 @@ namespace DockerDotNet.Shared.Models
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> IndexOption { get; private set; }
+        public Option<ulong?> IndexOption { get; private set; }
 
         /// <summary>
         /// Gets or Sets Index
         /// </summary>
         /* <example>373531</example> */
         [JsonPropertyName("Index")]
-        public int? Index { get { return this.IndexOption; } set { this.IndexOption = new(value); } }
+        public ulong? Index { get { return this.IndexOption; } set { this.IndexOption = new(value); } }
 
         /// <summary>
         /// Returns the string presentation of the object
